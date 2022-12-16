@@ -23,9 +23,25 @@ namespace Krebsregister
     public partial class MainWindow : Window
     {
 
-        public Dictionary<string, double> MapData { get; set; } = new Dictionary<string, double>();
+        
 
         public MainWindow()
+        {
+            PieChart();
+            BarChart();
+            AreaChart();
+            NegativStackChart();
+            GeoMap();
+
+            DataContext = this;
+            InitializeComponent();
+        }
+
+        #region GeoMap
+
+        public Dictionary<string, double> MapData { get; set; } = new Dictionary<string, double>();
+
+        public void GeoMap()
         {
             MapData = new Dictionary<string, double>()
             {
@@ -40,16 +56,6 @@ namespace Krebsregister
                 { "2281",70.0 },
                 { "2282",50.0 }
             };
-
-            DataContext = this;
-            InitializeComponent();
-
-
-
-            PieChart();
-            BarChart();
-            AreaChart();
-            NegativStackChart();
 
             //InitializeComponent();
             //LiveCharts.Wpf.GeoMap geoMap = new LiveCharts.Wpf.GeoMap();
@@ -68,10 +74,11 @@ namespace Krebsregister
             //geoMap.Source = @"Austria.xml";
 
             //DataContext = this;
-
         }
 
-        
+        #endregion
+
+        #region PieChart
         public Func<ChartPoint, string> PointLabel { get; set; }
         public void PieChart()
         {
@@ -93,7 +100,9 @@ namespace Krebsregister
             selectedSeries.PushOut = 8;
         }
 
+        #endregion
 
+        #region NegativStackChart
         public SeriesCollection SeriesCollectionNSC { get; set; }
         public string[] LabelsNSC { get; set; }
         public Func<double, string> FormatterNSC { get; set; }
@@ -119,6 +128,9 @@ namespace Krebsregister
             DataContext = this;
         }
 
+        #endregion
+
+        #region AreaChart
         public SeriesCollection SeriesCollection { get; set; }
         public string[] Labels { get; set; }
         public Func<double, string> YFormatter { get; set; }
@@ -165,6 +177,10 @@ namespace Krebsregister
 
             DataContext = this;
         }
+
+        #endregion
+
+        #region BarChart
         public SeriesCollection SeriesCollectionBC { get; set; }
         public string[] LabelsBC { get; set; }
         public Func<double, string> Formatter { get; set; }
@@ -194,6 +210,6 @@ namespace Krebsregister
 
             DataContext = this;
         }
-    
-}
+        #endregion
+    }
 }
