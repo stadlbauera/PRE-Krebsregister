@@ -1,24 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
+    <None Remove="Images\Pfeil.jpg" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NumericUpDown\NumericUpDown.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="maps\austria.xml">
+    <Resource Include="Images\Pfeil.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    </Resource>
   </ItemGroup>
 
 </Project>

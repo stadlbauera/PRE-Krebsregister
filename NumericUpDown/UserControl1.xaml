@@ -1,0 +1,28 @@
+<UserControl x:Class="NumericUpDown.UserControl1"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:NumericUpDown"
+             mc:Ignorable="d" 
+             d:DesignHeight="30" d:DesignWidth="150">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <TextBox Name="tbAnzahl" Grid.Column="0"></TextBox>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Button Name="bUP" Grid.Row="0"  Click="bUP_Click">
+                <Canvas Name="canUP" Background="Gray"/>
+            </Button>
+            <Button Name="bDOWN" Grid.Row="1" Click="bDOWN_Click">
+                <Canvas Name="canDOWN" Background="Gray" SizeChanged="canDOWN_SizeChanged"/>
+            </Button>
+        </Grid>
+    </Grid>
+</UserControl>
