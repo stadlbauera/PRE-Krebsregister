@@ -38,6 +38,8 @@ namespace Krebsregister
             NegativStackChart();
             GeoMap();
 
+
+
             DataContext = this;
             InitializeComponent();
             
@@ -45,7 +47,7 @@ namespace Krebsregister
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            FillDatabase();
+            //FillDatabase();
         }
 
         #region GeoMap
@@ -392,8 +394,12 @@ namespace Krebsregister
             sqlc.ExecuteNonQuery();
         }
 
+
         #endregion //Database
 
-        
+        private void bNeueKrebsmeldung_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

@@ -11,7 +11,7 @@
             <ColumnDefinition Width="5*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <TextBox Name="tbAnzahl" Grid.Column="0"></TextBox>
+        <TextBox Name="tbAnzahl" Grid.Column="0" ></TextBox>
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
