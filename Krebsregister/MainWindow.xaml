@@ -8,7 +8,7 @@
         xmlns:local="clr-namespace:Krebsregister"
         xmlns:NumericUpDown="clr-namespace:NumericUpDown;assembly=NumericUpDown" x:Class="Krebsregister.MainWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
 
     <Grid>
         <Grid.RowDefinitions>
