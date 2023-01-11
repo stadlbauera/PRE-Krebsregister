@@ -19,14 +19,18 @@ namespace Krebsregister
     /// </summary>
     public partial class Confirmation : Window
     {
-        public Confirmation()
+        public Krebsmeldung neueKrebsmeldung { get; set; }
+        public Confirmation(Krebsmeldung neueKrebsmeldung)
         {
+            this.neueKrebsmeldung = neueKrebsmeldung;
             InitializeComponent();
         }
 
         private void ok_Click(object sender, RoutedEventArgs e)
         {
-
+            Window MainWindow = new MainWindow(neueKrebsmeldung, true);
+            MainWindow.Show();
+            this.Close();
         }
     }
 }

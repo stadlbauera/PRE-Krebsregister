@@ -54,8 +54,8 @@ namespace Krebsregister
 
         private void bNeueKrebsmeldung_Click(object sender, RoutedEventArgs e)
         {
-            Window MainWindow = new MainWindow(neueKrebsmeldung, true);
-            MainWindow.Show();
+            Window Confirmation = new Confirmation(neueKrebsmeldung);
+            Confirmation.Show();
             this.Close();
         }
     }
