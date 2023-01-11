@@ -26,29 +26,37 @@ namespace Krebsregister
     /// </summary>
     public partial class MainWindow : Window
     {
+        
 
         //const string constring = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\lilia\\source\\repos\\stadlbauera\\PRE-Krebsregister\\Krebsregister\\Krebsregister_Database.mdf;Integrated Security=True";
         //const string path_rest_icd10 = "C:\\Users\\lilia\\Source\\Repos\\stadlbauera\\PRE-Krebsregister\\Krebsregister\\CSV-Dateien\\restlicheICD10Codes.csv";
 
         public MainWindow()
         {
-            PieChart();
-            BarChart();
-            AreaChart();
-            NegativStackChart();
-            GeoMap();
+           
 
 
-
+            InitializeCharts();
             DataContext = this;
             InitializeComponent();
             
         }
 
+        private void InitializeCharts()
+        {
+            PieChart();
+            BarChart();
+            AreaChart();
+            NegativStackChart();
+            GeoMap();
+        }
+
+        
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             //FillDatabase();
-            DatabaseMethods.FillDatabase();
+            //DatabaseMethods.FillDatabase();
            
         }
 
@@ -227,19 +235,48 @@ namespace Krebsregister
         }
         #endregion
 
+        #region Krebsmeldung
 
-        private void DropTables(string tablename, SqlConnection connection)
+        public MainWindow(Krebsmeldung neueKrebsmeldung, bool erstellen)
         {
-            SqlCommand sqlc = new SqlCommand($"DELETE FROM {tablename}", connection);
-            sqlc.ExecuteNonQuery();
+            InitializeCharts();
+            InitializeComponent();
+
+            if (erstellen)
+            {
+                //Bestätigungs-Fenster
+            }
+            else
+            {
+                if(neueKrebsmeldung != null)
+                {
+                    cbKrebsart.Text = neueKrebsmeldung.Krebsart;
+                    cbGeschlecht.Text = neueKrebsmeldung.Geschlecht;
+                    cbBundesland.Text = neueKrebsmeldung.Bundesland;
+                    nudJahr.NudContent = neueKrebsmeldung.Jahr;
+                    nudAnzahl.NudContent = neueKrebsmeldung.Anzahl;
+                }
+            }
+            tiKrebsmeldung.IsSelected = true;
+            DataContext = this;
+            
         }
-
-
-        #endregion //Database
 
         private void bNeueKrebsmeldung_Click(object sender, RoutedEventArgs e)
         {
-
+            Krebsmeldung neueKrebsmeldung = new Krebsmeldung
+            {
+                Krebsart = cbKrebsart.Text,
+                Geschlecht = cbGeschlecht.Text,
+                Bundesland = cbBundesland.Text,
+                Anzahl = nudAnzahl.NudContent,
+                Jahr = nudJahr.NudContent
+            };
+            Window KrebsmeldungConfirm = new KrebsmeldungConfirm(neueKrebsmeldung);
+            KrebsmeldungConfirm.Show();
+            this.Close();
         }
+
+        #endregion
     }
 }

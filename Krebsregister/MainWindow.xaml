@@ -142,7 +142,7 @@
                 </Canvas>
             </TabItem>
             <!--NEUE-KREBSMELDUNG********************************************************************************************************************************************************************************-->
-            <TabItem Header="Neue Krebsmeldung">
+            <TabItem Name="tiKrebsmeldung" Header="Neue Krebsmeldung">
                 <Grid Name="gridKrebsmeldung">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30"/>

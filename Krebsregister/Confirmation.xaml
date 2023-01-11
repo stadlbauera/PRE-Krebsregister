@@ -1,0 +1,13 @@
+﻿<Window x:Class="Krebsregister.Confirmation"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Krebsregister"
+        mc:Ignorable="d"
+        Title="Confirmation" Height="150" Width="250">
+    <Grid>
+        <Label Content="Neue Krebsmeldung wurde hinzugefügt!" HorizontalAlignment="Center" />
+        <Button Name="ok" Content="Okay" Click="ok_Click" Height="20" Width="60" HorizontalAlignment="Center"/>
+    </Grid>
+</Window>
