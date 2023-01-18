@@ -5,8 +5,12 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography.Pkcs;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Controls.Primitives;
+using System.Xml.Linq;
 
 namespace Krebsregister
 {
@@ -191,7 +195,35 @@ namespace Krebsregister
                 connection.Open();
             }
 
-            //latest ID => MAX(id)
+            /*INSERT INTO Eintrag
+            SELECT MAX(e.EintragID)+1, e.Berichtsjahr, e.AnzahlMeldungen, i.ICD10ID, g.GeschlechtID, b.BundeslandID
+            FROM Eintrag e
+            JOIN ICD10 i ON(e.ICD10ID = i.ICD10ID)
+            JOIN Geschlecht g ON(g.GeschlechtID = e.GeschlechtID)
+            JOIN Bundesland b ON(b.BundeslandID = e.BundeslandID)
+            WHERE i.ICD10Code = 'C00'
+            AND g.Geschlecht = 'weiblich'
+            AND b.Name = 'Wien'
+            GROUP BY e.Berichtsjahr, e.AnzahlMeldungen, i.ICD10ID, g.GeschlechtID, b.BundeslandID;*/
+
+            SqlCommand cmd = new SqlCommand("INSERT INTO Eintrag " +
+                "SELECT MAX(e.EintragID)+1, @aktuellBerichtsjahr, @aktuellAnzahlMeldungen, i.ICD10ID, g.GeschlechtID, b.BundeslandID " +
+                "FROM Eintrag e " +
+                "JOIN ICD10 i ON(e.ICD10ID = i.ICD10ID) " +
+                "JOIN Geschlecht g ON(g.GeschlechtID = e.GeschlechtID) " +
+                "JOIN Bundesland b ON(b.BundeslandID = e.BundeslandID) " +
+                "WHERE i.ICD10Code = '@aktuellICD10Code' " +
+                "AND g.Geschlecht = '@aktuellGeschlecht' " +
+                "AND b.Name = '@aktuellBundesland' " +
+                "GROUP BY e.Berichtsjahr, e.AnzahlMeldungen, i.ICD10ID, g.GeschlechtID, b.BundeslandID;", connection);
+
+            cmd.Parameters.AddWithValue("@aktuellBerichtsjahr", km.Jahr);
+            cmd.Parameters.AddWithValue("@aktuellAnzahlMeldungen", km.Anzahl);
+            cmd.Parameters.AddWithValue("@aktuellICD10Code", km.ICD10Code);
+            cmd.Parameters.AddWithValue("@aktuellGeschlecht", km.Geschlecht);
+            cmd.Parameters.AddWithValue("@aktuellBundesland", km.Bundesland);
+            cmd.ExecuteNonQuery();
+            connection.Close();
         }
 
         #endregion neue Krebsmeldung einfügen
@@ -219,7 +251,7 @@ namespace Krebsregister
                     Krebsart = reader.GetString(3),
                     Geschlecht = reader.GetString(4),
                     Bundesland = reader.GetString(5)
-                }) ;
+                });
             }
 
             connection.Close();
