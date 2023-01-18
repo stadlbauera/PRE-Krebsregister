@@ -207,14 +207,23 @@ namespace Krebsregister
                 connection.Open();
             }
 
-            SqlCommand cmd = new SqlCommand("SELECT e.Berichtsjahr, e.AnzahlMeldungen, i.ICD10Code, i.Bezeichnung, g.Geschlecht, b.Name\r\nFROM Eintrag e\r\nJOIN ICD10 i ON (i.ICD10ID = e.ICD10ID)\r\nJOIN Geschlecht g ON (g.GeschlechtID = e.GeschlechtID)\r\nJOIN Bundesland b ON (b.BundeslandID = e.BundeslandID);");
+            SqlCommand cmd = new SqlCommand("SELECT e.Berichtsjahr, e.AnzahlMeldungen, i.ICD10Code, i.Bezeichnung, g.Geschlecht, b.Name\r\nFROM Eintrag e\r\nJOIN ICD10 i ON (i.ICD10ID = e.ICD10ID)\r\nJOIN Geschlecht g ON (g.GeschlechtID = e.GeschlechtID)\r\nJOIN Bundesland b ON (b.BundeslandID = e.BundeslandID);", connection);
             SqlDataReader reader = cmd.ExecuteReader();
-            if (reader.Read())
+            while (reader.Read())
             {
                 krebsmeldungs.Add(new Krebsmeldung
                 {
-                });
+                    Jahr = reader.GetInt32(0),
+                    Anzahl = reader.GetInt32(1),
+                    ICD10Code = reader.GetString(2),
+                    Krebsart = reader.GetString(3),
+                    Geschlecht = reader.GetString(4),
+                    Bundesland = reader.GetString(5)
+                }) ;
             }
+
+            connection.Close();
+            return krebsmeldungs;
         }
 
         #endregion Daten aus den Datenbank holen

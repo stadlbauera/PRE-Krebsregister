@@ -56,6 +56,7 @@ namespace Krebsregister
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             //DatabaseMethods.FillDatabase();
+            List<Krebsmeldung> list_krebsmeldung = DatabaseMethods.GetDataFromDatabase();
         }
 
         #region GeoMap
