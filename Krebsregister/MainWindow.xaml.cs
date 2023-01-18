@@ -57,8 +57,8 @@ namespace Krebsregister
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            //FillDatabase();
             //DatabaseMethods.FillDatabase();
+            List<Krebsmeldung> list_krebsmeldung = DatabaseMethods.GetDataFromDatabase();
 
             PieChart();
            

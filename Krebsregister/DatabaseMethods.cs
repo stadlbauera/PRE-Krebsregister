@@ -17,7 +17,7 @@ namespace Krebsregister
         static string path_rest_icd10 = "C:\\Users\\lilia\\Source\\Repos\\stadlbauera\\PRE-Krebsregister\\Krebsregister\\CSV-Dateien\\restlicheICD10Codes.csv";
 
 
-
+        #region erstellen und befüllen Datenbank
         public static void FillDatabase()
         {
             //Allgemein Databaseconnection erstellen und öffnen
@@ -28,10 +28,10 @@ namespace Krebsregister
             }
 
             //Daten, die bereits in die Tabellen existieren löschen
-            DropTables("Eintrag", connection);
-            DropTables("Geschlecht", connection);
-            DropTables("Bundesland", connection);
-            DropTables("ICD10", connection);
+            DropTable("Eintrag", connection);
+            DropTable("Geschlecht", connection);
+            DropTable("Bundesland", connection);
+            DropTable("ICD10", connection);
 
 
             //Geschlechtfields ist ein List mit die Zeilen der CSV-Dateien
@@ -142,19 +142,6 @@ namespace Krebsregister
             connection.Close();
         }
 
-        public static void InsertNewMeldung(Krebsmeldung km)
-        {
-            //Allgemein Databaseconnection erstellen und öffnen
-            SqlConnection connection = new SqlConnection(constring);
-            if (connection.State != System.Data.ConnectionState.Open)
-            {
-                connection.Open();
-            }
-
-            //latest ID => MAX(id)
-        }
-
-
         private static List<string[]> ReadInCSV_Web(string webPath)
         {
             List<string[]> fieldsList = new List<string[]>();
@@ -191,11 +178,59 @@ namespace Krebsregister
             return fieldsList;
         }
 
-        private static void DropTables(string tablename, SqlConnection connection)
+        #endregion erstellen und befüllen Datenbank
+
+
+        #region neue Krebsmeldung einfügen
+        public static void InsertNewMeldung(Krebsmeldung km)
+        {
+            //Allgemein Databaseconnection erstellen und öffnen
+            SqlConnection connection = new SqlConnection(constring);
+            if (connection.State != System.Data.ConnectionState.Open)
+            {
+                connection.Open();
+            }
+
+            //latest ID => MAX(id)
+        }
+
+        #endregion neue Krebsmeldung einfügen
+
+        #region Daten aus den Datenbank holen 
+
+        public static List<Krebsmeldung> GetDataFromDatabase()
+        {
+            List<Krebsmeldung> krebsmeldungs = new List<Krebsmeldung>();
+            SqlConnection connection = new SqlConnection(constring);
+            if (connection.State != System.Data.ConnectionState.Open)
+            {
+                connection.Open();
+            }
+
+            SqlCommand cmd = new SqlCommand("SELECT e.Berichtsjahr, e.AnzahlMeldungen, i.ICD10Code, i.Bezeichnung, g.Geschlecht, b.Name\r\nFROM Eintrag e\r\nJOIN ICD10 i ON (i.ICD10ID = e.ICD10ID)\r\nJOIN Geschlecht g ON (g.GeschlechtID = e.GeschlechtID)\r\nJOIN Bundesland b ON (b.BundeslandID = e.BundeslandID);", connection);
+            SqlDataReader reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                krebsmeldungs.Add(new Krebsmeldung
+                {
+                    Jahr = reader.GetInt32(0),
+                    Anzahl = reader.GetInt32(1),
+                    ICD10Code = reader.GetString(2),
+                    Krebsart = reader.GetString(3),
+                    Geschlecht = reader.GetString(4),
+                    Bundesland = reader.GetString(5)
+                }) ;
+            }
+
+            connection.Close();
+            return krebsmeldungs;
+        }
+
+        #endregion Daten aus den Datenbank holen
+        private static void DropTable(string tablename, SqlConnection connection)
         {
             SqlCommand sqlc = new SqlCommand($"DELETE FROM {tablename}", connection);
             sqlc.ExecuteNonQuery();
         }
-
     }
 }
