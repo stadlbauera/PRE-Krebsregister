@@ -43,7 +43,7 @@
                     <!--GEOHEATMAP********************************************************************************************************************************************************************************-->
                     <lvc:GeoMap HeatMap="{Binding MapData}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Grid.RowSpan="2" Source="maps/austria.xml"  Background="White" />
                     <!--PIECHART**********************************************************************************************************************************************************************************-->
-                    <lvc:PieChart Grid.Column="3" Grid.Row="1" LegendLocation="Bottom"  Hoverable="False" DataTooltip="{x:Null}" DataClick="PieChart_DataClick" >
+                    <!--<lvc:PieChart Grid.Column="3" Grid.Row="1" LegendLocation="Bottom"  Hoverable="False" DataTooltip="{x:Null}" DataClick="PieChart_DataClick" >
                         <lvc:PieChart.Series>
                             <lvc:PieSeries Title="Maria" Values="3" DataLabels="True"
                                LabelPoint="{Binding PointLabel}"/>
@@ -54,10 +54,10 @@
                             <lvc:PieSeries Title="Frederic" Values="2" DataLabels="True" 
                                LabelPoint="{Binding PointLabel}"/>
                         </lvc:PieChart.Series>
-                    </lvc:PieChart>
+                    </lvc:PieChart>-->
                     <!--PIECHART********************************************************************************************************************************************************************************-->
-                    <lvc:PieChart Grid.Column="2" Grid.Row="2" LegendLocation="Bottom"  Hoverable="False" DataTooltip="{x:Null}" DataClick="PieChart_DataClick">
-                        <lvc:PieChart.Series>
+                    <lvc:PieChart Name="pieChart1" Grid.Column="2" Grid.Row="2" LegendLocation="Bottom"  Hoverable="False" DataTooltip="{x:Null}" DataClick="PieChart_DataClick">
+                        <!--<lvc:PieChart.Series>
                             <lvc:PieSeries Title="Maria" Values="3" DataLabels="True"
                                LabelPoint="{Binding PointLabel}"/>
                             <lvc:PieSeries Title="Charles" Values="4" DataLabels="True" 
@@ -66,7 +66,7 @@
                                LabelPoint="{Binding PointLabel}"/>
                             <lvc:PieSeries Title="Frederic" Values="2" DataLabels="True" 
                                LabelPoint="{Binding PointLabel}"/>
-                        </lvc:PieChart.Series>
+                        </lvc:PieChart.Series>-->
                     </lvc:PieChart>
                     <!--AREACHART**************************************************************************************************************************************************************************-->
                     <lvc:CartesianChart Grid.Column="4" Grid.Row="0" LegendLocation="Right" Series="{Binding SeriesCollection}">

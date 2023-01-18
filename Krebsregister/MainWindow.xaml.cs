@@ -33,13 +33,15 @@ namespace Krebsregister
 
         public MainWindow()
         {
-           
-
 
             InitializeCharts();
-            DataContext = this;
             InitializeComponent();
             
+            DataContext = this;
+
+
+
+
         }
 
         private void InitializeCharts()
@@ -57,6 +59,8 @@ namespace Krebsregister
         {
             //FillDatabase();
             //DatabaseMethods.FillDatabase();
+
+            PieChart();
            
         }
 
@@ -105,14 +109,26 @@ namespace Krebsregister
         public Func<ChartPoint, string> PointLabel { get; set; }
         public void PieChart()
         {
-            PointLabel = chartPoint =>
-                string.Format("{0} ({1:P})", chartPoint.Y, chartPoint.Participation);
+            if(pieChart1 != null)
+            {
+                pieChart1.Series.Clear();
+                SeriesCollection series = new SeriesCollection();
+                List<double> values = new List<double>() { 15.0, 30.0, 50.0, 5.0 };
+                series.Add(new PieSeries() { Title = "Prozente", Values = new ChartValues<double>(values) });
+                pieChart1.Series = series;
+            }
 
-            DataContext = this;
+
+            //PointLabel = chartPoint =>
+            //    string.Format("{0} ({1:P})", chartPoint.Y, chartPoint.Participation);
+
+            //DataContext = this;
         }
 
         public void PieChart_DataClick(object sender, ChartPoint chartpoint)
         {
+
+
             var chart = (LiveCharts.Wpf.PieChart)chartpoint.ChartView;
 
             //clear selected slice.
