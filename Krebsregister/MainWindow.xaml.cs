@@ -237,9 +237,11 @@ namespace Krebsregister
 
         public MainWindow(Krebsmeldung neueKrebsmeldung, bool erstellen)
         {
+            
             InitializeCharts();
             InitializeComponent();
 
+            lblException.Content = "";
             if (erstellen)
             {
                 //Bestätigungs-Fenster
@@ -248,7 +250,7 @@ namespace Krebsregister
             {
                 if(neueKrebsmeldung != null)
                 {
-                    cbKrebsart.Text = neueKrebsmeldung.Krebsart;
+                    cbKrebsart.Text = $"{neueKrebsmeldung.ICD10Code} - {neueKrebsmeldung.Krebsart}";
                     cbGeschlecht.Text = neueKrebsmeldung.Geschlecht;
                     cbBundesland.Text = neueKrebsmeldung.Bundesland;
                     nudJahr.NudContent = neueKrebsmeldung.Jahr;
@@ -262,17 +264,26 @@ namespace Krebsregister
 
         private void bNeueKrebsmeldung_Click(object sender, RoutedEventArgs e)
         {
-            Krebsmeldung neueKrebsmeldung = new Krebsmeldung
+            lblException.Content = "";
+            if(cbKrebsart.Text.Equals("") || cbGeschlecht.Text.Equals("") || cbBundesland.Text.Equals(""))
             {
-                Krebsart = cbKrebsart.Text,
-                Geschlecht = cbGeschlecht.Text,
-                Bundesland = cbBundesland.Text,
-                Anzahl = nudAnzahl.NudContent,
-                Jahr = nudJahr.NudContent
-            };
-            Window KrebsmeldungConfirm = new KrebsmeldungConfirm(neueKrebsmeldung);
-            KrebsmeldungConfirm.Show();
-            this.Close();
+                lblException.Content = "Bitte füllen Sie alle Felder aus!";
+            }
+            else
+            {
+                Krebsmeldung neueKrebsmeldung = new Krebsmeldung
+                {
+                    Krebsart = cbKrebsart.Text.Split(" - ")[1],
+                    ICD10Code = cbKrebsart.Text.Split(" - ")[0],
+                    Geschlecht = cbGeschlecht.Text,
+                    Bundesland = cbBundesland.Text,
+                    Anzahl = nudAnzahl.NudContent,
+                    Jahr = nudJahr.NudContent
+                };
+                Window KrebsmeldungConfirm = new KrebsmeldungConfirm(neueKrebsmeldung);
+                KrebsmeldungConfirm.Show();
+                this.Close();
+            }
         }
 
         #endregion
