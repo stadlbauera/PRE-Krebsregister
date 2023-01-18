@@ -9,6 +9,7 @@ namespace Krebsregister
     public class Krebsmeldung
     {
         public string Krebsart { get; set; }
+        public string ICD10Code { get; set; }
         public string Geschlecht { get; set; }
         public string Bundesland { get; set; }
         public int Anzahl { get; set; }

@@ -26,6 +26,7 @@ namespace Krebsregister
             InitializeComponent();
             this.neueKrebsmeldung = neueKrebsmeldung;
             lblKrebsart.Content = neueKrebsmeldung.Krebsart;
+            lblICD10Code.Content = neueKrebsmeldung.ICD10Code;
             lblGeschlecht.Content = neueKrebsmeldung.Geschlecht;
             lblBundesland.Content = neueKrebsmeldung.Bundesland;
             lblJahr.Content = neueKrebsmeldung.Jahr;
