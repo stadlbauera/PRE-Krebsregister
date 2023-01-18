@@ -55,9 +55,7 @@ namespace Krebsregister
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            //FillDatabase();
             //DatabaseMethods.FillDatabase();
-           
         }
 
         #region GeoMap
