@@ -18,8 +18,7 @@ using System.Data;
 using System.IO;
 using System.Net;
 using System.Data.SqlClient;
-using System.Configuration;
-using System.Security.Policy;
+using System.Diagnostics.Metrics;
 
 namespace Krebsregister
 {
@@ -28,27 +27,44 @@ namespace Krebsregister
     /// </summary>
     public partial class MainWindow : Window
     {
+        
 
-        const string constring = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\lilia\\source\\repos\\stadlbauera\\PRE-Krebsregister\\Krebsregister\\Krebsregister_Database.mdf;Integrated Security=True";
-        const string path_rest_icd10 = "C:\\Users\\lilia\\Source\\Repos\\stadlbauera\\PRE-Krebsregister\\Krebsregister\\CSV-Dateien\\restlicheICD10Codes.csv";
+        //const string constring = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\lilia\\source\\repos\\stadlbauera\\PRE-Krebsregister\\Krebsregister\\Krebsregister_Database.mdf;Integrated Security=True";
+        //const string path_rest_icd10 = "C:\\Users\\lilia\\Source\\Repos\\stadlbauera\\PRE-Krebsregister\\Krebsregister\\CSV-Dateien\\restlicheICD10Codes.csv";
 
         public MainWindow()
         {
-            PieChart();
+
+            InitializeCharts();
+            InitializeComponent();
+            
+            DataContext = this;
+
+
+
+
+        }
+
+        private void InitializeCharts()
+        {
+            //PieChart();
             BarChart();
             AreaChart();
             NegativStackChart();
             GeoMap();
-            getData();
-
-            DataContext = this;
-            //InitializeComponent();
-
         }
+
+        
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            FillDatabase();
+            //DatabaseMethods.FillDatabase();
+            List<Krebsmeldung> list_krebsmeldung = DatabaseMethods.GetDataFromDatabase();
+
+            List<Krebsmeldung> pieChartRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00")).ToList();
+
+            PieChart(pieChartRelevant);
+           
         }
 
         #region GeoMap
@@ -94,16 +110,64 @@ namespace Krebsregister
 
         #region PieChart
         public Func<ChartPoint, string> PointLabel { get; set; }
-        public void PieChart()
+        public void PieChart(List<Krebsmeldung> show)
         {
-            PointLabel = chartPoint =>
-                string.Format("{0} ({1:P})", chartPoint.Y, chartPoint.Participation);
+            //show beinhaltet alle Krebsmeldungen mit ICD10 C00
+            //Dictionary muss erstellt werden mit allen Bundesländern und der anzahl der krebsmeldungen dazu
+            //dazu muss man die liste (jede krebsmeldugn) durchgehen und das bundesland herausfinden und den counter um die anzahl erhöhen
+            Dictionary<string, int> bundeslaenderCounter = new Dictionary<string, int>();
+            int countAll = 0;
+            bundeslaenderCounter.Add("Burgenland", 0);
+            bundeslaenderCounter.Add("Kärnten", 0);
+            bundeslaenderCounter.Add("Niederösterreich", 0);
+            bundeslaenderCounter.Add("Oberösterreich", 0);
+            bundeslaenderCounter.Add("Salzburg", 0);
+            bundeslaenderCounter.Add("Steiermark", 0);
+            bundeslaenderCounter.Add("Tirol", 0);
+            bundeslaenderCounter.Add("Vorarlberg", 0);
+            bundeslaenderCounter.Add("Wien", 0);
 
-            DataContext = this;
+            foreach (Krebsmeldung krebsmeldung in show)
+            {
+                bundeslaenderCounter[krebsmeldung.Bundesland] += krebsmeldung.Anzahl;
+                countAll += krebsmeldung.Anzahl;
+            }
+            pieChart1.Series.Clear();
+            
+            SeriesCollection series = new SeriesCollection();
+
+            foreach (KeyValuePair<string, int> bundesland in bundeslaenderCounter)
+            {
+                series.Add(new PieSeries() { Title = bundesland.Key, Values = new ChartValues<double> { bundesland.Value * 100 / countAll } });
+            }
+            pieChart1.Series = series;
+
+
+            //if (pieChart1 != null)
+            //{
+            //    pieChart1.Series.Clear();
+            //    SeriesCollection series = new SeriesCollection();
+            //    List<double> values = new List<double>() { 15.0, 30.0, 50.0, 5.0 };
+            //    foreach(double value in values)
+            //    {
+            //        series.Add(new PieSeries() { Title = "Prozente", Values = new ChartValues<double> { value } });
+            //    }
+
+            //    pieChart1.Series = series;
+
+            //}
+
+
+            //PointLabel = chartPoint =>
+            //    string.Format("{0} ({1:P})", chartPoint.Y, chartPoint.Participation);
+
+            //DataContext = this;
         }
 
         public void PieChart_DataClick(object sender, ChartPoint chartpoint)
         {
+
+
             var chart = (LiveCharts.Wpf.PieChart)chartpoint.ChartView;
 
             //clear selected slice.
@@ -226,232 +290,60 @@ namespace Krebsregister
         }
         #endregion
 
+        #region Krebsmeldung
 
-        #region Database
-
-        public void FillDatabase()
+        public MainWindow(Krebsmeldung neueKrebsmeldung, bool erstellen)
         {
-            //Allgemein Databaseconnection erstellen und öffnen
-            SqlConnection connection = new SqlConnection(constring);
-            if (connection.State != System.Data.ConnectionState.Open)
+            
+            InitializeCharts();
+            InitializeComponent();
+
+            lblException.Content = "";
+            if (erstellen)
             {
-                connection.Open();
+                //Bestätigungs-Fenster
+                DatabaseMethods.InsertNewMeldung(neueKrebsmeldung);
             }
-
-            //Daten, die bereits in die Tabellen existieren löschen
-            DropTables("Eintrag", connection);
-            DropTables("Geschlecht", connection);
-            DropTables("Bundesland", connection);
-            DropTables("ICD10", connection);
-
-
-            //Geschlechtfields ist ein List mit die Zeilen der CSV-Dateien
-            var Geschlechtfields = ReadInCSV_Web("https://data.statistik.gv.at/data/OGD_krebs_ext_KREBS_1_C-KRE_GESCHLECHT-0.csv");
-            for (int i = 0; i < Geschlechtfields.Count; i++)
+            else
             {
-                string[] currentFields = Geschlechtfields[i];
-                string[] FieldsIDgesplittet = currentFields[0].Split("-"); //erste Feld der currentFields wird gesplittet, damit wir nur den eigentlichen GeschlechtsID haben (GESCHLECHT-1 -> GESCHLECHT; 1)
-                SqlCommand cmd = new SqlCommand("insert into Geschlecht (GeschlechtID, Geschlecht) values (@GeschlechtID, @Geschlecht)", connection);
-                cmd.Parameters.AddWithValue("@GeschlechtID", FieldsIDgesplittet[1]);    //1
-                cmd.Parameters.AddWithValue("@Geschlecht", currentFields[1]);
-                cmd.ExecuteNonQuery();
-            }
-
-            var Bundeslandfields = ReadInCSV_Web("https://data.statistik.gv.at/data/OGD_krebs_ext_KREBS_1_C-BUNDESLAND-0.csv");
-            for (int i = 0; i < Bundeslandfields.Count; i++)
-            {
-                string[] currentFields = Bundeslandfields[i];
-                string[] FieldsIDgesplittet = currentFields[0].Split("-");     //BUNDESLAND-1 -> BUNDESLAND; 1
-                SqlCommand cmd = new SqlCommand("insert into Bundesland (BundeslandID, Name) values (@BundeslandID, @Name)", connection);
-                cmd.Parameters.AddWithValue("@BundeslandID", FieldsIDgesplittet[1]);    //1
-                cmd.Parameters.AddWithValue("@Name", currentFields[1]);
-                cmd.ExecuteNonQuery();
-            }
-
-
-            var ICD10fields = ReadInCSV_Web("https://data.statistik.gv.at/data/OGD_krebs_ext_KREBS_1_C-TUM_ICD10_3ST-0.csv");
-            for (int i = 0; i < ICD10fields.Count; i++)
-            {
-                string[] currentFields = ICD10fields[i];
-
-                string[] FieldsIDgesplittet = currentFields[0].Split("-");  //TUM_ICD10_3ST-D10 -> TUM_ICD10_3ST; D10
-
-                SqlCommand cmd = new SqlCommand("insert into ICD10 (ICD10ID, ICD10Code, Bezeichnung) values (@ICD10ID, @ICD10Code, @Bezeichnung)", connection);
-
-
-                cmd.Parameters.AddWithValue("@ICD10ID", i + 1);     //ICD10ID ist ein durchgezählte Nummer
-
-                cmd.Parameters.AddWithValue("@ICD10Code", FieldsIDgesplittet[1]);   //D10
-
-                string[] bezeichnung_current = currentFields[1].Split("> ");    //<D10> Gutartige Neubildung des Mundes und des Pharynx -> <D10; Gutartige Neubildung des Mundes und des Pharynx
-
-                cmd.Parameters.AddWithValue("@Bezeichnung", bezeichnung_current[1]);    //Gutartige Neubildung des Mundes und des Pharynx
-                cmd.ExecuteNonQuery();
-            }
-
-            int currentCountID = ICD10fields.Count() + 1;
-            var RestICD10fields = ReadInCSV_Lokal(path_rest_icd10);
-            for (int i = 0; i < RestICD10fields.Count; i++)
-            {
-                string[] currentFields = RestICD10fields[i];
-
-                string[] FieldsIDgesplittet = currentFields[0].Split("-");  //TUM_ICD10_3ST-D10 -> TUM_ICD10_3ST; D10
-
-                SqlCommand cmd = new SqlCommand("insert into ICD10 (ICD10ID, ICD10Code, Bezeichnung) values (@ICD10ID, @ICD10Code, @Bezeichnung)", connection);
-
-
-                cmd.Parameters.AddWithValue("@ICD10ID", currentCountID);     //ICD10ID ist ein durchgezählte Nummer
-
-                cmd.Parameters.AddWithValue("@ICD10Code", FieldsIDgesplittet[1]);   //D10
-
-                string[] bezeichnung_current = currentFields[1].Split("> ");    //<D10> Gutartige Neubildung des Mundes und des Pharynx -> <D10; Gutartige Neubildung des Mundes und des Pharynx
-
-                cmd.Parameters.AddWithValue("@Bezeichnung", bezeichnung_current[1]);    //Gutartige Neubildung des Mundes und des Pharynx
-                cmd.ExecuteNonQuery();
-                currentCountID++;
-            }
-
-
-            var Eintragfields = ReadInCSV_Web("https://data.statistik.gv.at/data/OGD_krebs_ext_KREBS_1.csv");
-            for (int i = 0; i < Eintragfields.Count; i++)
-            {
-                string[] currentFields = Eintragfields[i];
-                SqlCommand cmd = new SqlCommand("insert into Eintrag (EintragID, Berichtsjahr, AnzahlMeldungen, ICD10ID, GeschlechtID, BundeslandID) values (@EintragID, @Berichtsjahr, @AnzahlMeldungen, @ICD10ID, @GeschlechtID, @BundeslandID)", connection);
-
-                cmd.Parameters.AddWithValue("@EintragID", i + 1);       //EintragID ist ein durchgezählte Nummer
-
-                //Im nächsten Abschnitt wird ein SELECT-Anweisung auf die bereits existierte ICD10-Tabelle gemacht, damit mal den durchgezählten ICD10ID bekommt und als FK einsetzten kann
-                int icd10ID_current = -1;
-                string icd10Code_current = (currentFields[0].Split("-"))[1];    //TUM_ICD10_3ST-C00 -> TUM_ICD10_3ST; C00
-                SqlCommand cmd_select_icd10 = new SqlCommand("select ICD10ID from ICD10 where ICD10Code=@currentCode", connection);
-                cmd_select_icd10.Parameters.AddWithValue("@currentCode", icd10Code_current);
-                SqlDataReader sqldr = cmd_select_icd10.ExecuteReader();
-
-                while (sqldr.Read())
-                { icd10ID_current = sqldr.GetInt32("ICD10ID"); }    //ID auslesen
-                sqldr.Close();
-
-                cmd.Parameters.AddWithValue("@ICD10ID", icd10ID_current);
-
-
-                int berichtsjahr = int.Parse((currentFields[1].Split("-"))[1]);    //BERJ-1999 -> BERJ; 1999
-                cmd.Parameters.AddWithValue("@Berichtsjahr", berichtsjahr);
-
-                int bundesland = int.Parse((currentFields[2].Split("-"))[1]);      //BUNDESLAND-1 -> BUNDESLAND; 1
-                cmd.Parameters.AddWithValue("@BundeslandID", bundesland);
-
-                int geschlecht = int.Parse((currentFields[3].Split("-")[1]));       //GESCHLECHT-1 -> GESCHLECHT; 1
-                cmd.Parameters.AddWithValue("@GeschlechtID", geschlecht);
-
-                cmd.Parameters.AddWithValue("@AnzahlMeldungen", int.Parse(currentFields[4]));
-                cmd.ExecuteNonQuery();
-
-
-
-            }
-
-            connection.Close();
-        }
-
-        private List<string[]> ReadInCSV_Web(string webPath)
-        {
-            List<string[]> fieldsList = new List<string[]>();
-            WebRequest request = WebRequest.Create(webPath);
-            request.Method = "GET";
-            WebResponse response = request.GetResponse();
-            Stream stream = response.GetResponseStream();
-            StreamReader reader = new StreamReader(stream);
-
-            reader.ReadLine();
-
-            while (!reader.EndOfStream)
-            {
-                string[] fields = reader.ReadLine().Split(";");
-                fieldsList.Add(fields);
-            }
-            reader.Close();
-            response.Close();
-            return fieldsList;
-        }
-
-        private List<string[]> ReadInCSV_Lokal(string path)
-        {
-            List<string[]> fieldsList = new List<string[]>();
-
-            StreamReader reader = new StreamReader(path);
-            reader.ReadLine();
-            while (!reader.EndOfStream)
-            {
-                string[] fields = reader.ReadLine().Split(";");
-                fieldsList.Add(fields);
-            }
-            reader.Close();
-            return fieldsList;
-        }
-
-        private void DropTables(string tablename, SqlConnection connection)
-        {
-            SqlCommand sqlc = new SqlCommand($"DELETE FROM {tablename}", connection);
-            sqlc.ExecuteNonQuery();
-        }
-
-
-        public void getData()
-        {
-            String connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Valentina\\Source\\Repos\\PRE-Krebsregister\\Krebsregister\\Krebsregister.csproj; Integrated Security=True";
-
-            SqlConnection connection = new SqlConnection(connectionString);
-            if (connection.State != System.Data.ConnectionState.Open)
-            {
-                connection.Open();
-            }
-
-            string query = "SELECT * FROM Eintrag";
-
-            SqlCommand command = new SqlCommand(query, connection);
-            SqlDataAdapter adapter = new SqlDataAdapter(command);
-
-
-            DataTable dt = new DataTable();
-            adapter.Fill(dt);
-
-            if (dt.Rows.Count > 0)
-            {
-                string filepath = @"C:\File.csv";
-                var sw = new StreamWriter(filepath);
-
-                int i = 1;
-                foreach (DataColumn col in dt.Columns)
+                if(neueKrebsmeldung != null)
                 {
-                    if (i < dt.Columns.Count)
-                    {
-                        sw.Write(",");
-                    }
-                    i++;
-                }
-                sw.WriteLine();
-
-                int rows = 2;
-                foreach (DataRow row in dt.Rows)
-                {
-                    for (int j = 0; j < dt.Columns.Count; j++)
-                    {
-                        sw.Write(row[j]);
-                        if (j < dt.Columns.Count - 1)
-                        {
-                            sw.Write(",");
-                        }
-                    }
-                    sw.WriteLine();
+                    cbKrebsart.Text = $"{neueKrebsmeldung.ICD10Code} - {neueKrebsmeldung.Krebsart}";
+                    cbGeschlecht.Text = neueKrebsmeldung.Geschlecht;
+                    cbBundesland.Text = neueKrebsmeldung.Bundesland;
+                    nudJahr.NudContent = neueKrebsmeldung.Jahr;
+                    nudAnzahl.NudContent = neueKrebsmeldung.Anzahl;
                 }
             }
+            tiKrebsmeldung.IsSelected = true;
+            DataContext = this;
+            
         }
+
+        private void bNeueKrebsmeldung_Click(object sender, RoutedEventArgs e)
+        {
+            lblException.Content = "";
+            if(cbKrebsart.Text.Equals("") || cbGeschlecht.Text.Equals("") || cbBundesland.Text.Equals(""))
+            {
+                lblException.Content = "Bitte füllen Sie alle Felder aus!";
+            }
+            else
+            {
+                Krebsmeldung neueKrebsmeldung = new Krebsmeldung
+                {
+                    Krebsart = cbKrebsart.Text.Split(" - ")[1],
+                    ICD10Code = cbKrebsart.Text.Split(" - ")[0],
+                    Geschlecht = cbGeschlecht.Text,
+                    Bundesland = cbBundesland.Text,
+                    Anzahl = nudAnzahl.NudContent,
+                    Jahr = nudJahr.NudContent
+                };
+                Window KrebsmeldungConfirm = new KrebsmeldungConfirm(neueKrebsmeldung);
+                KrebsmeldungConfirm.Show();
+                this.Close();
+            }
+        }
+
+        #endregion
     }
 }
-
-
-#endregion //Database
-
-
-
-
