@@ -18,6 +18,7 @@ using System.Data;
 using System.IO;
 using System.Net;
 using System.Data.SqlClient;
+using System.Diagnostics.Metrics;
 
 namespace Krebsregister
 {
@@ -46,7 +47,7 @@ namespace Krebsregister
 
         private void InitializeCharts()
         {
-            PieChart();
+            //PieChart();
             BarChart();
             AreaChart();
             NegativStackChart();
@@ -60,7 +61,9 @@ namespace Krebsregister
             //DatabaseMethods.FillDatabase();
             List<Krebsmeldung> list_krebsmeldung = DatabaseMethods.GetDataFromDatabase();
 
-            PieChart();
+            List<Krebsmeldung> pieChartRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00")).ToList();
+
+            PieChart(pieChartRelevant);
            
         }
 
@@ -107,16 +110,52 @@ namespace Krebsregister
 
         #region PieChart
         public Func<ChartPoint, string> PointLabel { get; set; }
-        public void PieChart()
+        public void PieChart(List<Krebsmeldung> show)
         {
-            if(pieChart1 != null)
+            //show beinhaltet alle Krebsmeldungen mit ICD10 C00
+            //Dictionary muss erstellt werden mit allen Bundesländern und der anzahl der krebsmeldungen dazu
+            //dazu muss man die liste (jede krebsmeldugn) durchgehen und das bundesland herausfinden und den counter um die anzahl erhöhen
+            Dictionary<string, int> bundeslaenderCounter = new Dictionary<string, int>();
+            int countAll = 0;
+            bundeslaenderCounter.Add("Burgenland", 0);
+            bundeslaenderCounter.Add("Kärnten", 0);
+            bundeslaenderCounter.Add("Niederösterreich", 0);
+            bundeslaenderCounter.Add("Oberösterreich", 0);
+            bundeslaenderCounter.Add("Salzburg", 0);
+            bundeslaenderCounter.Add("Steiermark", 0);
+            bundeslaenderCounter.Add("Tirol", 0);
+            bundeslaenderCounter.Add("Vorarlberg", 0);
+            bundeslaenderCounter.Add("Wien", 0);
+
+            foreach (Krebsmeldung krebsmeldung in show)
             {
-                pieChart1.Series.Clear();
-                SeriesCollection series = new SeriesCollection();
-                List<double> values = new List<double>() { 15.0, 30.0, 50.0, 5.0 };
-                series.Add(new PieSeries() { Title = "Prozente", Values = new ChartValues<double>(values) });
-                pieChart1.Series = series;
+                bundeslaenderCounter[krebsmeldung.Bundesland] += krebsmeldung.Anzahl;
+                countAll += krebsmeldung.Anzahl;
             }
+            pieChart1.Series.Clear();
+            
+            SeriesCollection series = new SeriesCollection();
+
+            foreach (KeyValuePair<string, int> bundesland in bundeslaenderCounter)
+            {
+                series.Add(new PieSeries() { Title = bundesland.Key, Values = new ChartValues<double> { bundesland.Value * 100 / countAll } });
+            }
+            pieChart1.Series = series;
+
+
+            //if (pieChart1 != null)
+            //{
+            //    pieChart1.Series.Clear();
+            //    SeriesCollection series = new SeriesCollection();
+            //    List<double> values = new List<double>() { 15.0, 30.0, 50.0, 5.0 };
+            //    foreach(double value in values)
+            //    {
+            //        series.Add(new PieSeries() { Title = "Prozente", Values = new ChartValues<double> { value } });
+            //    }
+
+            //    pieChart1.Series = series;
+
+            //}
 
 
             //PointLabel = chartPoint =>

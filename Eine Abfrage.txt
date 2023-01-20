@@ -1,0 +1,29 @@
+//show beinhaltet alle Krebsmeldungen mit ICD10 C00
+            //Dictionary muss erstellt werden mit allen Bundesländern und der anzahl der krebsmeldungen dazu
+            //dazu muss man die liste (jede krebsmeldugn) durchgehen und das bundesland herausfinden und den counter um die anzahl erhöhen
+            Dictionary<string, int> bundeslaenderCounter = new Dictionary<string, int>();
+            int countAll = 0;
+            bundeslaenderCounter.Add("Burgenland", 0);
+            bundeslaenderCounter.Add("Kärnten", 0);
+            bundeslaenderCounter.Add("Niederösterreich", 0);
+            bundeslaenderCounter.Add("Oberösterreich", 0);
+            bundeslaenderCounter.Add("Salzburg", 0);
+            bundeslaenderCounter.Add("Steiermark", 0);
+            bundeslaenderCounter.Add("Tirol", 0);
+            bundeslaenderCounter.Add("Vorarlberg", 0);
+            bundeslaenderCounter.Add("Wien", 0);
+
+            foreach (Krebsmeldung krebsmeldung in show)
+            {
+                bundeslaenderCounter[krebsmeldung.Bundesland] += krebsmeldung.Anzahl;
+                countAll += krebsmeldung.Anzahl;
+            }
+            pieChart1.Series.Clear();
+            
+            SeriesCollection series = new SeriesCollection();
+
+            foreach (KeyValuePair<string, int> bundesland in bundeslaenderCounter)
+            {
+                series.Add(new PieSeries() { Title = bundesland.Key, Values = new ChartValues<double> { bundesland.Value * 100 / countAll } });
+            }
+            pieChart1.Series = series;

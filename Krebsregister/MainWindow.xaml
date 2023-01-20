@@ -78,8 +78,8 @@
                         </lvc:CartesianChart.AxisX>
                     </lvc:CartesianChart>
                     <!--NEGATIVSTACKCHART**************************************************************************************************************************************************************************-->
-                    <lvc:CartesianChart Grid.Column="3" Grid.Row="0" Series="{Binding SeriesCollectionNSC}">
-                        <lvc:CartesianChart.AxisX>
+                    <lvc:CartesianChart Name="negativ" Grid.Column="3" Grid.Row="0" Series="{Binding SeriesCollectionNSC}">
+                        <!--<lvc:CartesianChart.AxisX>
                             <lvc:Axis LabelFormatter="{Binding FormatterNSC}"/>
                         </lvc:CartesianChart.AxisX>
                         <lvc:CartesianChart.AxisY>
@@ -87,7 +87,7 @@
                         </lvc:CartesianChart.AxisY>
                         <lvc:CartesianChart.DataTooltip>
                             <lvc:DefaultTooltip SelectionMode="SharedYValues"/>
-                        </lvc:CartesianChart.DataTooltip>
+                        </lvc:CartesianChart.DataTooltip>-->
                     </lvc:CartesianChart>
                     <!--BARCHART**************************************************************************************************************************************************************************-->
                     <lvc:CartesianChart Grid.Column="4" Grid.Row="1"  LegendLocation="Left" Series="{Binding SeriesCollectionBC}">
