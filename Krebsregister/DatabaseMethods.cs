@@ -5,8 +5,12 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography.Pkcs;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Controls.Primitives;
+using System.Xml.Linq;
 
 namespace Krebsregister
 {
@@ -198,7 +202,34 @@ namespace Krebsregister
                 connection.Open();
             }
 
-            //latest ID => MAX(id)
+            SqlCommand cmd_id = new SqlCommand("SELECT MAX(EintragID)+1 FROM Eintrag;", connection);
+            SqlDataReader reader = cmd_id.ExecuteReader();
+            int aktuell_id = 0;
+            if(reader.Read())
+            {
+                aktuell_id = reader.GetInt32(0);
+            }
+            reader.Close();
+
+            SqlCommand cmd_insert = new SqlCommand("INSERT INTO Eintrag " +
+                "SELECT @aktuellid, @aktuellBerichtsjahr, @aktuellAnzahlMeldungen, i.ICD10ID, g.GeschlechtID, b.BundeslandID " +
+                "FROM Eintrag e " +
+                "JOIN ICD10 i ON(e.ICD10ID = i.ICD10ID) " +
+                "JOIN Geschlecht g ON(g.GeschlechtID = e.GeschlechtID) " +
+                "JOIN Bundesland b ON(b.BundeslandID = e.BundeslandID) " +
+                "WHERE i.ICD10Code = '@aktuellICD10Code' " +
+                "AND g.Geschlecht = '@aktuellGeschlecht' " +
+                "AND b.Name = '@aktuellBundesland' " +
+                "GROUP BY e.Berichtsjahr, e.AnzahlMeldungen, i.ICD10ID, g.GeschlechtID, b.BundeslandID;", connection);
+
+            cmd_insert.Parameters.AddWithValue("@aktuellid", aktuell_id);
+            cmd_insert.Parameters.AddWithValue("@aktuellBerichtsjahr", km.Jahr);
+            cmd_insert.Parameters.AddWithValue("@aktuellAnzahlMeldungen", km.Anzahl);
+            cmd_insert.Parameters.AddWithValue("@aktuellICD10Code", km.ICD10Code);
+            cmd_insert.Parameters.AddWithValue("@aktuellGeschlecht", km.Geschlecht);
+            cmd_insert.Parameters.AddWithValue("@aktuellBundesland", km.Bundesland);
+            cmd_insert.ExecuteNonQuery();
+            connection.Close();
         }
 
         #endregion neue Krebsmeldung einfügen
@@ -226,7 +257,7 @@ namespace Krebsregister
                     Krebsart = reader.GetString(3),
                     Geschlecht = reader.GetString(4),
                     Bundesland = reader.GetString(5)
-                }) ;
+                });
             }
 
             connection.Close();

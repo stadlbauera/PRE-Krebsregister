@@ -302,6 +302,7 @@ namespace Krebsregister
             if (erstellen)
             {
                 //Bestätigungs-Fenster
+                DatabaseMethods.InsertNewMeldung(neueKrebsmeldung);
             }
             else
             {
