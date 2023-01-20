@@ -18,6 +18,8 @@ using System.Data;
 using System.IO;
 using System.Net;
 using System.Data.SqlClient;
+using System.Configuration;
+using System.Security.Policy;
 
 namespace Krebsregister
 {
@@ -37,10 +39,11 @@ namespace Krebsregister
             AreaChart();
             NegativStackChart();
             GeoMap();
+            getData();
 
             DataContext = this;
-            InitializeComponent();
-            
+            //InitializeComponent();
+
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -392,8 +395,63 @@ namespace Krebsregister
             sqlc.ExecuteNonQuery();
         }
 
-        #endregion //Database
 
-        
+        public void getData()
+        {
+            String connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Valentina\\Source\\Repos\\PRE-Krebsregister\\Krebsregister\\Krebsregister.csproj; Integrated Security=True";
+
+            SqlConnection connection = new SqlConnection(connectionString);
+            if (connection.State != System.Data.ConnectionState.Open)
+            {
+                connection.Open();
+            }
+
+            string query = "SELECT * FROM Eintrag";
+
+            SqlCommand command = new SqlCommand(query, connection);
+            SqlDataAdapter adapter = new SqlDataAdapter(command);
+
+
+            DataTable dt = new DataTable();
+            adapter.Fill(dt);
+
+            if (dt.Rows.Count > 0)
+            {
+                string filepath = @"C:\File.csv";
+                var sw = new StreamWriter(filepath);
+
+                int i = 1;
+                foreach (DataColumn col in dt.Columns)
+                {
+                    if (i < dt.Columns.Count)
+                    {
+                        sw.Write(",");
+                    }
+                    i++;
+                }
+                sw.WriteLine();
+
+                int rows = 2;
+                foreach (DataRow row in dt.Rows)
+                {
+                    for (int j = 0; j < dt.Columns.Count; j++)
+                    {
+                        sw.Write(row[j]);
+                        if (j < dt.Columns.Count - 1)
+                        {
+                            sw.Write(",");
+                        }
+                    }
+                    sw.WriteLine();
+                }
+            }
+        }
     }
 }
+
+
+#endregion //Database
+
+
+
+
