@@ -138,7 +138,7 @@ namespace Krebsregister
 
             foreach (KeyValuePair<string, int> bundesland in bundeslaenderCounter)
             {
-                series.Add(new PieSeries() { Title = bundesland.Key, Values = new ChartValues<double> { bundesland.Value * 100 / countAll } });
+                series.Add(new PieSeries() { Title = bundesland.Key, Values = new ChartValues<double> { bundesland.Value *100/countAll } });
             }
             pieChart1.Series = series;
 
