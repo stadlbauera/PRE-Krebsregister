@@ -38,12 +38,6 @@ namespace Krebsregister
                 connection.Open();
             }
 
-            //Daten, die bereits in die Tabellen existieren löschen
-            DropTable("Eintrag", connection);
-            DropTable("Geschlecht", connection);
-            DropTable("Bundesland", connection);
-            DropTable("ICD10", connection);
-
 
             //Geschlechtfields ist ein List mit die Zeilen der CSV-Dateien
             var Geschlechtfields = ReadInCSV_Web("https://data.statistik.gv.at/data/OGD_krebs_ext_KREBS_1_C-KRE_GESCHLECHT-0.csv");
@@ -51,7 +45,7 @@ namespace Krebsregister
             {
                 string[] currentFields = Geschlechtfields[i];
                 string[] FieldsIDgesplittet = currentFields[0].Split("-"); //erste Feld der currentFields wird gesplittet, damit wir nur den eigentlichen GeschlechtsID haben (GESCHLECHT-1 -> GESCHLECHT; 1)
-                SqlCommand cmd = new SqlCommand($"insert into Geschlecht (GeschlechtID, Geschlecht) values (@GeschlechtID, @Geschlecht)", connection);
+                SqlCommand cmd = new SqlCommand("INSERT INTO Geschlecht (GeschlechtID, Geschlecht) SELECT @GeschlechtID, @Geschlecht WHERE NOT EXISTS (SELECT GeschlechtID, Geschlecht FROM Geschlecht WHERE GeschlechtID = @GeschlechtID)", connection);
                 cmd.Parameters.AddWithValue("@GeschlechtID", FieldsIDgesplittet[1]);    //1
                 cmd.Parameters.AddWithValue("@Geschlecht", currentFields[1]);
                 cmd.ExecuteNonQuery();
@@ -62,7 +56,7 @@ namespace Krebsregister
             {
                 string[] currentFields = Bundeslandfields[i];
                 string[] FieldsIDgesplittet = currentFields[0].Split("-");     //BUNDESLAND-1 -> BUNDESLAND; 1
-                SqlCommand cmd = new SqlCommand("insert into Bundesland (BundeslandID, Name) values (@BundeslandID, @Name)", connection);
+                SqlCommand cmd = new SqlCommand("INSERT INTO Bundesland (BundeslandID, Name) SELECT @BundeslandID, @Name WHERE NOT EXISTS (SELECT BundeslandID, Name FROM Bundesland WHERE BundeslandID = @BundeslandID)", connection);
                 cmd.Parameters.AddWithValue("@BundeslandID", FieldsIDgesplittet[1]);    //1
                 cmd.Parameters.AddWithValue("@Name", currentFields[1]);
                 cmd.ExecuteNonQuery();
@@ -76,7 +70,7 @@ namespace Krebsregister
 
                 string[] FieldsIDgesplittet = currentFields[0].Split("-");  //TUM_ICD10_3ST-D10 -> TUM_ICD10_3ST; D10
 
-                SqlCommand cmd = new SqlCommand("insert into ICD10 (ICD10ID, ICD10Code, Bezeichnung) values (@ICD10ID, @ICD10Code, @Bezeichnung)", connection);
+                SqlCommand cmd = new SqlCommand("INSERT INTO ICD10 (ICD10ID, ICD10Code, Bezeichnung) SELECT @ICD10ID, @ICD10Code, @Bezeichnung WHERE NOT EXISTS (SELECT ICD10ID, ICD10Code, Bezeichnung FROM ICD10 WHERE ICD10ID = @ICD10ID)", connection);
 
 
                 cmd.Parameters.AddWithValue("@ICD10ID", i + 1);     //ICD10ID ist ein durchgezählte Nummer
@@ -97,7 +91,7 @@ namespace Krebsregister
 
                 string[] FieldsIDgesplittet = currentFields[0].Split("-");  //TUM_ICD10_3ST-D10 -> TUM_ICD10_3ST; D10
 
-                SqlCommand cmd = new SqlCommand("insert into ICD10 (ICD10ID, ICD10Code, Bezeichnung) values (@ICD10ID, @ICD10Code, @Bezeichnung)", connection);
+                SqlCommand cmd = new SqlCommand("INSERT INTO ICD10 (ICD10ID, ICD10Code, Bezeichnung) SELECT @ICD10ID, @ICD10Code, @Bezeichnung WHERE NOT EXISTS (SELECT ICD10ID, ICD10Code, Bezeichnung FROM ICD10 WHERE ICD10ID = @ICD10ID)", connection);
 
 
                 cmd.Parameters.AddWithValue("@ICD10ID", currentCountID);     //ICD10ID ist ein durchgezählte Nummer
@@ -116,7 +110,7 @@ namespace Krebsregister
             for (int i = 0; i < Eintragfields.Count; i++)
             {
                 string[] currentFields = Eintragfields[i];
-                SqlCommand cmd = new SqlCommand("insert into Eintrag (EintragID, Berichtsjahr, AnzahlMeldungen, ICD10ID, GeschlechtID, BundeslandID) values (@EintragID, @Berichtsjahr, @AnzahlMeldungen, @ICD10ID, @GeschlechtID, @BundeslandID)", connection);
+                SqlCommand cmd = new SqlCommand("INSERT INTO Eintrag (EintragID, Berichtsjahr, AnzahlMeldungen, ICD10ID, GeschlechtID, BundeslandID) SELECT @EintragID, @Berichtsjahr, @AnzahlMeldungen, @ICD10ID, @GeschlechtID, @BundeslandID WHERE NOT EXISTS (SELECT EintragID, Berichtsjahr, AnzahlMeldungen, ICD10ID, GeschlechtID, BundeslandID FROM Eintrag WHERE EintragID = @EintragID)", connection);
 
                 cmd.Parameters.AddWithValue("@EintragID", i + 1);       //EintragID ist ein durchgezählte Nummer
 
@@ -264,10 +258,6 @@ namespace Krebsregister
         }
 
         #endregion Daten aus den Datenbank holen
-        private static void DropTable(string tablename, SqlConnection connection)
-        {
-            SqlCommand sqlc = new SqlCommand($"DELETE FROM {tablename}", connection);
-            sqlc.ExecuteNonQuery();
-        }
+        
     }
 }

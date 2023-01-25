@@ -27,11 +27,6 @@ namespace Krebsregister
     /// </summary>
     public partial class MainWindow : Window
     {
-        
-
-        //const string constring = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\lilia\\source\\repos\\stadlbauera\\PRE-Krebsregister\\Krebsregister\\Krebsregister_Database.mdf;Integrated Security=True";
-        //const string path_rest_icd10 = "C:\\Users\\lilia\\Source\\Repos\\stadlbauera\\PRE-Krebsregister\\Krebsregister\\CSV-Dateien\\restlicheICD10Codes.csv";
-
         public MainWindow()
         {
 
@@ -58,7 +53,7 @@ namespace Krebsregister
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            //DatabaseMethods.FillDatabase();
+            DatabaseMethods.FillDatabase();
             List<Krebsmeldung> list_krebsmeldung = DatabaseMethods.GetDataFromDatabase();
 
             List<Krebsmeldung> pieChartRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00")).ToList();
