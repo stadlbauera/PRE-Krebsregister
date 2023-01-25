@@ -9,6 +9,11 @@
 
   <ItemGroup>
     <PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NumericUpDown\NumericUpDown.csproj" />
   </ItemGroup>
 
   <ItemGroup>
