@@ -107,7 +107,7 @@ namespace Krebsregister
 
 
             var Eintragfields = ReadInCSV_Web("https://data.statistik.gv.at/data/OGD_krebs_ext_KREBS_1.csv");
-            for (int i = 0; i < Eintragfields.Count; i++)
+            for (int i = 0; i < 100; i++)           //i < Eintragfields.Count
             {
                 string[] currentFields = Eintragfields[i];
                 SqlCommand cmd = new SqlCommand("INSERT INTO Eintrag (EintragID, Berichtsjahr, AnzahlMeldungen, ICD10ID, GeschlechtID, BundeslandID) SELECT @EintragID, @Berichtsjahr, @AnzahlMeldungen, @ICD10ID, @GeschlechtID, @BundeslandID WHERE NOT EXISTS (SELECT EintragID, Berichtsjahr, AnzahlMeldungen, ICD10ID, GeschlechtID, BundeslandID FROM Eintrag WHERE EintragID = @EintragID)", connection);
