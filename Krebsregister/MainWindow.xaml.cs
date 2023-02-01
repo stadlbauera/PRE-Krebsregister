@@ -78,10 +78,20 @@ namespace Krebsregister
 
             PieChart2(pieChart2Relevant);
 
+            DataGrid(list_krebsmeldung);
+
         }
 
+        #region DataGrid
+        private void DataGrid(List<Krebsmeldung> list_krebsmeldung)
+        {
+
+        }
+
+        #endregion
+
         #region GeoMap
-        
+
 
         public void GeoMap(List<Krebsmeldung> show)
         {
