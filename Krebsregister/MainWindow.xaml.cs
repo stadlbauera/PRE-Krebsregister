@@ -20,6 +20,7 @@ using System.Net;
 using System.Data.SqlClient;
 using System.Diagnostics.Metrics;
 using LiveCharts.Definitions.Charts;
+using LiveCharts.Wpf.Charts.Base;
 
 namespace Krebsregister
 {
@@ -49,13 +50,18 @@ namespace Krebsregister
         private void InitializeCharts()
         {
             //PieChart();
+<<<<<<< HEAD
+            //BarChart();
+            AreaChart();
+=======
             BarChart();
             //AreaChart();
+>>>>>>> b180a973546e53accbcb5da81da52b331bb49928
             //NegativStackChart();
             
         }
 
-        
+
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -71,11 +77,17 @@ namespace Krebsregister
             NegativStackChart(negativStackChartRelevant);
 
 <<<<<<< HEAD
+            List<Krebsmeldung> barChartRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00")).ToList();
+            BarChart(barChartRelevant);
+
+=======
+<<<<<<< HEAD
             List<int> jahre = new List<int> { 1983, 1984, 1985, 1986, 1987, 1988, 1989 };
             List<int> anzahlVonC00 = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00") && (krebsmeldung.Jahr >= 1983 && krebsmeldung.Jahr <= 1989)).ToList().MySum(jahre);
             List<int> anzahlVonC01 = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C01") && (krebsmeldung.Jahr >= 1983 && krebsmeldung.Jahr <= 1989)).ToList().MySum(jahre);
 =======
             List<Krebsmeldung> geoHeatMapRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00") && krebsmeldung.Jahr == 1994).ToList();
+>>>>>>> b180a973546e53accbcb5da81da52b331bb49928
 
             GeoMap(geoHeatMapRelevant);
 
@@ -149,7 +161,7 @@ namespace Krebsregister
             //Dictionary muss erstellt werden mit allen Bundesländern und der anzahl der krebsmeldungen dazu
             //dazu muss man die liste (jede krebsmeldugn) durchgehen und das bundesland herausfinden und den counter um die anzahl erhöhen
             Dictionary<string, int> bundeslaenderCounter = new Dictionary<string, int>();
-            
+
             bundeslaenderCounter.Add("Burgenland", 0);
             bundeslaenderCounter.Add("Kärnten", 0);
             bundeslaenderCounter.Add("Niederösterreich", 0);
@@ -162,33 +174,38 @@ namespace Krebsregister
 
             foreach (Krebsmeldung krebsmeldung in show)
             {
-               
+
 
                 bundeslaenderCounter[krebsmeldung.Bundesland] += krebsmeldung.Anzahl;
-                
+
             }
             pieChart1.Series.Clear();
-            
+
             SeriesCollection series = new SeriesCollection();
 
             foreach (KeyValuePair<string, int> bundesland in bundeslaenderCounter)
             {
-                series.Add(new PieSeries() { Title = bundesland.Key, Values = new ChartValues<double> {bundesland.Value} });
+                series.Add(new PieSeries() { Title = bundesland.Key, Values = new ChartValues<double> { bundesland.Value } });
             }
             pieChart1.Series = series;
 
+<<<<<<< HEAD
+            new ToolTip
+            {
+
+            };
+
+=======
+>>>>>>> b180a973546e53accbcb5da81da52b331bb49928
             var tooltip = new DefaultTooltip
             {
                 SelectionMode = TooltipSelectionMode.SharedYValues,
                 IsEnabled = false
-                
+
 
             };
 
-            
-
             pieChart1.DataTooltip = tooltip;
-
 
             //if (pieChart1 != null)
             //{
@@ -213,8 +230,6 @@ namespace Krebsregister
 
         public void PieChart_DataClick(object sender, ChartPoint chartpoint)
         {
-
-
             var chart = (LiveCharts.Wpf.PieChart)chartpoint.ChartView;
 
             //clear selected slice.
@@ -277,20 +292,20 @@ namespace Krebsregister
                 }
                 if (krebsmeldung.Geschlecht.Equals("männlich"))
                 {
-                    
-                        dMale[krebsmeldung.Jahr] -= krebsmeldung.Anzahl;
-                    
+
+                    dMale[krebsmeldung.Jahr] -= krebsmeldung.Anzahl;
+
                 }
                 else if (krebsmeldung.Geschlecht.Equals("weiblich"))
                 {
-                   
-                        dFemale[krebsmeldung.Jahr] += krebsmeldung.Anzahl;
-                   
+
+                    dFemale[krebsmeldung.Jahr] += krebsmeldung.Anzahl;
+
                 }
             }
 
-            
-            foreach(KeyValuePair<int,int> keyValuePair in dMale)
+
+            foreach (KeyValuePair<int, int> keyValuePair in dMale)
             {
                 cvMale.Add(keyValuePair.Value);
             }
@@ -300,16 +315,16 @@ namespace Krebsregister
             }
 
 
-             SeriesCollectionNSC = new SeriesCollection
+            SeriesCollectionNSC = new SeriesCollection
             {
-                
+
                 new StackedRowSeries
                 {
                     //DataLabels = 
                     
                     Title = "Male",
                     Values = cvMale
-                    
+
 
                 },
                 new StackedRowSeries
@@ -317,12 +332,8 @@ namespace Krebsregister
                     Title = "Female",
                     Values = cvFemale
                 }
-                
 
             };
-
-            
-
             negativStackChart.Series = SeriesCollectionNSC;
 
             LabelsNSC = new string[labels.Count];
@@ -382,15 +393,36 @@ namespace Krebsregister
 
         #region BarChart
         public SeriesCollection SeriesCollectionBC { get; set; }
+
         public string[] LabelsBC { get; set; }
         public Func<double, string> Formatter { get; set; }
-        private void BarChart()
-        {
+        
+
+        private void BarChart(List<Krebsmeldung> show)
+        { //Balken für C00 und Balken für C01, man soll etwa 3-4 Jahre darstellen können
+
+            ChartValues<Int32> tumorart00 = new ChartValues<int>();
+            ChartValues<Int32> tumorart01 = new ChartValues<int>();
+            Dictionary<string, double> tumorartC00  = new Dictionary<string, double>();
+            Dictionary<string, double> tumorartC01 = new Dictionary<string, double>();
+            List<int> labels = new List<int>();
+
+            //Testversuch
+            List<KeyValuePair<int, int>> series = new List<KeyValuePair<int, int>>();
+            series.Add(new KeyValuePair<int, int>());
+
+            foreach (Krebsmeldung item in show)
+            {
+                tumorartC00[item.Krebsart] += item.Anzahl;
+            }
+            barChart.Series.Clear();
+
+
             SeriesCollectionBC = new SeriesCollection
             {
                 new ColumnSeries
                 {
-                    Title = "2015",
+                    Title = "",
                     Values = new ChartValues<double> { 10, 50, 39, 50 }
                 }
             };
@@ -405,7 +437,12 @@ namespace Krebsregister
             //also adding values updates and animates the chart automatically
             SeriesCollectionBC[1].Values.Add(48d);
 
-            LabelsBC = new[] { "Maria", "Susan", "Charles", "Frida" };
+            LabelsBC = new string[labels.Count]; //{ "Maria", "Susan", "Charles", "Frida" }
+            for (int i = 0; i < LabelsBC.Length; i++)
+            {
+                LabelsBC[i] = labels[i].ToString();
+            };
+
             Formatter = value => value.ToString("N");
 
             DataContext = this;
@@ -416,7 +453,7 @@ namespace Krebsregister
 
         public MainWindow(Krebsmeldung neueKrebsmeldung, bool erstellen)
         {
-            
+
             InitializeCharts();
             InitializeComponent();
 
@@ -428,7 +465,7 @@ namespace Krebsregister
             }
             else
             {
-                if(neueKrebsmeldung != null)
+                if (neueKrebsmeldung != null)
                 {
                     cbKrebsart.Text = $"{neueKrebsmeldung.ICD10Code} - {neueKrebsmeldung.Krebsart}";
                     cbGeschlecht.Text = neueKrebsmeldung.Geschlecht;
@@ -439,13 +476,13 @@ namespace Krebsregister
             }
             tiKrebsmeldung.IsSelected = true;
             DataContext = this;
-            
+
         }
 
         private void bNeueKrebsmeldung_Click(object sender, RoutedEventArgs e)
         {
             lblException.Content = "";
-            if(cbKrebsart.Text.Equals("") || cbGeschlecht.Text.Equals("") || cbBundesland.Text.Equals(""))
+            if (cbKrebsart.Text.Equals("") || cbGeschlecht.Text.Equals("") || cbBundesland.Text.Equals(""))
             {
                 lblException.Content = "Bitte füllen Sie alle Felder aus!";
             }
@@ -467,5 +504,7 @@ namespace Krebsregister
         }
 
         #endregion
+
+     
     }
 }

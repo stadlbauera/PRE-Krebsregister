@@ -98,22 +98,27 @@
                         </lvc:CartesianChart>
                     </DockPanel>
                     <!--BARCHART**************************************************************************************************************************************************************************-->
-                    
-                    <lvc:CartesianChart Grid.Column="4" Grid.Row="1"  LegendLocation="Left" Series="{Binding SeriesCollectionBC}">
+                    <!--lvc:CartesianChart Grid.Column="4" Grid.Row="1"  LegendLocation="Left" Series="{Binding SeriesCollectionBC}">
                         <lvc:CartesianChart.AxisX>
                             <lvc:Axis Title="Salesman" Labels="{Binding LabelsBC}"/>
                         </lvc:CartesianChart.AxisX>
                         <lvc:CartesianChart.AxisY>
                             <lvc:Axis Title="Sold Apps" LabelFormatter="{Binding Formatter}"/>
                         </lvc:CartesianChart.AxisY>
-                    </lvc:CartesianChart>
-                    <ScrollViewer Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2">
-                        <DataGrid Name="datagrid">
+                    </lvc:CartesianChart-->
 
-                        </DataGrid>
-                    </ScrollViewer>
-                    
-                    
+                    <!--BARCHART**************************************************************************************************************************************************************************-->
+                    <DockPanel Grid.Column="4" Grid.Row="1" LastChildFill="True">
+                        <Label Name="lblTitleBarChart" DockPanel.Dock="Top"/>
+                        <lvc:CartesianChart Name="barChart" LegendLocation ="Right" Series="{Binding SeriesCollectionBC}">
+                            <lvc:CartesianChart.AxisX>
+                                <lvc:Axis Title="Tumorart pro Jahr" Labels="{Binding LabelsBC}"/>
+                            </lvc:CartesianChart.AxisX>
+                            <lvc:CartesianChart.AxisY>
+                                <lvc:Axis Title="Anzahl" LabelFormatter="{Binding Formatter}"/>
+                            </lvc:CartesianChart.AxisY>
+                        </lvc:CartesianChart>
+                    </DockPanel>
                 </Grid>
             </TabItem>
             <!--ERWEITERTE-STATISTIK********************************************************************************************************************************************************************************-->
