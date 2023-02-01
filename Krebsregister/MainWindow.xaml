@@ -8,7 +8,8 @@
         xmlns:local="clr-namespace:Krebsregister"
         xmlns:NumericUpDown="clr-namespace:NumericUpDown;assembly=NumericUpDown" x:Class="Krebsregister.MainWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
+        Title="MainWindow" Loaded="Window_Loaded"
+        WindowState="Maximized">
 
     <Grid >
         <Grid.RowDefinitions>
@@ -43,27 +44,20 @@
                     <!--GEOHEATMAP********************************************************************************************************************************************************************************-->
                     <DockPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Grid.RowSpan="2" LastChildFill="True">
                         <Label Name="lblTitleGeoHeatMap" DockPanel.Dock="Top"/>
-                        <lvc:GeoMap HeatMap="{Binding MapData}" Source="maps/austria.xml" Background="White"  />
+                        <lvc:GeoMap Name="geoMap" Source="maps/austria.xml"  Background="White" />
+                        
                     </DockPanel>
                     
                     <!--PIECHART**********************************************************************************************************************************************************************************-->
-                    <!--<lvc:PieChart Grid.Column="3" Grid.Row="1" LegendLocation="Bottom"  Hoverable="False" DataTooltip="{x:Null}" DataClick="PieChart_DataClick" >
-                        <lvc:PieChart.Series>
-                            <lvc:PieSeries Title="Maria" Values="3" DataLabels="True"
-                               LabelPoint="{Binding PointLabel}"/>
-                            <lvc:PieSeries Title="Charles" Values="4" DataLabels="True" 
-                               LabelPoint="{Binding PointLabel}"/>
-                            <lvc:PieSeries Title="Frida" Values="6" DataLabels="True" 
-                               LabelPoint="{Binding PointLabel}"/>
-                            <lvc:PieSeries Title="Frederic" Values="2" DataLabels="True" 
-                               LabelPoint="{Binding PointLabel}"/>
-                        </lvc:PieChart.Series>
-                    </lvc:PieChart>-->
+                    <DockPanel LastChildFill="True" Grid.Column="3" Grid.Row="1">
+                        <Label Name="lblTitlePieChart2" DockPanel.Dock="Top"/>
+                        <lvc:PieChart Name="pieChart2"  LegendLocation="Bottom"  Hoverable="False" DataClick="PieChart_DataClick" />
+                    </DockPanel>
+                    
                     <!--PIECHART********************************************************************************************************************************************************************************-->
                     <DockPanel Grid.Column="2" Grid.Row="2" LastChildFill="True">
                         <Label Name="lblTitlePieChart" DockPanel.Dock="Top"/>
                         <lvc:PieChart Name="pieChart1"  LegendLocation="Bottom"  Hoverable="False" DataTooltip="{x:Null}" DataClick="PieChart_DataClick">
-
                             <!--<lvc:PieChart.Series>
                             <lvc:PieSeries Title="Maria" Values="3" DataLabels="True"
                                LabelPoint="{Binding PointLabel}"/>
@@ -105,6 +99,7 @@
                         </lvc:CartesianChart>
                     </DockPanel>
                     <!--BARCHART**************************************************************************************************************************************************************************-->
+                    
                     <lvc:CartesianChart Grid.Column="4" Grid.Row="1"  LegendLocation="Left" Series="{Binding SeriesCollectionBC}">
                         <lvc:CartesianChart.AxisX>
                             <lvc:Axis Title="Salesman" Labels="{Binding LabelsBC}"/>
@@ -150,7 +145,7 @@
                                 <ComboBoxItem Content="2021"/>
                             </ComboBox>
                             <Viewbox x:Name="vbAustria" Margin="0,96,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                <lvc:GeoMap x:Name="gmap" HeatMap="{Binding Values}" Source="C:\Users\Markus Stadlbauer\Documents\Schule\5.Klasse\PRE\Projekt\Code\Krebsregister\Austria.xml" LanguagePack="{Binding LanguagePack}"  />
+                                <!--<lvc:GeoMap x:Name="gmap" HeatMap="{Binding Values}" Source="C:\Users\Markus Stadlbauer\Documents\Schule\5.Klasse\PRE\Projekt\Code\Krebsregister\Austria.xml" LanguagePack="{Binding LanguagePack}"  />-->
                             </Viewbox>
                         </Grid>
                     </GroupBox>

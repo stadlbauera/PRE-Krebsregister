@@ -35,6 +35,10 @@ namespace Krebsregister
             InitializeComponent();
 
             lblTitleGeoHeatMap.Content = "Geo-Heat-Map Österreich";
+            lblTitleNegativStackedChart.Content = "Vergleich Männer und Frauen: C00";
+            lblTitlePieChart.Content = "C00 Verteilung auf die Bundesländer";
+            lblTitleAreaChart.Content = "C00 und C01 im Jahr 1983, 1984, 1985";
+            lblTitlePieChart2.Content = "C00 in Oberösterreich über die Jahre";
             DataContext = this;
 
 
@@ -48,7 +52,7 @@ namespace Krebsregister
             BarChart();
             AreaChart();
             //NegativStackChart();
-            GeoMap();
+            
         }
 
         
@@ -66,51 +70,60 @@ namespace Krebsregister
 
             NegativStackChart(negativStackChartRelevant);
 
+            List<Krebsmeldung> geoHeatMapRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00") && krebsmeldung.Jahr == 1994).ToList();
+
+            GeoMap(geoHeatMapRelevant);
+
+            List<Krebsmeldung> pieChart2Relevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00") && krebsmeldung.Bundesland.Equals("Oberösterreich")).ToList();
+
+            PieChart2(pieChart2Relevant);
 
         }
 
         #region GeoMap
+        
 
-        public Dictionary<string, double> MapData { get; set; } = new Dictionary<string, double>();
-
-        public void GeoMap()
+        public void GeoMap(List<Krebsmeldung> show)
         {
-            MapData = new Dictionary<string, double>()
+            Dictionary<string, double> bundeslaenderCounter  = new Dictionary<string, double>();
+            Dictionary<string, string> bundeslaenderIDs = new Dictionary<string, string>()
             {
-                // Welche Id zu welchem Bundesland gehört, findet ihr in der maps/austria.xml Datei
-                { "2273",20.0 },
-                { "2274",100.0 },
-                { "2275",40.0 },
-                { "2276",10.0 },
-                { "2277",30.0 },
-                { "2278",60.0 },
-                { "2280",30.0 },
-                { "2281",70.0 },
-                { "2282",50.0 }
+                {"Vorarlberg", "2273"},
+                {"Burgenland","2274"},
+                {"Steiermark", "2275"},
+                {"Kärnten","2276"},
+                {"Oberösterreich", "2277"},
+                {"Salzburg", "2278" },
+                {"Tirol", "2280"},
+                {"Niederösterreich", "2281"},
+                {"Wien", "2282"},
+            };
+          
+            foreach (Krebsmeldung krebsmeldung in show)
+            {
+                if (!bundeslaenderCounter.ContainsKey(bundeslaenderIDs[krebsmeldung.Bundesland]))
+                {
+                    bundeslaenderCounter.Add(bundeslaenderIDs[krebsmeldung.Bundesland], 0);
+                }
+                bundeslaenderCounter[bundeslaenderIDs[krebsmeldung.Bundesland]] += krebsmeldung.Anzahl;
+            }
+            geoMap.HeatMap = bundeslaenderCounter;
+            var tooltip = new DefaultTooltip
+            {
+                SelectionMode = TooltipSelectionMode.Auto,
+                IsEnabled = false
+
+
             };
 
-            //InitializeComponent();
-            //LiveCharts.Wpf.GeoMap geoMap = new LiveCharts.Wpf.GeoMap();
-            //Random r = new Random();
-            //Dictionary<string, double> map = new Dictionary<string, double>();
-            //map["W"] = r.Next(0, 100);
-            //map["OOE"] = r.Next(0, 100);
-            //map["NOE"] = r.Next(0, 100);
-            //map["BGL"] = r.Next(0, 100);
-            //map["SBG"] = r.Next(0, 100);
-            //map["KTN"] = r.Next(0, 100);
-            //map["TIR"] = r.Next(0, 100);
-            //map["VAB"] = r.Next(0, 100);
-            //map["SMK"] = r.Next(0, 100);
-            //geoMap.HeatMap = map;
-            //geoMap.Source = @"Austria.xml";
 
-            //DataContext = this;
+            geoMap.ToolTip = tooltip;
+
         }
 
         #endregion
 
-        #region PieChart
+        #region PieChart Bundesländer C00
         public Func<ChartPoint, string> PointLabel { get; set; }
         public void PieChart(List<Krebsmeldung> show)
         {
@@ -145,11 +158,6 @@ namespace Krebsregister
                 series.Add(new PieSeries() { Title = bundesland.Key, Values = new ChartValues<double> {bundesland.Value} });
             }
             pieChart1.Series = series;
-
-            new ToolTip
-            {
-               
-            };
 
             var tooltip = new DefaultTooltip
             {
@@ -201,7 +209,36 @@ namespace Krebsregister
 
         #endregion
 
-        #region NegativStackChart
+        #region PieChart C00 in Bundesland in Berichtsjahr
+
+        public void PieChart2(List<Krebsmeldung> show)
+        {
+
+            Dictionary<int, int> berichtsJahrCounter = new Dictionary<int, int>();
+
+
+
+            foreach (Krebsmeldung krebsmeldung in show)
+            {
+                if (!berichtsJahrCounter.ContainsKey(krebsmeldung.Jahr)) berichtsJahrCounter.Add(krebsmeldung.Jahr, 0);
+
+                berichtsJahrCounter[krebsmeldung.Jahr] += krebsmeldung.Anzahl;
+
+            }
+            pieChart2.Series.Clear();
+
+            SeriesCollection series = new SeriesCollection();
+
+            foreach (KeyValuePair<int, int> berichtsJahr in berichtsJahrCounter)
+            {
+                series.Add(new PieSeries() { Title = "" + berichtsJahr.Key, Values = new ChartValues<double> { berichtsJahr.Value } });
+            }
+            pieChart2.Series = series;
+        }
+   
+            #endregion
+
+            #region NegativStackChart
         public SeriesCollection SeriesCollectionNSC { get; set; }
         public string[] LabelsNSC { get; set; }
         public Func<double, string> FormatterNSC { get; set; }
