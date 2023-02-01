@@ -65,6 +65,11 @@ namespace Krebsregister
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            FillCharts();
+        }
+
+        private void FillCharts()
+        {
             //DatabaseMethods.FillDatabase();
             List<Krebsmeldung> list_krebsmeldung = DatabaseMethods.GetDataFromDatabase();
 
@@ -77,15 +82,17 @@ namespace Krebsregister
             NegativStackChart(negativStackChartRelevant);
 
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
             List<Krebsmeldung> barChartRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00")).ToList();
             BarChart(barChartRelevant);
 
 =======
 <<<<<<< HEAD
+>>>>>>> 489cc021ceb6a495f273a4262d976daa00d5033a
             List<int> jahre = new List<int> { 1983, 1984, 1985, 1986, 1987, 1988, 1989 };
             List<int> anzahlVonC00 = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00") && (krebsmeldung.Jahr >= 1983 && krebsmeldung.Jahr <= 1989)).ToList().MySum(jahre);
             List<int> anzahlVonC01 = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C01") && (krebsmeldung.Jahr >= 1983 && krebsmeldung.Jahr <= 1989)).ToList().MySum(jahre);
-=======
             List<Krebsmeldung> geoHeatMapRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00") && krebsmeldung.Jahr == 1994).ToList();
 >>>>>>> b180a973546e53accbcb5da81da52b331bb49928
 
@@ -96,7 +103,6 @@ namespace Krebsregister
             PieChart2(pieChart2Relevant);
 
             DataGrid(list_krebsmeldung);
->>>>>>> 481596ea0fdecdf69a5f18ea59648d4c34bf63dd
 
             List<List<int>> anzahls = new List<List<int>> { anzahlVonC00, anzahlVonC01 };
             AreaChart(anzahls);
@@ -271,7 +277,7 @@ namespace Krebsregister
    
             #endregion
 
-            #region NegativStackChart
+        #region NegativStackChart
         public SeriesCollection SeriesCollectionNSC { get; set; }
         public string[] LabelsNSC { get; set; }
         public Func<double, string> FormatterNSC { get; set; }
@@ -499,6 +505,7 @@ namespace Krebsregister
                 };
                 Window KrebsmeldungConfirm = new KrebsmeldungConfirm(neueKrebsmeldung);
                 KrebsmeldungConfirm.Show();
+                FillCharts();
                 this.Close();
             }
         }
