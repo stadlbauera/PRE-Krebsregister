@@ -50,7 +50,7 @@ namespace Krebsregister
         {
             //PieChart();
             BarChart();
-            AreaChart();
+            //AreaChart();
             //NegativStackChart();
             
         }
@@ -59,7 +59,7 @@ namespace Krebsregister
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            DatabaseMethods.FillDatabase();
+            //DatabaseMethods.FillDatabase();
             List<Krebsmeldung> list_krebsmeldung = DatabaseMethods.GetDataFromDatabase();
 
             List<Krebsmeldung> pieChartRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00")).ToList();
@@ -70,6 +70,11 @@ namespace Krebsregister
 
             NegativStackChart(negativStackChartRelevant);
 
+<<<<<<< HEAD
+            List<int> jahre = new List<int> { 1983, 1984, 1985, 1986, 1987, 1988, 1989 };
+            List<int> anzahlVonC00 = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00") && (krebsmeldung.Jahr >= 1983 && krebsmeldung.Jahr <= 1989)).ToList().MySum(jahre);
+            List<int> anzahlVonC01 = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C01") && (krebsmeldung.Jahr >= 1983 && krebsmeldung.Jahr <= 1989)).ToList().MySum(jahre);
+=======
             List<Krebsmeldung> geoHeatMapRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00") && krebsmeldung.Jahr == 1994).ToList();
 
             GeoMap(geoHeatMapRelevant);
@@ -79,7 +84,10 @@ namespace Krebsregister
             PieChart2(pieChart2Relevant);
 
             DataGrid(list_krebsmeldung);
+>>>>>>> 481596ea0fdecdf69a5f18ea59648d4c34bf63dd
 
+            List<List<int>> anzahls = new List<List<int>> { anzahlVonC00, anzahlVonC01 };
+            AreaChart(anzahls);
         }
 
         #region DataGrid
@@ -331,50 +339,42 @@ namespace Krebsregister
         #endregion
 
         #region AreaChart
-        public SeriesCollection SeriesCollection { get; set; }
-        public string[] Labels { get; set; }
-        public Func<double, string> YFormatter { get; set; }
-        private void AreaChart()
+        public SeriesCollection SeriesCollectionAC { get; set; }
+        public string[] LabelsAC { get; set; }
+        public Func<int, string> YFormatterAC { get; set; }
+        public Func<int, string> XFormatterAC { get; set; }
+        private void AreaChart(List<List<int>> anzahls)
         {
-            SeriesCollection = new SeriesCollection
+            List<ChartValues<int>> cValues = new List<ChartValues<int>>();
+            foreach (var list_anzahlen in anzahls)
+            {
+                ChartValues<int> cv_current = new ChartValues<int>();
+                foreach (var anzahl in list_anzahlen)
+                {
+                    cv_current.Add(anzahl);
+                }
+                cValues.Add(cv_current);
+            }
+
+            SeriesCollectionAC = new SeriesCollection
             {
                 new LineSeries
                 {
-                    Title = "Series 1",
-                    Values = new ChartValues<double> { 4, 6, 5, 2 ,4 }
+                    Title = "C00",
+                    Values = cValues[0]
                 },
                 new LineSeries
                 {
-                    Title = "Series 2",
-                    Values = new ChartValues<double> { 6, 7, 3, 4 ,6 },
+                    Title = "C01",
+                    Values = cValues[1],
                     PointGeometry = null
-                },
-                new LineSeries
-                {
-                    Title = "Series 3",
-                    Values = new ChartValues<double> { 4,2,7,2,7 },
-                    PointGeometry = DefaultGeometries.Square,
-                    PointGeometrySize = 15
                 }
             };
-
-            Labels = new[] { "Jan", "Feb", "Mar", "Apr", "May" };
-            YFormatter = value => value.ToString("C");
-
-            //modifying the series collection will animate and update the chart
-            SeriesCollection.Add(new LineSeries
-            {
-                Title = "Series 4",
-                Values = new ChartValues<double> { 5, 3, 2, 4 },
-                LineSmoothness = 0, //0: straight lines, 1: really smooth lines
-                PointGeometry = Geometry.Parse("m 25 70.36218 20 -28 -20 22 -8 -6 z"),
-                PointGeometrySize = 50,
-                PointForeground = Brushes.Gray
-            });
-
-            //modifying any series values will also animate and update the chart
-            SeriesCollection[3].Values.Add(5d);
-
+            id_lineChart.Series = SeriesCollectionAC;
+            LabelsAC = new[] { "1983", "1984", "1985", "1986", "1987", "1988", "1989" };
+            YFormatterAC = value => value.ToString("C");
+            
+            
             DataContext = this;
         }
 
