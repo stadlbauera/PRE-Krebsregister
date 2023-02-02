@@ -42,21 +42,17 @@ namespace Krebsregister
             lblTitlePieChart2.Content = "C00 in Oberösterreich über die Jahre";
             DataContext = this;
 
+            nudJahr.MaxValue = DateTime.Now.Year;
+            nudJahr.Value = DateTime.Now.Year;
 
-
-
+            nudAnzahl.MinValue = 1;
         }
 
         private void InitializeCharts()
         {
             //PieChart();
-<<<<<<< HEAD
             //BarChart();
-            AreaChart();
-=======
-            BarChart();
             //AreaChart();
->>>>>>> b180a973546e53accbcb5da81da52b331bb49928
             //NegativStackChart();
             
         }
@@ -81,20 +77,14 @@ namespace Krebsregister
 
             NegativStackChart(negativStackChartRelevant);
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
             List<Krebsmeldung> barChartRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00")).ToList();
             BarChart(barChartRelevant);
 
-=======
-<<<<<<< HEAD
->>>>>>> 489cc021ceb6a495f273a4262d976daa00d5033a
             List<int> jahre = new List<int> { 1983, 1984, 1985, 1986, 1987, 1988, 1989 };
             List<int> anzahlVonC00 = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00") && (krebsmeldung.Jahr >= 1983 && krebsmeldung.Jahr <= 1989)).ToList().MySum(jahre);
             List<int> anzahlVonC01 = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C01") && (krebsmeldung.Jahr >= 1983 && krebsmeldung.Jahr <= 1989)).ToList().MySum(jahre);
             List<Krebsmeldung> geoHeatMapRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00") && krebsmeldung.Jahr == 1994).ToList();
->>>>>>> b180a973546e53accbcb5da81da52b331bb49928
+
 
             GeoMap(geoHeatMapRelevant);
 
@@ -195,14 +185,11 @@ namespace Krebsregister
             }
             pieChart1.Series = series;
 
-<<<<<<< HEAD
             new ToolTip
             {
 
             };
 
-=======
->>>>>>> b180a973546e53accbcb5da81da52b331bb49928
             var tooltip = new DefaultTooltip
             {
                 SelectionMode = TooltipSelectionMode.SharedYValues,
@@ -476,8 +463,8 @@ namespace Krebsregister
                     cbKrebsart.Text = $"{neueKrebsmeldung.ICD10Code} - {neueKrebsmeldung.Krebsart}";
                     cbGeschlecht.Text = neueKrebsmeldung.Geschlecht;
                     cbBundesland.Text = neueKrebsmeldung.Bundesland;
-                    nudJahr.NudContent = neueKrebsmeldung.Jahr;
-                    nudAnzahl.NudContent = neueKrebsmeldung.Anzahl;
+                    nudJahr.Value = neueKrebsmeldung.Jahr;
+                    nudAnzahl.Value = neueKrebsmeldung.Anzahl;
                 }
             }
             tiKrebsmeldung.IsSelected = true;
@@ -500,8 +487,8 @@ namespace Krebsregister
                     ICD10Code = cbKrebsart.Text.Split(" - ")[0],
                     Geschlecht = cbGeschlecht.Text,
                     Bundesland = cbBundesland.Text,
-                    Anzahl = nudAnzahl.NudContent,
-                    Jahr = nudJahr.NudContent
+                    Anzahl = nudAnzahl.Value,
+                    Jahr = nudJahr.Value
                 };
                 Window KrebsmeldungConfirm = new KrebsmeldungConfirm(neueKrebsmeldung);
                 KrebsmeldungConfirm.Show();
