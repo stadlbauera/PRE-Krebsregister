@@ -497,20 +497,9 @@ namespace Krebsregister
 
         private void FillComboBoxes()
         {
-            
-            foreach (var item in DatabaseMethods.GetDataFromDatabase_ICD10())
-            {
-                cbKrebsart.Items.Add(item);
-            }
-            foreach (var item in DatabaseMethods.GetDataFromDatabase_Geschlecht())
-            {
-                cbGeschlecht.Items.Add(item);
-            }
-            foreach (var item in DatabaseMethods.GetDataFromDatabase_Bundesland())
-            {
-                cbBundesland.Items.Add(item);
-            }
-            
+            cbKrebsart.ItemsSource = DatabaseMethods.GetDataFromDatabase_ICD10();
+            cbGeschlecht.ItemsSource = DatabaseMethods.GetDataFromDatabase_Geschlecht();
+            cbBundesland.ItemsSource = DatabaseMethods.GetDataFromDatabase_Bundesland();
         }
 
         #endregion
