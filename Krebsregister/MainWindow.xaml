@@ -164,7 +164,7 @@
                 </Canvas>
             </TabItem>
             <!--NEUE-KREBSMELDUNG********************************************************************************************************************************************************************************-->
-            <TabItem Name="tiKrebsmeldung" Header="Neue Krebsmeldung" Height="24" Margin="-2,0,-2,0" VerticalAlignment="Bottom">
+            <TabItem Name="tiKrebsmeldung" Header="Neue Krebsmeldung" Height="24" Margin="-2,0,-2,0" VerticalAlignment="Top">
                 <Grid Name="gridKrebsmeldung">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30"/>
@@ -185,27 +185,12 @@
                     <Label Grid.Column="0" Grid.Row="3" Content="Jahr:"/>
                     <Label Grid.Column="0" Grid.Row="4" Content="Anzahl:"/>
 
-                    <ComboBox Name="cbKrebsart" Grid.Column="1" Grid.Row="0" Width="150" Margin="5,5,0,5" HorizontalAlignment="Left">
-                        <ComboBoxItem Content="C00 - Krebsart00"/>
-                        <ComboBoxItem Content="C01 - Krebsart01"/>
-                        <ComboBoxItem Content="C02 - Krebsart02"/>
-                    </ComboBox>
-                    <ComboBox  Name="cbGeschlecht" Grid.Column="1" Grid.Row="1" Width="150" Margin="5,5,0,5" HorizontalAlignment="Left">
-                        <ComboBoxItem Content="Weiblich"/>
-                        <ComboBoxItem Content="Männlich"/>
-                        <ComboBoxItem Content="Keine Angabe"/>
-                    </ComboBox>
-                    <ComboBox Name="cbBundesland" Grid.Column="1" Grid.Row="2" Width="150" Margin="5,5,0,5" HorizontalAlignment="Left">
-                        <ComboBoxItem Content="Oberösterreich"/>
-                        <ComboBoxItem Content="Niederösterreich"/>
-                        <ComboBoxItem Content="Wien"/>
-                        <ComboBoxItem Content="Burgenland"/>
-                        <ComboBoxItem Content="Salzburg"/>
-                        <ComboBoxItem Content="Tirol"/>
-                        <ComboBoxItem Content="Vorarlberg"/>
-                        <ComboBoxItem Content="Kärnten"/>
-                        <ComboBoxItem Content="Steiermark"/>
-                    </ComboBox>
+                    <ComboBox Name="cbKrebsart" Grid.Column="1" Grid.Row="0" Width="150" Margin="5,5,0,5" HorizontalAlignment="Left"/>
+
+                    <ComboBox  Name="cbGeschlecht" Grid.Column="1" Grid.Row="1" Width="150" Margin="5,5,0,5" HorizontalAlignment="Left"/>
+
+                    <ComboBox Name="cbBundesland" Grid.Column="1" Grid.Row="2" Width="150" Margin="5,5,0,5" HorizontalAlignment="Left"/>
+
 
                     <num:NumericUpDown x:Name="nudJahr" Grid.Row="3" Grid.Column="1" Margin="5,2" Width="150" HorizontalAlignment="Left"/>
                     

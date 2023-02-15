@@ -21,6 +21,7 @@ using System.Data.SqlClient;
 using System.Diagnostics.Metrics;
 using LiveCharts.Definitions.Charts;
 using LiveCharts.Wpf.Charts.Base;
+using System.Collections.ObjectModel;
 
 namespace Krebsregister
 {
@@ -50,11 +51,6 @@ namespace Krebsregister
 
         private void InitializeCharts()
         {
-            //PieChart();
-            //BarChart();
-            //AreaChart();
-            //NegativStackChart();
-            
         }
 
 
@@ -62,12 +58,13 @@ namespace Krebsregister
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             FillCharts();
+            FillComboBoxes();
         }
 
         private void FillCharts()
         {
             //DatabaseMethods.FillDatabase();
-            List<Krebsmeldung> list_krebsmeldung = DatabaseMethods.GetDataFromDatabase();
+            List<Krebsmeldung> list_krebsmeldung = DatabaseMethods.GetDataFromDatabase_Eintrag();
 
             List<Krebsmeldung> pieChartRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00")).ToList();
 
@@ -78,7 +75,7 @@ namespace Krebsregister
             NegativStackChart(negativStackChartRelevant);
 
             List<Krebsmeldung> barChartRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00")).ToList();
-            BarChart(barChartRelevant);
+            //BarChart(barChartRelevant);
 
             List<int> jahre = new List<int> { 1983, 1984, 1985, 1986, 1987, 1988, 1989 };
             List<int> anzahlVonC00 = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00") && (krebsmeldung.Jahr >= 1983 && krebsmeldung.Jahr <= 1989)).ToList().MySum(jahre);
@@ -449,6 +446,7 @@ namespace Krebsregister
 
             InitializeCharts();
             InitializeComponent();
+            
 
             lblException.Content = "";
             if (erstellen)
@@ -495,6 +493,24 @@ namespace Krebsregister
                 FillCharts();
                 this.Close();
             }
+        }
+
+        private void FillComboBoxes()
+        {
+            
+            foreach (var item in DatabaseMethods.GetDataFromDatabase_ICD10())
+            {
+                cbKrebsart.Items.Add(item);
+            }
+            foreach (var item in DatabaseMethods.GetDataFromDatabase_Geschlecht())
+            {
+                cbGeschlecht.Items.Add(item);
+            }
+            foreach (var item in DatabaseMethods.GetDataFromDatabase_Bundesland())
+            {
+                cbBundesland.Items.Add(item);
+            }
+            
         }
 
         #endregion

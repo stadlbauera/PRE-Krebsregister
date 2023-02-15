@@ -229,7 +229,7 @@ namespace Krebsregister
 
         #region Daten aus den Datenbank holen 
 
-        public static List<Krebsmeldung> GetDataFromDatabase()
+        public static List<Krebsmeldung> GetDataFromDatabase_Eintrag()
         {
             List<Krebsmeldung> krebsmeldungs = new List<Krebsmeldung>();
             SqlConnection connection = new SqlConnection(constring);
@@ -257,7 +257,61 @@ namespace Krebsregister
             return krebsmeldungs;
         }
 
+        public static List<string> GetDataFromDatabase_ICD10()
+        {
+            List<string> result = new List<string>();
+            SqlConnection connection = new SqlConnection(constring);
+            if (connection.State != System.Data.ConnectionState.Open)
+            {
+                connection.Open();
+            }
+            SqlCommand cmd = new SqlCommand("SELECT ICD10Code, Bezeichnung FROM ICD10", connection);
+            SqlDataReader reader = cmd.ExecuteReader();
+            while(reader.Read())
+            {
+                result.Add($"{reader.GetString(0)} - {reader.GetString(1)}");
+            }
+            connection.Close();
+            return result;
+        }
+
+        public static List<string> GetDataFromDatabase_Geschlecht()
+        {
+            List<string> result = new List<string>();
+            SqlConnection connection = new SqlConnection(constring);
+            if (connection.State != System.Data.ConnectionState.Open)
+            {
+                connection.Open();
+            }
+            SqlCommand cmd = new SqlCommand("SELECT Geschlecht FROM Geschlecht", connection);
+            SqlDataReader reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                result.Add(reader.GetString(0));
+            }
+            connection.Close();
+            return result;
+        }
+
+        public static List<string> GetDataFromDatabase_Bundesland()
+        {
+            List<string> result = new List<string>();
+            SqlConnection connection = new SqlConnection(constring);
+            if (connection.State != System.Data.ConnectionState.Open)
+            {
+                connection.Open();
+            }
+            SqlCommand cmd = new SqlCommand("SELECT Name FROM Bundesland", connection);
+            SqlDataReader reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                result.Add(reader.GetString(0));
+            }
+            connection.Close();
+            return result;
+        }
+
         #endregion Daten aus den Datenbank holen
-        
+
     }
 }
