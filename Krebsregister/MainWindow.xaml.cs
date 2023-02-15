@@ -32,31 +32,30 @@ namespace Krebsregister
     {
         public MainWindow()
         {
-
-            InitializeCharts();
             InitializeComponent();
 
-            lblTitleGeoHeatMap.Content = "Geo-Heat-Map Österreich";
+            lblTitleGeoHeatMap.Content = "C00 1994 in Ö";
             lblTitleNegativStackedChart.Content = "Vergleich Männer und Frauen: C00";
             lblTitlePieChart.Content = "C00 Verteilung auf die Bundesländer";
-            lblTitleAreaChart.Content = "C00 und C01 im Jahr 1983, 1984, 1985";
+            lblTitleAreaChart.Content = "C00 und C01 im Jahr 1983 - 1989";
             lblTitlePieChart2.Content = "C00 in Oberösterreich über die Jahre";
+            lblTitleGridView.Content = "Alle Einträge in der DB";
+            //lblTitleBarChart.Content = "Mehrere Tumorarten von 1997-2000";
             DataContext = this;
+        }
+
+
+        
+        
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+        }
 
             nudJahr.MaxValue = DateTime.Now.Year;
             nudJahr.Value = DateTime.Now.Year;
 
             nudAnzahl.MinValue = 1;
-        }
 
-        private void InitializeCharts()
-        {
-        }
-
-
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
             FillCharts();
             FillComboBoxes();
         }
@@ -66,13 +65,14 @@ namespace Krebsregister
             //DatabaseMethods.FillDatabase();
             List<Krebsmeldung> list_krebsmeldung = DatabaseMethods.GetDataFromDatabase_Eintrag();
 
-            List<Krebsmeldung> pieChartRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00")).ToList();
 
+            List<Krebsmeldung> pieChartRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00")).ToList();
             PieChart(pieChartRelevant);
 
-            List<Krebsmeldung> negativStackChartRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00")).ToList();
 
+            List<Krebsmeldung> negativStackChartRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00")).ToList();
             NegativStackChart(negativStackChartRelevant);
+
 
             List<Krebsmeldung> barChartRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00")).ToList();
             //BarChart(barChartRelevant);
@@ -80,25 +80,31 @@ namespace Krebsregister
             List<int> jahre = new List<int> { 1983, 1984, 1985, 1986, 1987, 1988, 1989 };
             List<int> anzahlVonC00 = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00") && (krebsmeldung.Jahr >= 1983 && krebsmeldung.Jahr <= 1989)).ToList().MySum(jahre);
             List<int> anzahlVonC01 = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C01") && (krebsmeldung.Jahr >= 1983 && krebsmeldung.Jahr <= 1989)).ToList().MySum(jahre);
-            List<Krebsmeldung> geoHeatMapRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00") && krebsmeldung.Jahr == 1994).ToList();
-
-
-            GeoMap(geoHeatMapRelevant);
-
-            List<Krebsmeldung> pieChart2Relevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00") && krebsmeldung.Bundesland.Equals("Oberösterreich")).ToList();
-
-            PieChart2(pieChart2Relevant);
-
-            DataGrid(list_krebsmeldung);
-
             List<List<int>> anzahls = new List<List<int>> { anzahlVonC00, anzahlVonC01 };
             AreaChart(anzahls);
+
+
+            List<Krebsmeldung> geoHeatMapRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00") && krebsmeldung.Jahr == 1994).ToList();
+            GeoMap(geoHeatMapRelevant);
+
+
+            List<Krebsmeldung> pieChart2Relevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00") && krebsmeldung.Bundesland.Equals("Oberösterreich")).ToList();
+            PieChart2(pieChart2Relevant);
+
+
+            Table(list_krebsmeldung);  
         }
 
-        #region DataGrid
-        private void DataGrid(List<Krebsmeldung> list_krebsmeldung)
-        {
+        #region Table
 
+        private void Table(List<Krebsmeldung> list_krebsmeldung)
+        {
+            List<Krebsmeldung> krebsmeldungen = new List<Krebsmeldung>();
+            foreach (Krebsmeldung k in list_krebsmeldung)
+            {
+                krebsmeldungen.Add(k);
+            }
+            lvKrebsmeldungen.ItemsSource = krebsmeldungen;
         }
 
         #endregion
@@ -131,17 +137,14 @@ namespace Krebsregister
                 bundeslaenderCounter[bundeslaenderIDs[krebsmeldung.Bundesland]] += krebsmeldung.Anzahl;
             }
             geoMap.HeatMap = bundeslaenderCounter;
+
             var tooltip = new DefaultTooltip
             {
                 SelectionMode = TooltipSelectionMode.Auto,
                 IsEnabled = false
-
-
             };
 
-
             geoMap.ToolTip = tooltip;
-
         }
 
         #endregion
@@ -167,10 +170,7 @@ namespace Krebsregister
 
             foreach (Krebsmeldung krebsmeldung in show)
             {
-
-
                 bundeslaenderCounter[krebsmeldung.Bundesland] += krebsmeldung.Anzahl;
-
             }
             pieChart1.Series.Clear();
 
@@ -182,40 +182,15 @@ namespace Krebsregister
             }
             pieChart1.Series = series;
 
-            new ToolTip
-            {
-
-            };
-
             var tooltip = new DefaultTooltip
             {
                 SelectionMode = TooltipSelectionMode.SharedYValues,
                 IsEnabled = false
 
-
             };
 
             pieChart1.DataTooltip = tooltip;
 
-            //if (pieChart1 != null)
-            //{
-            //    pieChart1.Series.Clear();
-            //    SeriesCollection series = new SeriesCollection();
-            //    List<double> values = new List<double>() { 15.0, 30.0, 50.0, 5.0 };
-            //    foreach(double value in values)
-            //    {
-            //        series.Add(new PieSeries() { Title = "Prozente", Values = new ChartValues<double> { value } });
-            //    }
-
-            //    pieChart1.Series = series;
-
-            //}
-
-
-            //PointLabel = chartPoint =>
-            //    string.Format("{0} ({1:P})", chartPoint.Y, chartPoint.Participation);
-
-            //DataContext = this;
         }
 
         public void PieChart_DataClick(object sender, ChartPoint chartpoint)
@@ -405,7 +380,7 @@ namespace Krebsregister
             {
                 tumorartC00[item.Krebsart] += item.Anzahl;
             }
-            barChart.Series.Clear();
+            //barChart.Series.Clear();
 
 
             SeriesCollectionBC = new SeriesCollection
@@ -444,7 +419,6 @@ namespace Krebsregister
         public MainWindow(Krebsmeldung neueKrebsmeldung, bool erstellen)
         {
 
-            InitializeCharts();
             InitializeComponent();
             
 

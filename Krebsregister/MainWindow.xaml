@@ -98,18 +98,34 @@
                         </lvc:CartesianChart.DataTooltip>-->
                         </lvc:CartesianChart>
                     </DockPanel>
-                    <!--BARCHART**************************************************************************************************************************************************************************-->
-                    <!--lvc:CartesianChart Grid.Column="4" Grid.Row="1"  LegendLocation="Left" Series="{Binding SeriesCollectionBC}">
-                        <lvc:CartesianChart.AxisX>
-                            <lvc:Axis Title="Salesman" Labels="{Binding LabelsBC}"/>
-                        </lvc:CartesianChart.AxisX>
-                        <lvc:CartesianChart.AxisY>
-                            <lvc:Axis Title="Sold Apps" LabelFormatter="{Binding Formatter}"/>
-                        </lvc:CartesianChart.AxisY>
-                    </lvc:CartesianChart-->
+                    <!--GRIDVIEW**************************************************************************************************************************************************************************-->
+
+                    <DockPanel  Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2" LastChildFill="True">
+
+                        <Label Name="lblTitleGridView" DockPanel.Dock="Top"/>
+                        <ListView Margin="10" Name="lvKrebsmeldungen" >
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Krebsart" Width="300" DisplayMemberBinding="{Binding Krebsart}" />
+                                    <GridViewColumn Header="ICD10-Code" Width="80" DisplayMemberBinding="{Binding ICD10Code}" />
+                                    <GridViewColumn Header="Bundesland" Width="100" DisplayMemberBinding="{Binding Bundesland}" />
+                                    <GridViewColumn Header="Geschlecht" Width="80" DisplayMemberBinding="{Binding Geschlecht}" />
+                                    <GridViewColumn Header="Jahr" Width="80" DisplayMemberBinding="{Binding Jahr}" />
+                                    <GridViewColumn Header="Anzahl" Width="80" DisplayMemberBinding="{Binding Anzahl}" />
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                        </DockPanel>
+                    
+                    
+                    
+                    
+                    
+
+       
 
                     <!--BARCHART**************************************************************************************************************************************************************************-->
-                    <DockPanel Grid.Column="4" Grid.Row="1" LastChildFill="True">
+                    <!--<DockPanel Grid.Column="4" Grid.Row="1" LastChildFill="True">
                         <Label Name="lblTitleBarChart" DockPanel.Dock="Top"/>
                         <lvc:CartesianChart Name="barChart" LegendLocation ="Right" Series="{Binding SeriesCollectionBC}">
                             <lvc:CartesianChart.AxisX>
@@ -119,7 +135,8 @@
                                 <lvc:Axis Title="Anzahl" LabelFormatter="{Binding Formatter}"/>
                             </lvc:CartesianChart.AxisY>
                         </lvc:CartesianChart>
-                    </DockPanel>
+                    </DockPanel>-->
+
                 </Grid>
             </TabItem>
             <!--ERWEITERTE-STATISTIK********************************************************************************************************************************************************************************-->
@@ -193,10 +210,10 @@
 
 
                     <num:NumericUpDown x:Name="nudJahr" Grid.Row="3" Grid.Column="1" Margin="5,2" Width="150" HorizontalAlignment="Left"/>
-                    
+
                     <num:NumericUpDown Name="nudAnzahl" Grid.Column="1"  Grid.Row="4" Margin="5, 2" Width="150" HorizontalAlignment="Left" Value="1"/>
 
-                    
+
 
                     <Button Name="bNeueKrebsmeldung" Content="Hinzufügen" Grid.Row="5" Grid.Column="1" Width="150" Margin="5,5,0,5" HorizontalAlignment="Left" Click="bNeueKrebsmeldung_Click"/>
 

@@ -22,11 +22,11 @@ namespace Krebsregister
         //static string constring = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Valentina\\Source\\Repos\\PRE-Krebsregister\\Krebsregister\\Krebsregister_Database.mdf;Integrated Security=True";
         //static string path_rest_icd10 = "C:\\Users\\Valentina\\Source\\Repos\\PRE-Krebsregister\\Krebsregister\\CSV-Dateien\\restlicheICD10Codes.csv";
         //Anna
-        //static string constring = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=\"C:\\Users\\Markus Stadlbauer\\Documents\\Schule\\5. Klasse\\PRE\\Projekt\\Krebsregister\\Krebsregister\\Krebsregister_Database.mdf\";Integrated Security=True";
-        //static string path_rest_icd10 = "C:\\Users\\Markus Stadlbauer\\Documents\\Schule\\5. Klasse\\PRE\\Projekt\\Krebsregister\\Krebsregister\\CSV-Dateien\\restlicheICD10Codes.csv";
+        static string constring = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=\"C:\\Users\\Markus Stadlbauer\\Documents\\Schule\\5. Klasse\\PRE\\Projekt\\Krebsregister\\Krebsregister\\Krebsregister_Database.mdf\";Integrated Security=True";
+        static string path_rest_icd10 = "C:\\Users\\Markus Stadlbauer\\Documents\\Schule\\5. Klasse\\PRE\\Projekt\\Krebsregister\\Krebsregister\\CSV-Dateien\\restlicheICD10Codes.csv";
         //Lili
-        static string path_rest_icd10 = "C:\\Users\\lilia\\Source\\Repos\\stadlbauera\\PRE-Krebsregister\\Krebsregister\\CSV-Dateien\\restlicheICD10Codes.csv";
-        static string constring = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\lilia\\source\\repos\\stadlbauera\\PRE-Krebsregister\\Krebsregister\\Krebsregister_Database.mdf;Integrated Security=True";
+        //static string path_rest_icd10 = "C:\\Users\\lilia\\Source\\Repos\\stadlbauera\\PRE-Krebsregister\\Krebsregister\\CSV-Dateien\\restlicheICD10Codes.csv";
+        //static string constring = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\lilia\\source\\repos\\stadlbauera\\PRE-Krebsregister\\Krebsregister\\Krebsregister_Database.mdf;Integrated Security=True";
 
         #region erstellen und befüllen Datenbank
         public static void FillDatabase()
@@ -107,7 +107,7 @@ namespace Krebsregister
 
 
             var Eintragfields = ReadInCSV_Web("https://data.statistik.gv.at/data/OGD_krebs_ext_KREBS_1.csv");
-            for (int i = 0; i < Eintragfields.Count; i++)           //i < Eintragfields.Count
+            for (int i = 0; i < 100; i++)           //i < Eintragfields.Count
             {
                 string[] currentFields = Eintragfields[i];
                 SqlCommand cmd = new SqlCommand("INSERT INTO Eintrag (EintragID, Berichtsjahr, AnzahlMeldungen, ICD10ID, GeschlechtID, BundeslandID) SELECT @EintragID, @Berichtsjahr, @AnzahlMeldungen, @ICD10ID, @GeschlechtID, @BundeslandID WHERE NOT EXISTS (SELECT EintragID, Berichtsjahr, AnzahlMeldungen, ICD10ID, GeschlechtID, BundeslandID FROM Eintrag WHERE EintragID = @EintragID)", connection);
@@ -222,7 +222,7 @@ namespace Krebsregister
             cmd_update.Parameters.AddWithValue("@aktuell_geschlecht", km.Geschlecht);
             cmd_update.Parameters.AddWithValue("@aktuell_bundesland", km.Bundesland);
             cmd_update.ExecuteNonQuery();     
-                connection.Close();
+            connection.Close();
         }
 
         #endregion neue Krebsmeldung einfügen

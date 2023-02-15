@@ -14,5 +14,10 @@ namespace Krebsregister
         public string Bundesland { get; set; }
         public int Anzahl { get; set; }
         public int Jahr { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Krebsart} {ICD10Code} {Bundesland} {Anzahl}";
+        }
     }
 }
