@@ -40,7 +40,7 @@ namespace Krebsregister
             lblTitleAreaChart.Content = "C00 und C01 im Jahr 1983 - 1989";
             lblTitlePieChart2.Content = "C00 in Oberösterreich über die Jahre";
             lblTitleGridView.Content = "Alle Einträge in der DB";
-            //lblTitleBarChart.Content = "Mehrere Tumorarten von 1997-2000";
+            
             DataContext = this;
         }
 
@@ -49,7 +49,7 @@ namespace Krebsregister
         
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-        }
+        
 
             nudJahr.MaxValue = DateTime.Now.Year;
             nudJahr.Value = DateTime.Now.Year;
