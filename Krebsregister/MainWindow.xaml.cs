@@ -22,6 +22,10 @@ using System.Diagnostics.Metrics;
 using LiveCharts.Definitions.Charts;
 using LiveCharts.Wpf.Charts.Base;
 using System.Collections.ObjectModel;
+using Microsoft.Win32;
+using System.Xml;
+using Path = System.IO.Path;
+using System.Numerics;
 
 namespace Krebsregister
 {
@@ -30,6 +34,10 @@ namespace Krebsregister
     /// </summary>
     public partial class MainWindow : Window
     {
+        public  string constring { get; set; }
+
+        public  string path_rest_icd10 { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -42,11 +50,9 @@ namespace Krebsregister
             lblTitleGridView.Content = "Alle Einträge in der DB";
             
             DataContext = this;
+
         }
 
-
-        
-        
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
         
@@ -60,10 +66,33 @@ namespace Krebsregister
             FillComboBoxes();
         }
 
+        private void GetPaths()
+        {
+            XmlDocument xml = new XmlDocument();
+            xml.Load(@"Dateien\\Pfade.xml");
+
+            XmlNodeList nodeList = xml.GetElementsByTagName("Lili");
+            foreach (XmlNode personalNode in nodeList)
+            {
+                foreach (XmlNode targetNode in personalNode.ChildNodes)
+                {
+                    if (targetNode.Name == "ConStringPfad")
+                    {
+                        constring = targetNode.InnerText;
+                    }
+                    else if (targetNode.Name == "RestICD10Pfad")
+                    {
+                        path_rest_icd10 = targetNode.InnerText;
+                    }
+                }
+            }
+        }
+
         private void FillCharts()
         {
-            //DatabaseMethods.FillDatabase();
-            List<Krebsmeldung> list_krebsmeldung = DatabaseMethods.GetDataFromDatabase_Eintrag();
+            GetPaths();
+            //DatabaseMethods.FillDatabase(constring, path_rest_icd10);
+            List<Krebsmeldung> list_krebsmeldung = DatabaseMethods.GetDataFromDatabase_Eintrag(constring);
 
 
             List<Krebsmeldung> pieChartRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00")).ToList();
@@ -423,6 +452,8 @@ namespace Krebsregister
 
         public string[] LabelsLC { get; set; }
 
+        public Func<int, string> XFormatterLC { get; set; }
+
         private void LiveChart(List<Krebsmeldung> krebsmeldung)
         {
             var values = new ChartValues<int>();
@@ -501,7 +532,7 @@ namespace Krebsregister
             if (erstellen)
             {
                 //Bestätigungs-Fenster
-                DatabaseMethods.InsertNewMeldung(neueKrebsmeldung);
+                DatabaseMethods.InsertNewMeldung(neueKrebsmeldung, constring);
             }
             else
             {
@@ -546,13 +577,38 @@ namespace Krebsregister
 
         private void FillComboBoxes()
         {
-            cbKrebsart.ItemsSource = DatabaseMethods.GetDataFromDatabase_ICD10();
-            cbGeschlecht.ItemsSource = DatabaseMethods.GetDataFromDatabase_Geschlecht();
-            cbBundesland.ItemsSource = DatabaseMethods.GetDataFromDatabase_Bundesland();
+            cbKrebsart.ItemsSource = DatabaseMethods.GetDataFromDatabase_ICD10(constring);
+            cbGeschlecht.ItemsSource = DatabaseMethods.GetDataFromDatabase_Geschlecht(constring);
+            cbBundesland.ItemsSource = DatabaseMethods.GetDataFromDatabase_Bundesland(constring);
         }
+
 
         #endregion
 
-     
+        private void xmlLaden_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            if(ofd.ShowDialog() == true)
+            {
+                XmlDocument xml = new XmlDocument();
+                xml.LoadXml("\\Dateien\\Pfade.xml");
+
+                XmlNodeList nodeList = xml.GetElementsByTagName("Lili");
+                foreach (XmlNode personalNode in nodeList)
+                {
+                    foreach (XmlNode targetNode in personalNode.ChildNodes)
+                    {
+                        if(targetNode.Name == "ConStringPfad")
+                        {
+                            constring = targetNode.InnerText;
+                        }
+                        else if(targetNode.Name == "RestICD10Pfad")
+                        {
+                            path_rest_icd10 = targetNode.InnerText;
+                        }
+                    }
+                }
+            }
+        }
     }
 }

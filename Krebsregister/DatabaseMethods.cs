@@ -16,20 +16,8 @@ namespace Krebsregister
 {
     internal class DatabaseMethods
     {
-
-
-        //Vali
-        //static string constring = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Valentina\\Source\\Repos\\PRE-Krebsregister\\Krebsregister\\Krebsregister_Database.mdf;Integrated Security=True";
-        //static string path_rest_icd10 = "C:\\Users\\Valentina\\Source\\Repos\\PRE-Krebsregister\\Krebsregister\\CSV-Dateien\\restlicheICD10Codes.csv";
-        //Anna
-        //static string constring = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=\"C:\\Users\\Markus Stadlbauer\\Documents\\Schule\\5. Klasse\\PRE\\Projekt\\Krebsregister\\Krebsregister\\Krebsregister_Database.mdf\";Integrated Security=True";
-        //static string path_rest_icd10 = "C:\\Users\\Markus Stadlbauer\\Documents\\Schule\\5. Klasse\\PRE\\Projekt\\Krebsregister\\Krebsregister\\CSV-Dateien\\restlicheICD10Codes.csv";
-        //Lili
-        static string path_rest_icd10 = "C:\\Users\\lilia\\Source\\Repos\\stadlbauera\\PRE-Krebsregister\\Krebsregister\\CSV-Dateien\\restlicheICD10Codes.csv";
-        static string constring = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\lilia\\source\\repos\\stadlbauera\\PRE-Krebsregister\\Krebsregister\\Krebsregister_Database.mdf;Integrated Security=True";
-
         #region erstellen und befüllen Datenbank
-        public static void FillDatabase()
+        public static void FillDatabase(string constring, string path_rest_icd10)
         {
             //Allgemein Databaseconnection erstellen und öffnen
             SqlConnection connection = new SqlConnection(constring);
@@ -187,7 +175,7 @@ namespace Krebsregister
 
 
         #region neue Krebsmeldung einfügen
-        public static void InsertNewMeldung(Krebsmeldung km)
+        public static void InsertNewMeldung(Krebsmeldung km, string constring)
         {
             //Allgemein Databaseconnection erstellen und öffnen
             SqlConnection connection = new SqlConnection(constring);
@@ -229,7 +217,7 @@ namespace Krebsregister
 
         #region Daten aus den Datenbank holen 
 
-        public static List<Krebsmeldung> GetDataFromDatabase_Eintrag()
+        public static List<Krebsmeldung> GetDataFromDatabase_Eintrag(string constring)
         {
             List<Krebsmeldung> krebsmeldungs = new List<Krebsmeldung>();
             SqlConnection connection = new SqlConnection(constring);
@@ -257,7 +245,7 @@ namespace Krebsregister
             return krebsmeldungs;
         }
 
-        public static List<string> GetDataFromDatabase_ICD10()
+        public static List<string> GetDataFromDatabase_ICD10(string constring)
         {
             List<string> result = new List<string>();
             SqlConnection connection = new SqlConnection(constring);
@@ -275,7 +263,7 @@ namespace Krebsregister
             return result;
         }
 
-        public static List<string> GetDataFromDatabase_Geschlecht()
+        public static List<string> GetDataFromDatabase_Geschlecht(string constring)
         {
             List<string> result = new List<string>();
             SqlConnection connection = new SqlConnection(constring);
@@ -293,7 +281,7 @@ namespace Krebsregister
             return result;
         }
 
-        public static List<string> GetDataFromDatabase_Bundesland()
+        public static List<string> GetDataFromDatabase_Bundesland(string constring)
         {
             List<string> result = new List<string>();
             SqlConnection connection = new SqlConnection(constring);

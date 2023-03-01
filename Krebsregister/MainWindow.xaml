@@ -19,6 +19,7 @@
         <Menu x:Name="menu"  Grid.Row="0">
             <MenuItem Header="File">
                 <MenuItem x:Name="erstellen" Header="Erstellen" />
+                <MenuItem x:Name="xmlLaden" Header="XML laden" Click="xmlLaden_Click"/>
                 <Separator/>
                 <MenuItem Header="Beenden" />
             </MenuItem>
