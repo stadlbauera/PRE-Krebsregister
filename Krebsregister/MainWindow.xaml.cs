@@ -91,6 +91,8 @@ namespace Krebsregister
             List<Krebsmeldung> pieChart2Relevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00") && krebsmeldung.Bundesland.Equals("Oberösterreich")).ToList();
             PieChart2(pieChart2Relevant);
 
+            List<Krebsmeldung> liveChartRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00")).ToList();
+            LiveChart(liveChartRelevant);
 
             Table(list_krebsmeldung);  
         }
@@ -412,6 +414,79 @@ namespace Krebsregister
 
             DataContext = this;
         }
+        #endregion
+
+        #region LiveChart
+
+        public int MinValueX { get; set; }
+        public int MaxValueX { get; set; }
+
+        public string[] LabelsLC { get; set; }
+
+        private void LiveChart(List<Krebsmeldung> krebsmeldung)
+        {
+            var values = new ChartValues<int>();
+
+            MinValueX = krebsmeldung.Min(k => k.Anzahl);
+            MaxValueX = krebsmeldung.Max(k => k.Anzahl);
+
+            foreach (Krebsmeldung k in krebsmeldung)
+            {
+                values.Add(k.Anzahl);
+            }
+
+            liveChart.Series.Add(new LineSeries
+            {
+                Values = values
+            });
+
+
+            liveChart.AxisX.Add(new Axis
+            {
+                MinValue = MinValueX,
+                MaxValue = MaxValueX
+            });
+
+            List<int> jahre =  new List<int>();
+
+            jahre = krebsmeldung.Select(x => x.Jahr).ToList();
+
+            LabelsLC = jahre.Select(j => j.ToString()).ToArray();
+
+        }
+
+        private void PreviousOnClick(object sender, EventArgs e)
+        {
+            liveChart.AxisX[0].MinValue -= 25;
+            liveChart.AxisX[0].MaxValue -= 25;
+        }
+
+        private void NextOnClick(object sender, EventArgs e)
+        {
+            liveChart.AxisX[0].MinValue += 25;
+            liveChart.AxisX[0].MaxValue += 25;
+        }
+
+        private void CustomZoomOnClick(object sender, EventArgs e)
+        {
+            int minValue = Int32.Parse(minIntervall.Text);
+            int maxValue = Int32.Parse(maxIntervall.Text);
+
+            if(minValue >= liveChart.AxisX[0].MinValue && maxValue <= liveChart.AxisX[0].MaxValue)
+            {
+                liveChart.AxisX[0].MinValue = minValue;
+                liveChart.AxisX[0].MaxValue = maxValue;
+            }
+            minIntervall.Clear();
+            maxIntervall.Clear();
+        }
+
+        private void CustomZoomOutClick(object sender, RoutedEventArgs e)
+        {
+            liveChart.AxisX[0].MinValue = MinValueX;
+            liveChart.AxisX[0].MaxValue = MaxValueX;
+        }
+
         #endregion
 
         #region Krebsmeldung

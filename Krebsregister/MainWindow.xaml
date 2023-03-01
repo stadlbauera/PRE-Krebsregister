@@ -144,15 +144,15 @@
                                 <RowDefinition Height="30"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
-                            <WrapPanel Grid.Row="0" >
-                                <Button Content="Prev" Click="PreviousOnClick" Height="30"/>
+                            <WrapPanel Grid.Row="0">
+                                <Button Content="Prev" Click="PreviousOnClick" Height="30" />
                                 <Button Content="Next" Click="NextOnClick" Height="30"/>
-                                <Button Content="ZoomIn" Click="CustomZoomOnClick" Height="30"/>
-                                <Button Content="ZoomOut" Click="Button_Click" Height="30"/>
-                                <TextBox x:Name="minIntervall" Height="30" Width="30"/>
-                                <TextBox x:Name="maxIntervall" Height="30" Width="30"/>
+                                <Button Content="ZoomIn" Click="CustomZoomOnClick" Height="30" />
+                                <Button Content="ZoomOut" Click="CustomZoomOutClick" Height="30" />
+                                <TextBox x:Name="minIntervall" Height="30" Width="40"/>
+                                <TextBox x:Name="maxIntervall" Height="30" Width="40"/>
                             </WrapPanel>
-                            <lvc:CartesianChart Name="cartesianChart1" Grid.Row="1"/>
+                            <lvc:CartesianChart Name="liveChart" Grid.Row="1"/>
                         </Grid>
                     </DockPanel>
                 </Grid>
