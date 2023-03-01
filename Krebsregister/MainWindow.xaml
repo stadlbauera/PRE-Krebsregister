@@ -153,7 +153,11 @@
                                 <TextBox x:Name="minIntervall" Height="30" Width="40"/>
                                 <TextBox x:Name="maxIntervall" Height="30" Width="40"/>
                             </WrapPanel>
-                            <lvc:CartesianChart Name="liveChart" Grid.Row="1"/>
+                            <lvc:CartesianChart Name="liveChart" Grid.Row="1">
+                                <lvc:CartesianChart.AxisX>
+                                    <lvc:Axis Labels="{Binding LabelsLC}"/>
+                                </lvc:CartesianChart.AxisX>
+                            </lvc:CartesianChart>
                         </Grid>
                     </DockPanel>
                 </Grid>

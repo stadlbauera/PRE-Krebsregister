@@ -34,9 +34,11 @@ namespace Krebsregister
     /// </summary>
     public partial class MainWindow : Window
     {
-        public  string constring { get; set; }
+        public string constring { get; set; }
 
-        public  string path_rest_icd10 { get; set; }
+        public string path_rest_icd10 { get; set; }
+
+        public string path_xml { get; set; } = "C:\\Users\\lilia\\Source\\Repos\\stadlbauera\\PRE-Krebsregister\\Krebsregister\\Dateien\\Pfade.xml";
 
         public MainWindow()
         {
@@ -48,14 +50,14 @@ namespace Krebsregister
             lblTitleAreaChart.Content = "C00 und C01 im Jahr 1983 - 1989";
             lblTitlePieChart2.Content = "C00 in Oberösterreich über die Jahre";
             lblTitleGridView.Content = "Alle Einträge in der DB";
-            
+
             DataContext = this;
 
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-        
+
 
             nudJahr.MaxValue = DateTime.Now.Year;
             nudJahr.Value = DateTime.Now.Year;
@@ -69,7 +71,7 @@ namespace Krebsregister
         private void GetPaths()
         {
             XmlDocument xml = new XmlDocument();
-            xml.Load(@"Dateien\\Pfade.xml");
+            xml.Load(path_xml);
 
             XmlNodeList nodeList = xml.GetElementsByTagName("Lili");
             foreach (XmlNode personalNode in nodeList)
@@ -87,6 +89,8 @@ namespace Krebsregister
                 }
             }
         }
+
+        public List<int> jahreForLiveChart { get; set; }
 
         private void FillCharts()
         {
@@ -120,10 +124,12 @@ namespace Krebsregister
             List<Krebsmeldung> pieChart2Relevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00") && krebsmeldung.Bundesland.Equals("Oberösterreich")).ToList();
             PieChart2(pieChart2Relevant);
 
-            List<Krebsmeldung> liveChartRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00")).ToList();
-            LiveChart(liveChartRelevant);
 
-            Table(list_krebsmeldung);  
+            jahreForLiveChart = list_krebsmeldung.Select(x => x.Jahr).Distinct().ToList();
+            List<int> liveChartRelevantC00 = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00")).ToList().MySum(jahreForLiveChart);
+            LiveChart(liveChartRelevantC00, jahreForLiveChart);
+
+            Table(list_krebsmeldung);
         }
 
         #region Table
@@ -145,7 +151,7 @@ namespace Krebsregister
 
         public void GeoMap(List<Krebsmeldung> show)
         {
-            Dictionary<string, double> bundeslaenderCounter  = new Dictionary<string, double>();
+            Dictionary<string, double> bundeslaenderCounter = new Dictionary<string, double>();
             Dictionary<string, string> bundeslaenderIDs = new Dictionary<string, string>()
             {
                 {"Vorarlberg", "2273"},
@@ -158,7 +164,7 @@ namespace Krebsregister
                 {"Niederösterreich", "2281"},
                 {"Wien", "2282"},
             };
-          
+
             foreach (Krebsmeldung krebsmeldung in show)
             {
                 if (!bundeslaenderCounter.ContainsKey(bundeslaenderIDs[krebsmeldung.Bundesland]))
@@ -264,8 +270,8 @@ namespace Krebsregister
             }
             pieChart2.Series = series;
         }
-   
-            #endregion
+
+        #endregion
 
         #region NegativStackChart
         public SeriesCollection SeriesCollectionNSC { get; set; }
@@ -380,8 +386,8 @@ namespace Krebsregister
             id_lineChart.Series = SeriesCollectionAC;
             LabelsAC = new[] { "1983", "1984", "1985", "1986", "1987", "1988", "1989" };
             YFormatterAC = value => value.ToString("C");
-            
-            
+
+
             DataContext = this;
         }
 
@@ -392,14 +398,14 @@ namespace Krebsregister
 
         public string[] LabelsBC { get; set; }
         public Func<double, string> Formatter { get; set; }
-        
+
 
         private void BarChart(List<Krebsmeldung> show)
         { //Balken für C00 und Balken für C01, man soll etwa 3-4 Jahre darstellen können
 
             ChartValues<Int32> tumorart00 = new ChartValues<int>();
             ChartValues<Int32> tumorart01 = new ChartValues<int>();
-            Dictionary<string, double> tumorartC00  = new Dictionary<string, double>();
+            Dictionary<string, double> tumorartC00 = new Dictionary<string, double>();
             Dictionary<string, double> tumorartC01 = new Dictionary<string, double>();
             List<int> labels = new List<int>();
 
@@ -454,33 +460,22 @@ namespace Krebsregister
 
         public Func<int, string> XFormatterLC { get; set; }
 
-        private void LiveChart(List<Krebsmeldung> krebsmeldung)
+        
+
+        private void LiveChart(List<int> anzahls, List<int> jahre)
         {
             var values = new ChartValues<int>();
 
-            MinValueX = krebsmeldung.Min(k => k.Anzahl);
-            MaxValueX = krebsmeldung.Max(k => k.Anzahl);
-
-            foreach (Krebsmeldung k in krebsmeldung)
+            foreach (var anzahl in anzahls)
             {
-                values.Add(k.Anzahl);
+                values.Add(anzahl);
             }
 
             liveChart.Series.Add(new LineSeries
             {
                 Values = values
             });
-
-
-            liveChart.AxisX.Add(new Axis
-            {
-                MinValue = MinValueX,
-                MaxValue = MaxValueX
-            });
-
-            List<int> jahre =  new List<int>();
-
-            jahre = krebsmeldung.Select(x => x.Jahr).ToList();
+            
 
             LabelsLC = jahre.Select(j => j.ToString()).ToArray();
 
@@ -488,34 +483,52 @@ namespace Krebsregister
 
         private void PreviousOnClick(object sender, EventArgs e)
         {
-            liveChart.AxisX[0].MinValue -= 25;
-            liveChart.AxisX[0].MaxValue -= 25;
+            int newIntervallMin = (int)(liveChart.AxisX[0].MinValue - 2);
+            int newIntervallMax = (int)(liveChart.AxisX[0].MaxValue - 2);
+            if(newIntervallMin + jahreForLiveChart.Min() >= jahreForLiveChart.Min() && newIntervallMax + jahreForLiveChart.Min() <= jahreForLiveChart.Max())
+            {
+                liveChart.AxisX[0].MinValue -= 2;
+                liveChart.AxisX[0].MaxValue -= 2;
+            }
+            else
+            {
+                liveChart.AxisX[0].MinValue = 0;
+                liveChart.AxisX[0].MaxValue = 2;
+            }
         }
 
         private void NextOnClick(object sender, EventArgs e)
         {
-            liveChart.AxisX[0].MinValue += 25;
-            liveChart.AxisX[0].MaxValue += 25;
+            int newIntervallMin = (int)(liveChart.AxisX[0].MinValue + 2);
+            int newIntervallMax = (int)(liveChart.AxisX[0].MaxValue + 2);
+            if (newIntervallMin + jahreForLiveChart.Min() >= jahreForLiveChart.Min() && newIntervallMax + jahreForLiveChart.Min() <= jahreForLiveChart.Max())
+            {
+                liveChart.AxisX[0].MinValue += 2;
+                liveChart.AxisX[0].MaxValue += 2;
+            }
+            else
+            {
+                liveChart.AxisX[0].MinValue = jahreForLiveChart.Count() -2;
+                liveChart.AxisX[0].MaxValue = jahreForLiveChart.Count();
+            }
         }
 
         private void CustomZoomOnClick(object sender, EventArgs e)
         {
-            int minValue = Int32.Parse(minIntervall.Text);
-            int maxValue = Int32.Parse(maxIntervall.Text);
+            int minValue = Int32.Parse(minIntervall.Text) - jahreForLiveChart.Min();
+            int maxValue = Int32.Parse(maxIntervall.Text) - jahreForLiveChart.Min();
 
-            if(minValue >= liveChart.AxisX[0].MinValue && maxValue <= liveChart.AxisX[0].MaxValue)
-            {
-                liveChart.AxisX[0].MinValue = minValue;
-                liveChart.AxisX[0].MaxValue = maxValue;
-            }
+            liveChart.AxisX[0].MinValue = minValue;
+            liveChart.AxisX[0].MaxValue = maxValue;
+
             minIntervall.Clear();
             maxIntervall.Clear();
         }
 
         private void CustomZoomOutClick(object sender, RoutedEventArgs e)
         {
-            liveChart.AxisX[0].MinValue = MinValueX;
-            liveChart.AxisX[0].MaxValue = MaxValueX;
+            liveChart.AxisX[0].MinValue = 0;
+            liveChart.AxisX[0].MaxValue = jahreForLiveChart.Count();
         }
 
         #endregion
@@ -526,7 +539,7 @@ namespace Krebsregister
         {
 
             InitializeComponent();
-            
+
 
             lblException.Content = "";
             if (erstellen)
@@ -588,7 +601,7 @@ namespace Krebsregister
         private void xmlLaden_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            if(ofd.ShowDialog() == true)
+            if (ofd.ShowDialog() == true)
             {
                 XmlDocument xml = new XmlDocument();
                 xml.LoadXml("\\Dateien\\Pfade.xml");
@@ -598,11 +611,11 @@ namespace Krebsregister
                 {
                     foreach (XmlNode targetNode in personalNode.ChildNodes)
                     {
-                        if(targetNode.Name == "ConStringPfad")
+                        if (targetNode.Name == "ConStringPfad")
                         {
                             constring = targetNode.InnerText;
                         }
-                        else if(targetNode.Name == "RestICD10Pfad")
+                        else if (targetNode.Name == "RestICD10Pfad")
                         {
                             path_rest_icd10 = targetNode.InnerText;
                         }
