@@ -40,13 +40,11 @@ namespace Krebsregister
             lblTitleAreaChart.Content = "C00 und C01 im Jahr 1983 - 1989";
             lblTitlePieChart2.Content = "C00 in Oberösterreich über die Jahre";
             lblTitleGridView.Content = "Alle Einträge in der DB";
+            lblTitleBarChart.Content = "C00, C01, C01 in den Jahren 1994 und 1995";
             
             DataContext = this;
         }
 
-
-        
-        
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
         
@@ -74,8 +72,8 @@ namespace Krebsregister
             NegativStackChart(negativStackChartRelevant);
 
 
-            List<Krebsmeldung> barChartRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00")).ToList();
-            //BarChart(barChartRelevant);
+            List<Krebsmeldung> barChartRelevant = list_krebsmeldung.Where(krebsmeldung => ((krebsmeldung.ICD10Code.Equals("C00") || krebsmeldung.ICD10Code.Equals("C01") || krebsmeldung.ICD10Code.Equals("C02")) && (krebsmeldung.Jahr >= 1983 && krebsmeldung.Jahr <= 1984))).ToList();
+            BarChart(barChartRelevant);
 
             List<int> jahre = new List<int> { 1983, 1984, 1985, 1986, 1987, 1988, 1989 };
             List<int> anzahlVonC00 = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00") && (krebsmeldung.Jahr >= 1983 && krebsmeldung.Jahr <= 1989)).ToList().MySum(jahre);
@@ -357,58 +355,50 @@ namespace Krebsregister
         #endregion
 
         #region BarChart
-        public SeriesCollection SeriesCollectionBC { get; set; }
-
+       
         public string[] LabelsBC { get; set; }
-        public Func<double, string> Formatter { get; set; }
-        
-
         private void BarChart(List<Krebsmeldung> show)
-        { //Balken für C00 und Balken für C01, man soll etwa 3-4 Jahre darstellen können
+        {
+            List<string> labels = new List<string>();
+            Dictionary<string, Dictionary<int, int>> chartValues = new Dictionary<string, Dictionary<int, int>>();
 
-            ChartValues<Int32> tumorart00 = new ChartValues<int>();
-            ChartValues<Int32> tumorart01 = new ChartValues<int>();
-            Dictionary<string, double> tumorartC00  = new Dictionary<string, double>();
-            Dictionary<string, double> tumorartC01 = new Dictionary<string, double>();
-            List<int> labels = new List<int>();
-
-            //Testversuch
-            List<KeyValuePair<int, int>> series = new List<KeyValuePair<int, int>>();
-            series.Add(new KeyValuePair<int, int>());
-
-            foreach (Krebsmeldung item in show)
+            foreach (Krebsmeldung krebsmeldung in show)
             {
-                tumorartC00[item.Krebsart] += item.Anzahl;
-            }
-            //barChart.Series.Clear();
-
-
-            SeriesCollectionBC = new SeriesCollection
-            {
-                new ColumnSeries
+                if (!chartValues.ContainsKey(krebsmeldung.ICD10Code))
                 {
-                    Title = "",
-                    Values = new ChartValues<double> { 10, 50, 39, 50 }
+                    chartValues.Add(krebsmeldung.ICD10Code, new Dictionary<int, int>());
                 }
-            };
+                if (!chartValues[krebsmeldung.ICD10Code].ContainsKey(krebsmeldung.Jahr))
+                {
+                    labels.Add("" + krebsmeldung.Jahr);
+                    chartValues[krebsmeldung.ICD10Code].Add(krebsmeldung.Jahr, 0);
+                }
+                chartValues[krebsmeldung.ICD10Code][krebsmeldung.Jahr] += krebsmeldung.Anzahl;
+            }
 
-            //adding series will update and animate the chart automatically
-            SeriesCollectionBC.Add(new ColumnSeries
+            SeriesCollection seriesCollection = new SeriesCollection();
+            foreach (KeyValuePair<string, Dictionary<int, int>> icd10 in chartValues)
             {
-                Title = "2016",
-                Values = new ChartValues<double> { 11, 56, 42 }
-            });
+                ChartValues<int> cv = new ChartValues<int>();
+                foreach (KeyValuePair<int, int> jahr in icd10.Value)
+                {
+                    cv.Add(jahr.Value);
+                }
 
-            //also adding values updates and animates the chart automatically
-            SeriesCollectionBC[1].Values.Add(48d);
+                seriesCollection.Add(new ColumnSeries
+                {
+                    Title = "" + icd10.Key,
+                    Values = cv
+                });
+            }
 
-            LabelsBC = new string[labels.Count]; //{ "Maria", "Susan", "Charles", "Frida" }
+            LabelsBC = new string[labels.Count];       
             for (int i = 0; i < LabelsBC.Length; i++)
             {
                 LabelsBC[i] = labels[i].ToString();
             };
 
-            Formatter = value => value.ToString("N");
+            barChart.Series = seriesCollection;
 
             DataContext = this;
         }

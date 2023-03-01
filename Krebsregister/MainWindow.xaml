@@ -125,7 +125,7 @@
        
 
                     <!--BARCHART**************************************************************************************************************************************************************************-->
-                    <!--<DockPanel Grid.Column="4" Grid.Row="1" LastChildFill="True">
+                    <DockPanel Grid.Column="4" Grid.Row="1" LastChildFill="True">
                         <Label Name="lblTitleBarChart" DockPanel.Dock="Top"/>
                         <lvc:CartesianChart Name="barChart" LegendLocation ="Right" Series="{Binding SeriesCollectionBC}">
                             <lvc:CartesianChart.AxisX>
@@ -135,7 +135,7 @@
                                 <lvc:Axis Title="Anzahl" LabelFormatter="{Binding Formatter}"/>
                             </lvc:CartesianChart.AxisY>
                         </lvc:CartesianChart>
-                    </DockPanel>-->
+                    </DockPanel>
 
                 </Grid>
             </TabItem>
