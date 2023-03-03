@@ -532,7 +532,7 @@ namespace Krebsregister
         {
 
             InitializeComponent();
-
+            GetPaths();
 
             lblException.Content = "";
             if (erstellen)
