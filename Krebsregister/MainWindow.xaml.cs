@@ -544,9 +544,9 @@ namespace Krebsregister
             {
                 if (neueKrebsmeldung != null)
                 {
-                    cbKrebsart.Text = $"{neueKrebsmeldung.ICD10Code} - {neueKrebsmeldung.Krebsart}";
-                    cbGeschlecht.Text = neueKrebsmeldung.Geschlecht;
-                    cbBundesland.Text = neueKrebsmeldung.Bundesland;
+                    NK_cbKrebsart.Text = $"{neueKrebsmeldung.ICD10Code} - {neueKrebsmeldung.Krebsart}";
+                    NK_cbGeschlecht.Text = neueKrebsmeldung.Geschlecht;
+                    NK_cbBundesland.Text = neueKrebsmeldung.Bundesland;
                     nudJahr.Value = neueKrebsmeldung.Jahr;
                     nudAnzahl.Value = neueKrebsmeldung.Anzahl;
                 }
@@ -559,7 +559,7 @@ namespace Krebsregister
         private void bNeueKrebsmeldung_Click(object sender, RoutedEventArgs e)
         {
             lblException.Content = "";
-            if (cbKrebsart.Text.Equals("") || cbGeschlecht.Text.Equals("") || cbBundesland.Text.Equals(""))
+            if (NK_cbKrebsart.Text.Equals("") || NK_cbGeschlecht.Text.Equals("") || NK_cbBundesland.Text.Equals(""))
             {
                 lblException.Content = "Bitte füllen Sie alle Felder aus!";
             }
@@ -567,10 +567,10 @@ namespace Krebsregister
             {
                 Krebsmeldung neueKrebsmeldung = new Krebsmeldung
                 {
-                    Krebsart = cbKrebsart.Text.Split(" - ")[1],
-                    ICD10Code = cbKrebsart.Text.Split(" - ")[0],
-                    Geschlecht = cbGeschlecht.Text,
-                    Bundesland = cbBundesland.Text,
+                    Krebsart = NK_cbKrebsart.Text.Split(" - ")[1],
+                    ICD10Code = NK_cbKrebsart.Text.Split(" - ")[0],
+                    Geschlecht = NK_cbGeschlecht.Text,
+                    Bundesland = NK_cbBundesland.Text,
                     Anzahl = nudAnzahl.Value,
                     Jahr = nudJahr.Value
                 };
@@ -583,9 +583,14 @@ namespace Krebsregister
 
         private void FillComboBoxes()
         {
-            cbKrebsart.ItemsSource = DatabaseMethods.GetDataFromDatabase_ICD10(constring);
-            cbGeschlecht.ItemsSource = DatabaseMethods.GetDataFromDatabase_Geschlecht(constring);
-            cbBundesland.ItemsSource = DatabaseMethods.GetDataFromDatabase_Bundesland(constring);
+            NK_cbKrebsart.ItemsSource = DatabaseMethods.GetDataFromDatabase_ICD10(constring);
+            NK_cbGeschlecht.ItemsSource = DatabaseMethods.GetDataFromDatabase_Geschlecht(constring);
+            NK_cbBundesland.ItemsSource = DatabaseMethods.GetDataFromDatabase_Bundesland(constring);
+
+            ES_cboKrebsart.ItemsSource = DatabaseMethods.GetDataFromDatabase_ICD10(constring);
+            ES_cboGeschlecht.ItemsSource = DatabaseMethods.GetDataFromDatabase_Geschlecht (constring);
+            ES_cboBundesland.ItemsSource = DatabaseMethods.GetDataFromDatabase_Bundesland(constring);
+            ES_cboBerichtsjahr.ItemsSource = DatabaseMethods.GetDataFromDatabase_Eintrag(constring).Select(x => x.Jahr).Distinct();
         }
 
 
@@ -615,6 +620,11 @@ namespace Krebsregister
                     }
                 }
             }
+        }
+
+        private void ErweiterteStatistik_Loaded(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
