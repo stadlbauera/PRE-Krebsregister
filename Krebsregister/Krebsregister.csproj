@@ -18,6 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Dateien\Pfade.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="maps\austria.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

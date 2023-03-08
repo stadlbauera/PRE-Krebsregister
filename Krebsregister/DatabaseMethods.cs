@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Security.Cryptography.Pkcs;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -17,15 +18,16 @@ namespace Krebsregister
     internal class DatabaseMethods
     {
         #region erstellen und befüllen Datenbank
-        public static void FillDatabase(string constring, string path_rest_icd10)
+        public static void FillDatabase(string constring)
         {
+            string path_rest_icd10 = GetXMLPath();
+
             //Allgemein Databaseconnection erstellen und öffnen
             SqlConnection connection = new SqlConnection(constring);
             if (connection.State != System.Data.ConnectionState.Open)
             {
                 connection.Open();
             }
-
 
             //Geschlechtfields ist ein List mit die Zeilen der CSV-Dateien
             var Geschlechtfields = ReadInCSV_Web("https://data.statistik.gv.at/data/OGD_krebs_ext_KREBS_1_C-KRE_GESCHLECHT-0.csv");
@@ -49,7 +51,6 @@ namespace Krebsregister
                 cmd.Parameters.AddWithValue("@Name", currentFields[1]);
                 cmd.ExecuteNonQuery();
             }
-
 
             var ICD10fields = ReadInCSV_Web("https://data.statistik.gv.at/data/OGD_krebs_ext_KREBS_1_C-TUM_ICD10_3ST-0.csv");
             for (int i = 0; i < ICD10fields.Count; i++)
@@ -301,5 +302,15 @@ namespace Krebsregister
 
         #endregion Daten aus den Datenbank holen
 
+        private static string GetXMLPath()
+        {
+            string path = Assembly.GetExecutingAssembly().Location;
+            while (!path.EndsWith("Krebsregister"))
+            {
+                path = Directory.GetParent(path).ToString();
+            }
+
+            return  path + "\\Dateien\\restlicheICD10Codes.csv";
+        }
     }
 }

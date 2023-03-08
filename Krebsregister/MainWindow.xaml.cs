@@ -26,6 +26,7 @@ using Microsoft.Win32;
 using System.Xml;
 using Path = System.IO.Path;
 using System.Numerics;
+using System.Reflection;
 
 namespace Krebsregister
 {
@@ -38,7 +39,7 @@ namespace Krebsregister
 
         public string path_rest_icd10 { get; set; }
 
-        public string path_xml { get; set; } = "C:\\Users\\lilia\\Source\\Repos\\stadlbauera\\PRE-Krebsregister\\Krebsregister\\Dateien\\Pfade.xml";
+        public string path_xml { get; set; } 
 
         public MainWindow()
         {
@@ -54,12 +55,11 @@ namespace Krebsregister
             
             DataContext = this;
 
+            GetXMLPath();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-
-
             nudJahr.MaxValue = DateTime.Now.Year;
             nudJahr.Value = DateTime.Now.Year;
 
@@ -83,10 +83,6 @@ namespace Krebsregister
                     {
                         constring = targetNode.InnerText;
                     }
-                    else if (targetNode.Name == "RestICD10Pfad")
-                    {
-                        path_rest_icd10 = targetNode.InnerText;
-                    }
                 }
             }
         }
@@ -96,13 +92,11 @@ namespace Krebsregister
         private void FillCharts()
         {
             GetPaths();
-            //DatabaseMethods.FillDatabase(constring, path_rest_icd10);
+            //DatabaseMethods.FillDatabase(constring);
             List<Krebsmeldung> list_krebsmeldung = DatabaseMethods.GetDataFromDatabase_Eintrag(constring);
-
 
             List<Krebsmeldung> pieChartRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00")).ToList();
             PieChart(pieChartRelevant);
-
 
             List<Krebsmeldung> negativStackChartRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00")).ToList();
             NegativStackChart(negativStackChartRelevant);
@@ -532,6 +526,7 @@ namespace Krebsregister
         {
 
             InitializeComponent();
+            
             GetPaths();
 
             lblException.Content = "";
@@ -596,35 +591,25 @@ namespace Krebsregister
 
         #endregion
 
-        private void xmlLaden_Click(object sender, RoutedEventArgs e)
+        private void DatenLaden_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-            if (ofd.ShowDialog() == true)
-            {
-                XmlDocument xml = new XmlDocument();
-                xml.LoadXml("\\Dateien\\Pfade.xml");
-
-                XmlNodeList nodeList = xml.GetElementsByTagName("Lili");
-                foreach (XmlNode personalNode in nodeList)
-                {
-                    foreach (XmlNode targetNode in personalNode.ChildNodes)
-                    {
-                        if (targetNode.Name == "ConStringPfad")
-                        {
-                            constring = targetNode.InnerText;
-                        }
-                        else if (targetNode.Name == "RestICD10Pfad")
-                        {
-                            path_rest_icd10 = targetNode.InnerText;
-                        }
-                    }
-                }
-            }
+            DatabaseMethods.FillDatabase(constring);
         }
 
         private void ErweiterteStatistik_Loaded(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void GetXMLPath()
+        {
+            string path = Assembly.GetExecutingAssembly().Location;
+            while (!path.EndsWith("Krebsregister"))
+            {
+                path = Directory.GetParent(path).ToString();
+            }
+
+            path_xml = path + "\\Dateien\\Pfade.xml";
         }
     }
 }
