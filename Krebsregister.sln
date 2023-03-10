@@ -5,8 +5,6 @@ VisualStudioVersion = 17.3.32901.215
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Krebsregister", "Krebsregister\Krebsregister.csproj", "{B7D0BB97-18AE-4D60-9EF7-72F63CA6518E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NumericUpDown", "NumericUpDown\NumericUpDown.csproj", "{0C3ADE52-4122-40F3-869F-70C8F915F6EC}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{B7D0BB97-18AE-4D60-9EF7-72F63CA6518E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7D0BB97-18AE-4D60-9EF7-72F63CA6518E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7D0BB97-18AE-4D60-9EF7-72F63CA6518E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0C3ADE52-4122-40F3-869F-70C8F915F6EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0C3ADE52-4122-40F3-869F-70C8F915F6EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0C3ADE52-4122-40F3-869F-70C8F915F6EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0C3ADE52-4122-40F3-869F-70C8F915F6EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

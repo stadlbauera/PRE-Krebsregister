@@ -38,7 +38,7 @@ namespace Krebsregister
 
         public string path_rest_icd10 { get; set; }
 
-        public string path_xml { get; set; } = "C:\\Users\\lilia\\Source\\Repos\\stadlbauera\\PRE-Krebsregister\\Krebsregister\\Dateien\\Pfade.xml";
+        public string path_xml { get; set; } = "C:\\Users\\Markus Stadlbauer\\Documents\\Schule\\5. Klasse\\PRE\\Projekt\\Code\\PRE-Krebsregister\\Krebsregister\\Dateien\\Pfade.xml";
 
         public MainWindow()
         {
@@ -51,6 +51,7 @@ namespace Krebsregister
             lblTitlePieChart2.Content = "C00 in Oberösterreich über die Jahre";
             lblTitleGridView.Content = "Alle Einträge in der DB";
             lblTitleBarChart.Content = "C00, C01, C01 in den Jahren 1994 und 1995";
+            lblTitleLiveChart.Content = "C00 über die Jahre";
             
             DataContext = this;
 
@@ -74,7 +75,7 @@ namespace Krebsregister
             XmlDocument xml = new XmlDocument();
             xml.Load(path_xml);
 
-            XmlNodeList nodeList = xml.GetElementsByTagName("Lili");
+            XmlNodeList nodeList = xml.GetElementsByTagName("Anna");
             foreach (XmlNode personalNode in nodeList)
             {
                 foreach (XmlNode targetNode in personalNode.ChildNodes)

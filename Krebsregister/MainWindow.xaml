@@ -6,10 +6,10 @@
         xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         xmlns:num="clr-namespace:NumericUpDownLib;assembly=NumericUpDownLib"
         xmlns:local="clr-namespace:Krebsregister"
-        xmlns:NumericUpDown="clr-namespace:NumericUpDown;assembly=NumericUpDown" x:Class="Krebsregister.MainWindow"
+        x:Class="Krebsregister.MainWindow"
         mc:Ignorable="d"
         Title="MainWindow" Loaded="Window_Loaded"
-        WindowState="Maximized">
+        WindowState="Maximized" d:DesignHeight="304.565" d:DesignWidth="705.461">
 
     <Grid >
         <Grid.RowDefinitions>
@@ -140,6 +140,7 @@
 
                     <!--LiveChart**************************************************************************************************************************************************************************-->
                     <DockPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" LastChildFill="True">
+                        <Label Name="lblTitleLiveChart" DockPanel.Dock="Top"></Label>
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="30"/>
@@ -164,23 +165,52 @@
             </TabItem>
             <!--ERWEITERTE-STATISTIK********************************************************************************************************************************************************************************-->
             <TabItem Header="Erweiterte Statistik">
-                <Canvas>
-                    <GroupBox Header="Filteroptions" Margin="10,40,21,74">
+                <DockPanel LastChildFill="True">
+                    <GroupBox Header="Filter-Optionen" Height="100" DockPanel.Dock="Top">
                         <Grid>
-                            <Label Content="Krebsart:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.226,-1.641"/>
-                            <Label Content="Geschlecht:" HorizontalAlignment="Left" Margin="149,5,0,0" VerticalAlignment="Top"/>
-                            <Label Content="Bundesland:" HorizontalAlignment="Left" Margin="287,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.035,0.554"/>
-                            <Label Content="Berichtsjahr:" HorizontalAlignment="Left" Margin="427,10,0,0" VerticalAlignment="Top"/>
-                            <ComboBox Name="ES_cboKrebsart" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top" Width="120"/>
-
-                            <ComboBox Name="ES_cboGeschlecht" HorizontalAlignment="Left" Margin="149,41,0,0" VerticalAlignment="Top" Width="120"/>
-
-                            <ComboBox Name="ES_cboBundesland" HorizontalAlignment="Left" Margin="287,41,0,0" VerticalAlignment="Top" Width="120"/>
-
-                            <ComboBox Name="ES_cboBerichtsjahr" HorizontalAlignment="Left" Margin="427,41,0,0" VerticalAlignment="Top" Width="120"/>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="0.5*"/>
+                                <ColumnDefinition Width="1.5*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Label Content="Krebsart:" Grid.Row="0" Grid.Column="0"/>
+                            <Label Content="Geschlecht:" Grid.Row="0" Grid.Column="1"/>
+                            <Label Content="Bundesland:" Grid.Row="0" Grid.Column="2"/>
+                            <RadioButton Name="rbZeitpunkt" Grid.Row="0" Grid.Column="3" Content="Zeitpunkt" VerticalAlignment="Center"/>
+                            <RadioButton Name="rbZeitraum" Grid.Row="0" Grid.Column="4" Content="Zeitraum" VerticalAlignment="Center" Grid.ColumnSpan="2"/>
+                            <ComboBox Name="ES_cboKrebsart" Margin="5,10,5,10" Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"/>
+                            <ComboBox Name="ES_cboGeschlecht" Margin="5,10,5,10" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2"/>
+                            <ComboBox Name="ES_cboBundesland" Margin="5,10,5,10" Grid.Row="1" Grid.Column="2" Grid.RowSpan="2"/>
+                            <ComboBox Name="ES_cboBerichtsjahr" Margin="5,10,5,10" Grid.Row="1" Grid.Column="3" Grid.RowSpan="2"/>
+                            <Label Content="von:" Grid.Row="1" Grid.Column="4"/>
+                            <Label Content="bis:" Grid.Row="2" Grid.Column="4"/>
                         </Grid>
                     </GroupBox>
-                </Canvas>
+                    
+                    <ListView Margin="10" Name="lvfilter" >
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Krebsart" Width="300" DisplayMemberBinding="{Binding Krebsart}" />
+                                <GridViewColumn Header="ICD10-Code" Width="80" DisplayMemberBinding="{Binding ICD10Code}" />
+                                <GridViewColumn Header="Bundesland" Width="100" DisplayMemberBinding="{Binding Bundesland}" />
+                                <GridViewColumn Header="Geschlecht" Width="80" DisplayMemberBinding="{Binding Geschlecht}" />
+                                <GridViewColumn Header="Jahr" Width="80" DisplayMemberBinding="{Binding Jahr}" />
+                                <GridViewColumn Header="Anzahl" Width="80" DisplayMemberBinding="{Binding Anzahl}" />
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <Canvas Name="filterChart"></Canvas>
+                </DockPanel>
+                    
+                
             </TabItem>
             <!--NEUE-KREBSMELDUNG********************************************************************************************************************************************************************************-->
             <TabItem Name="tiKrebsmeldung" Header="Neue Krebsmeldung" Height="24" Margin="-2,0,-2,0" VerticalAlignment="Top">
