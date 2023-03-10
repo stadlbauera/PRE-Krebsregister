@@ -2,14 +2,11 @@
 <Pfade>
 	<Lili>
 		<ConStringPfad>Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\lilia\source\repos\stadlbauera\PRE-Krebsregister\Krebsregister\Krebsregister_Database.mdf;Integrated Security=True</ConStringPfad>
-		<RestICD10Pfad>C:\\Users\\lilia\\Source\\Repos\\stadlbauera\\PRE-Krebsregister\\Krebsregister\\Dateien\\restlicheICD10Codes.csv</RestICD10Pfad>
-	</Lili>
+		</Lili>
 	<Anna>
-		<ConStringPfad>Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename="C:\Users\Markus Stadlbauer\Documents\Schule\5. Klasse\PRE\Projekt\Code\PRE-Krebsregister\Krebsregister\Krebsregister_Database.mdf";Integrated Security=True</ConStringPfad>
-		<RestICD10Pfad>C:\\Users\\Markus Stadlbauer\\Documents\\Schule\\5. Klasse\\PRE\\Projekt\\Krebsregister\\Krebsregister\\Dateien\\restlicheICD10Codes.csv</RestICD10Pfad>
-	</Anna>
+		<ConStringPfad>Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\Markus Stadlbauer\Documents\Schule\5. Klasse\PRE\Projekt\Krebsregister\Krebsregister\Krebsregister_Database.mdf;Integrated Security=True</ConStringPfad>
+		</Anna>
 	<Vali>
 		<ConStringPfad>Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\Valentina\Source\Repos\PRE-Krebsregister\Krebsregister\Krebsregister_Database.mdf;Integrated Security=True</ConStringPfad>
-		<RestICD10Pfad>C:\\Users\\Valentina\\Source\\Repos\\PRE-Krebsregister\\Krebsregister\\Dateien\\restlicheICD10Codes.csv</RestICD10Pfad>
-	</Vali>
+		</Vali>
 </Pfade>
