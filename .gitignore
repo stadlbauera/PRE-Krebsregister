@@ -263,8 +263,6 @@ ServiceFabricBackup/
 
 # SQL Server files
 *.ndf
-*.mdf
-*.ldf
 
 
 
