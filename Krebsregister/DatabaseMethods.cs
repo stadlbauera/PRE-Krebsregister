@@ -231,6 +231,7 @@ namespace Krebsregister
             SqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read())
             {
+                
                 krebsmeldungs.Add(new Krebsmeldung
                 {
                     Jahr = reader.GetInt32(0),

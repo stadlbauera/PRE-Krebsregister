@@ -69,7 +69,6 @@ namespace Krebsregister
 
             FillCharts(new List<string> { "C00", "C01", "C02"});
             FillComboBoxes();
-            FillComboBoxImMenu();
         }
 
         
@@ -620,24 +619,14 @@ namespace Krebsregister
             Application.Current.Shutdown();
         }
 
-        private void FillComboBoxImMenu()
+
+        private void FilterDashboard_Click(object sender, RoutedEventArgs e)
         {
-            cb_selectICD10Dashboard.ItemsSource = DatabaseMethods.GetDataFromDatabase_ICD10(constring);
-            cb_selectICD10Dashboard.SelectedIndex = 0;
-
-            cb_selectMultipleICD10Dashboard.ItemsSource = DatabaseMethods.GetDataFromDatabase_ICD10(constring);
-        }
-
-
-        private void btn_filterdashboard_selected_Click(object sender, RoutedEventArgs e)
-        {
-            List<string> list_icd10s = new List<string>();
-            string item = cb_selectICD10Dashboard.SelectedItem.ToString();
-            string[] items = item.Split("-");
-            list_icd10s.Add(items[0]);
-            list_icd10s.Add("C01");
-            list_icd10s.Add("C02");
-            FillCharts(list_icd10s);
+            Window filterDWindow = new FilterDashboardWindow(DatabaseMethods.GetDataFromDatabase_ICD10(constring));
+            if (filterDWindow.ShowDialog() == true)
+            {
+                FillCharts(FilterDashboardWindow.selectedICDs);
+            }
         }
     }
 }

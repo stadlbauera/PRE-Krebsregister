@@ -23,19 +23,7 @@
                 <Separator/>
                 <MenuItem Header="Beenden" Click="Beenden_Click"/>
             </MenuItem>
-            <MenuItem Header="Dashboardfilter">
-                <WrapPanel>
-                    <Label Content="aktuelle ICD10"/>
-                    <ComboBox x:Name="cb_selectICD10Dashboard"></ComboBox>
-                </WrapPanel>
-                <Separator/>
-                <WrapPanel>
-                    <Label Content="Vergleich mit ICD10s"/>
-                    <sdlCB:MultiSelectComboBox Name="cb_selectMultipleICD10Dashboard"/>
-                </WrapPanel>
-                <Separator/>
-                <Button x:Name="btn_filterdashboard_selected" Content="Filter" Click="btn_filterdashboard_selected_Click" Width="50"/>
-            </MenuItem>
+            <MenuItem Header="Dashboardfilter" Click="FilterDashboard_Click"/>
         </Menu>
 
         <TabControl Grid.Row="1">

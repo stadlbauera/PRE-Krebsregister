@@ -1,0 +1,29 @@
+﻿<Window x:Class="Krebsregister.FilterDashboardWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:sdlCB="http://schemas.sdl.com/xaml"
+        xmlns:local="clr-namespace:Krebsregister"
+        mc:Ignorable="d"
+        Title="Window1" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Label Content="Dashboard Filterung" Grid.ColumnSpan="2" FontSize="30" HorizontalAlignment="Center"/>
+        <Label Content="Aktuelle ICD10:" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="15"/>
+        <ComboBox Name="cb_selectICD10Dashboard" Grid.Column="1" Grid.Row="2" Margin="20" SelectionChanged="cb_selectICD10Dashboard_SelectionChanged"/>
+        <Label Content="Vergleich mit ICD10s:" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="15"/>
+        <sdlCB:MultiSelectComboBox Name="cb_selectMultipleICD10Dashboard" Grid.Column="1" Grid.Row="3" Margin="20" SelectedItemsChanged="cb_selectMultipleICD10Dashboard_SelectedItemsChanged"/>
+        <Button x:Name="btn_finished" Content="Filter" FontSize="15" Click="btn_finished_Click" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" Margin="150, 35"/>
+    </Grid>
+</Window>
