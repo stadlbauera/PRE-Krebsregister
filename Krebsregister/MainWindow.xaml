@@ -167,15 +167,14 @@
             <!--ERWEITERTE-STATISTIK********************************************************************************************************************************************************************************-->
             <TabItem Header="Erweiterte Statistik">
                 <DockPanel LastChildFill="True">
-                    <GroupBox Header="Filter-Optionen" Height="100" DockPanel.Dock="Top">
+                    <GroupBox Header="Filter-Optionen" Height="120" DockPanel.Dock="Top">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="2*"/>
-                                <ColumnDefinition Width="2*"/>
-                                <ColumnDefinition Width="2*"/>
-                                <ColumnDefinition Width="2*"/>
-                                <ColumnDefinition Width="0.5*"/>
-                                <ColumnDefinition Width="1.5*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>
@@ -185,18 +184,36 @@
                             <Label Content="Krebsart:" Grid.Row="0" Grid.Column="0"/>
                             <Label Content="Geschlecht:" Grid.Row="0" Grid.Column="1"/>
                             <Label Content="Bundesland:" Grid.Row="0" Grid.Column="2"/>
-                            <RadioButton Name="rbZeitpunkt" Grid.Row="0" Grid.Column="3" Content="Zeitpunkt" VerticalAlignment="Center"/>
-                            <RadioButton Name="rbZeitraum" Grid.Row="0" Grid.Column="4" Content="Zeitraum" VerticalAlignment="Center" Grid.ColumnSpan="2"/>
+                            <RadioButton Content="Zeitpunkt" Name="rbZeitpunkt" IsChecked="True" Grid.Row="0" Grid.Column="3" VerticalAlignment="Center" Checked="rbZeitpunkt_Checked"/>
+                            <RadioButton Name="rbZeitraum" Grid.Row="0" Grid.Column="4" Content="Zeitraum" VerticalAlignment="Center" Grid.ColumnSpan="2" Checked="rbZeitraum_Checked"/>
                             <sdlCB:MultiSelectComboBox Name="ES_cboKrebsart" Margin="5,10,5,10" Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"/>
                             <sdlCB:MultiSelectComboBox Name="ES_cboGeschlecht" Margin="5,10,5,10" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2"/>
                             <sdlCB:MultiSelectComboBox Name="ES_cboBundesland" Margin="5,10,5,10" Grid.Row="1" Grid.Column="2" Grid.RowSpan="2"/>
-                            <sdlCB:MultiSelectComboBox Name="ES_cboBerichtsjahr" Margin="5,10,5,10" Grid.Row="1" Grid.Column="3" Grid.RowSpan="2"/>
-                            <Label Content="von:" Grid.Row="1" Grid.Column="4"/>
-                            <Label Content="bis:" Grid.Row="2" Grid.Column="4"/>
+                            <GroupBox Name="gbZeitpunkt" Grid.Row="1" Grid.Column="3" Grid.RowSpan="2">
+                                <sdlCB:MultiSelectComboBox Name="ES_cboBerichtsjahr" Margin="5,8,5,6" />
+                            </GroupBox>
+                            <GroupBox Name="gbZeitraum" IsEnabled="False" Grid.Row="1" Grid.Column="4" Grid.RowSpan="2">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="3*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="von:" Grid.Row="0" Grid.Column="0"/>
+                                    <Label Content="bis:" Grid.Row="1" Grid.Column="0"/>
+                                    <TextBox Name="tbVon" Grid.Row="0" Grid.Column="1" Margin="2,4,2,0"/>
+                                    <TextBox Name="tbBis" Grid.Row="1" Grid.Column="1" Margin="2"/>
+
+                                </Grid>
+                            </GroupBox>
+                            
                         </Grid>
                     </GroupBox>
-                    
-                    <ListView Margin="10" Name="lvfilter" >
+                    <Button DockPanel.Dock="Top" Height="20" Content="Aktualisieren" Margin="5" Click="Aktualisieren"/>
+                    <ListView Margin="10" Name="lvfilter" DockPanel.Dock="Left">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Krebsart" Width="300" DisplayMemberBinding="{Binding Krebsart}" />
@@ -208,10 +225,13 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
-                    <Canvas Name="filterChart"></Canvas>
-                </DockPanel>
+                    <TabPanel Name="filteredCharts">
+                        
+                    </TabPanel>
                     
-                
+                </DockPanel>
+
+
             </TabItem>
             <!--NEUE-KREBSMELDUNG********************************************************************************************************************************************************************************-->
             <TabItem Name="tiKrebsmeldung" Header="Neue Krebsmeldung" Height="24" Margin="-2,0,-2,0" VerticalAlignment="Top">
