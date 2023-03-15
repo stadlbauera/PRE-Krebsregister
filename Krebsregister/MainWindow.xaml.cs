@@ -134,7 +134,11 @@ namespace Krebsregister
 
         #region Menue
 
+<<<<<<< HEAD
+
+=======
         
+>>>>>>> d11f408eed43164deb7061fd0818de0e1bb3bf39
         private void DatenLaden_Click(object sender, RoutedEventArgs e)
         {
             DatabaseMethods.FillDatabase(constring);
@@ -308,7 +312,7 @@ namespace Krebsregister
 
             }
             FillPieChart(pieChart2, berichtsJahrCounter);
-            
+
         }
 
         #endregion
@@ -518,7 +522,7 @@ namespace Krebsregister
         {
             int newIntervallMin = (int)(liveChart.AxisX[0].MinValue - 2);
             int newIntervallMax = (int)(liveChart.AxisX[0].MaxValue - 2);
-            if(newIntervallMin + jahreForLiveChart.Min() >= jahreForLiveChart.Min() && newIntervallMax + jahreForLiveChart.Min() <= jahreForLiveChart.Max())
+            if (newIntervallMin + jahreForLiveChart.Min() >= jahreForLiveChart.Min() && newIntervallMax + jahreForLiveChart.Min() <= jahreForLiveChart.Max())
             {
                 liveChart.AxisX[0].MinValue -= 2;
                 liveChart.AxisX[0].MaxValue -= 2;
@@ -541,7 +545,7 @@ namespace Krebsregister
             }
             else
             {
-                liveChart.AxisX[0].MinValue = jahreForLiveChart.Count() -2;
+                liveChart.AxisX[0].MinValue = jahreForLiveChart.Count() - 2;
                 liveChart.AxisX[0].MaxValue = jahreForLiveChart.Count();
             }
         }
@@ -566,7 +570,7 @@ namespace Krebsregister
 
         #endregion
 
-        
+
 
         #endregion
 
@@ -621,7 +625,7 @@ namespace Krebsregister
                 Window KrebsmeldungConfirm = new KrebsmeldungConfirm(neueKrebsmeldung);
                 KrebsmeldungConfirm.Show();
                 alleKrebsmeldungen = DatabaseMethods.GetDataFromDatabase_Eintrag(constring);
-                FillCharts(new List<string> { "C00", "C01", "C02"});
+                FillCharts(new List<string> { "C00", "C01", "C02" });
                 this.Close();
             }
         }
@@ -635,8 +639,8 @@ namespace Krebsregister
 
         private void rbZeitpunkt_Checked(object sender, RoutedEventArgs e)
         {
-            if(gbZeitpunkt != null) gbZeitpunkt.IsEnabled = true;
-            if(gbZeitraum != null) gbZeitraum.IsEnabled = false;
+            if (gbZeitpunkt != null) gbZeitpunkt.IsEnabled = true;
+            if (gbZeitraum != null) gbZeitraum.IsEnabled = false;
         }
 
         private void rbZeitraum_Checked(object sender, RoutedEventArgs e)
@@ -700,7 +704,11 @@ namespace Krebsregister
             bundeslaenderCounter.Add("Tirol", 0);
             bundeslaenderCounter.Add("Vorarlberg", 0);
             bundeslaenderCounter.Add("Wien", 0);
-
+            foreach (Krebsmeldung krebsmeldung in gefilterte_krebsmeldung)
+            {
+                bundeslaenderCounter[krebsmeldung.Bundesland] += krebsmeldung.Anzahl;
+            }
+            FillPieChart<string>(filteredPieChart, bundeslaenderCounter);
         }
         private void FilterDashboard_Click(object sender, RoutedEventArgs e)
         {
@@ -709,8 +717,13 @@ namespace Krebsregister
             {
                 FillCharts(FilterDashboardWindow.selectedICDs);
             }
+
+            
         }
 
+
+
         #endregion
+
     }
 }

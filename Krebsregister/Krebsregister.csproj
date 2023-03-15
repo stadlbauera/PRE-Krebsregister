@@ -8,9 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Dateien\Aktualisieren-Image.jpg" />
     <None Remove="Dateien\Aktualisieren-Image.png" />
-    <None Remove="Dateien\Aktualisieren.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,11 +16,6 @@
     <PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
     <PackageReference Include="Sdl.MultiSelectComboBox" Version="1.0.61" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="Dateien\Aktualisieren-Image.jpg" />
-    <Resource Include="Dateien\Aktualisieren.png" />
   </ItemGroup>
 
   <ItemGroup>
