@@ -25,5 +25,19 @@ namespace Krebsregister
             }
             return list;
         }
+
+        public static List<Krebsmeldung> MyWhere(this List<Krebsmeldung> alleKrebsmeldungen, List<string> gewünschteICD10s)
+        {
+            List<Krebsmeldung> filtered = new List<Krebsmeldung>();
+            foreach (Krebsmeldung aktuelleKrebsmeldung in alleKrebsmeldungen)
+            {
+                foreach(string aktuellerICD10 in gewünschteICD10s)
+                {
+                    if (aktuelleKrebsmeldung.ICD10Code.Equals(aktuellerICD10)) filtered.Add(aktuelleKrebsmeldung);
+                }
+                
+            }
+            return filtered;
+        }
     }
 }

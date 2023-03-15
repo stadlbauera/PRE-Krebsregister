@@ -35,50 +35,62 @@ namespace Krebsregister
     /// </summary>
     public partial class MainWindow : Window
     {
+
+        #region Allgemein
+
         public string constring { get; set; }
 
         public string path_rest_icd10 { get; set; }
 
-        public string path_xml { get; set; } 
+        public string path_xml { get; set; }
 
+        private List<Krebsmeldung> alleKrebsmeldungen = new List<Krebsmeldung>();
         public MainWindow()
         {
-            InitializeComponent();
 
-            lblTitleGeoHeatMap.Content = "C00 1994 in Ö";
-            lblTitleNegativStackedChart.Content = "Vergleich Männer und Frauen: C00";
-            lblTitlePieChart.Content = "C00 Verteilung auf die Bundesländer";
-            lblTitleAreaChart.Content = "C00 und C01 im Jahr 1983 - 1989";
-            lblTitlePieChart2.Content = "C00 in Oberösterreich über die Jahre";
-            lblTitleGridView.Content = "Alle Einträge in der DB";
-            lblTitleBarChart.Content = "C00, C01, C01 in den Jahren 1994 und 1995";
-            lblTitleLiveChart.Content = "C00 über die Jahre";
-            
-            DataContext = this;
-
-            GetXMLPath();
-            
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            InitializeComponent();
+            GetPaths();
+            alleKrebsmeldungen = DatabaseMethods.GetDataFromDatabase_Eintrag(constring);
+
             nudJahr.MaxValue = DateTime.Now.Year;
             nudJahr.Value = DateTime.Now.Year;
-
             nudAnzahl.MinValue = 1;
 
-            FillCharts(new List<string> { "C00", "C01", "C02"});
+            FillCharts(new List<string> { "C00", "C01", "C02" });
+
             FillComboBoxes();
-            FillComboBoxImMenu();
         }
 
-        
+        private void FillComboBoxes()
+        {
+            NK_cbKrebsart.ItemsSource = DatabaseMethods.GetDataFromDatabase_ICD10(constring);
+            NK_cbGeschlecht.ItemsSource = DatabaseMethods.GetDataFromDatabase_Geschlecht(constring);
+            NK_cbBundesland.ItemsSource = DatabaseMethods.GetDataFromDatabase_Bundesland(constring);
+
+            ES_cboKrebsart.ItemsSource = DatabaseMethods.GetDataFromDatabase_ICD10(constring);
+            ES_cboGeschlecht.ItemsSource = DatabaseMethods.GetDataFromDatabase_Geschlecht(constring);
+            ES_cboBundesland.ItemsSource = DatabaseMethods.GetDataFromDatabase_Bundesland(constring);
+            ES_cboBerichtsjahr.ItemsSource = DatabaseMethods.GetDataFromDatabase_Eintrag(constring).Select(x => x.Jahr).Distinct().ToList();
+        }
+
         private void GetPaths()
         {
+            string path = Assembly.GetExecutingAssembly().Location;
+            while (!path.EndsWith("Krebsregister"))
+            {
+                path = Directory.GetParent(path).ToString();
+            }
+
+            path_xml = path + "\\Dateien\\Pfade.xml";
+
             XmlDocument xml = new XmlDocument();
             xml.Load(path_xml);
 
-            XmlNodeList nodeList = xml.GetElementsByTagName("Lili");
+            XmlNodeList nodeList = xml.GetElementsByTagName("Anna");
             foreach (XmlNode personalNode in nodeList)
             {
                 foreach (XmlNode targetNode in personalNode.ChildNodes)
@@ -91,43 +103,105 @@ namespace Krebsregister
             }
         }
 
-        public List<int> jahreForLiveChart { get; set; }
+        #region Charts
+
+
+        public void FillPieChart<T>(PieChart chart, Dictionary<T, int> chartValuesToShow)
+        {
+            chart.Series.Clear();
+
+            SeriesCollection series = new SeriesCollection();
+
+            foreach (KeyValuePair<T, int> kv in chartValuesToShow)
+            {
+                series.Add(new PieSeries() { Title = $"{kv.Key}", Values = new ChartValues<int> { kv.Value } });
+            }
+            chart.Series = series;
+
+            var tooltip = new DefaultTooltip
+            {
+                SelectionMode = TooltipSelectionMode.SharedYValues,
+                IsEnabled = false
+
+            };
+
+            chart.DataTooltip = tooltip;
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Menue
+
+        private void btn_filterdashboard_selected_Click(object sender, RoutedEventArgs e)
+        {
+            List<string> list_icd10s = new List<string>();
+            string item = cb_selectICD10Dashboard.SelectedItem.ToString();
+            string[] items = item.Split(" - ");
+            list_icd10s.Add(items[0]);
+            list_icd10s.Add("C01");
+            list_icd10s.Add("C02");
+            FillCharts(list_icd10s);
+        }
+        private void DatenLaden_Click(object sender, RoutedEventArgs e)
+        {
+            DatabaseMethods.FillDatabase(constring);
+        }
+
+        private void Beenden_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+        #endregion
+
+        #region Dashboard
 
         private void FillCharts(List<string> used_ICD10s)
         {
-            GetPaths();
-            List<Krebsmeldung> list_krebsmeldung = DatabaseMethods.GetDataFromDatabase_Eintrag(constring);
-
-            List<Krebsmeldung> pieChartRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals(used_ICD10s[0])).ToList();
+            FillTitles(used_ICD10s);
+            List<Krebsmeldung> pieChartRelevant = alleKrebsmeldungen.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals(used_ICD10s[0])).ToList();
             PieChart(pieChartRelevant);
 
-            List<Krebsmeldung> negativStackChartRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals(used_ICD10s[0])).ToList();
+            List<Krebsmeldung> negativStackChartRelevant = alleKrebsmeldungen.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals(used_ICD10s[0])).ToList();
             NegativStackChart(negativStackChartRelevant);
 
 
-            List<Krebsmeldung> barChartRelevant = list_krebsmeldung.Where(krebsmeldung => ((krebsmeldung.ICD10Code.Equals(used_ICD10s[0]) || krebsmeldung.ICD10Code.Equals(used_ICD10s[1]) || krebsmeldung.ICD10Code.Equals(used_ICD10s[2])) && (krebsmeldung.Jahr >= 1983 && krebsmeldung.Jahr <= 1984))).ToList();
+            List<Krebsmeldung> barChartRelevant = alleKrebsmeldungen.Where(krebsmeldung => ((krebsmeldung.ICD10Code.Equals(used_ICD10s[0]) || krebsmeldung.ICD10Code.Equals(used_ICD10s[1]) || krebsmeldung.ICD10Code.Equals(used_ICD10s[2])) && (krebsmeldung.Jahr >= 1983 && krebsmeldung.Jahr <= 1984))).ToList();
             BarChart(barChartRelevant);
 
             List<int> jahre = new List<int> { 1983, 1984, 1985, 1986, 1987, 1988, 1989 };
-            List<int> anzahlVonC00 = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals(used_ICD10s[0]) && (krebsmeldung.Jahr >= 1983 && krebsmeldung.Jahr <= 1989)).ToList().MySum(jahre);
-            List<int> anzahlVonC01 = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals(used_ICD10s[1]) && (krebsmeldung.Jahr >= 1983 && krebsmeldung.Jahr <= 1989)).ToList().MySum(jahre);
+            List<int> anzahlVonC00 = alleKrebsmeldungen.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals(used_ICD10s[0]) && (krebsmeldung.Jahr >= 1983 && krebsmeldung.Jahr <= 1989)).ToList().MySum(jahre);
+            List<int> anzahlVonC01 = alleKrebsmeldungen.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals(used_ICD10s[1]) && (krebsmeldung.Jahr >= 1983 && krebsmeldung.Jahr <= 1989)).ToList().MySum(jahre);
             List<List<int>> anzahls = new List<List<int>> { anzahlVonC00, anzahlVonC01 };
             AreaChart(anzahls);
 
 
-            List<Krebsmeldung> geoHeatMapRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals(used_ICD10s[0]) && krebsmeldung.Jahr == 1994).ToList();
+            List<Krebsmeldung> geoHeatMapRelevant = alleKrebsmeldungen.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals(used_ICD10s[0]) && krebsmeldung.Jahr == 1994).ToList();
             GeoMap(geoHeatMapRelevant);
 
 
-            List<Krebsmeldung> pieChart2Relevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals(used_ICD10s[0]) && krebsmeldung.Bundesland.Equals("Oberösterreich")).ToList();
+            List<Krebsmeldung> pieChart2Relevant = alleKrebsmeldungen.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals(used_ICD10s[0]) && krebsmeldung.Bundesland.Equals("Oberösterreich")).ToList();
             PieChart2(pieChart2Relevant);
 
 
-            jahreForLiveChart = list_krebsmeldung.Select(x => x.Jahr).Distinct().ToList();
-            List<int> liveChartRelevantC00 = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals(used_ICD10s[0])).ToList().MySum(jahreForLiveChart);
+            jahreForLiveChart = alleKrebsmeldungen.Select(x => x.Jahr).Distinct().ToList();
+            List<int> liveChartRelevantC00 = alleKrebsmeldungen.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals(used_ICD10s[0])).ToList().MySum(jahreForLiveChart);
             LiveChart(liveChartRelevantC00, jahreForLiveChart);
 
-            Table(list_krebsmeldung);
+            Table(alleKrebsmeldungen);
+        }
+        private void FillTitles(List<string> list)
+        {
+            lblTitleGeoHeatMap.Content = $"{list[0]} 1994 in Ö";
+            lblTitleNegativStackedChart.Content = $"Vergleich Männer und Frauen: {list[0]}";
+            lblTitlePieChart.Content = $"{list[0]} Verteilung auf die Bundesländer";
+            lblTitleAreaChart.Content = $"{list[0]} und {list[1]} im Jahr 1983 - 1989";
+            lblTitlePieChart2.Content = $"{list[0]} in Oberösterreich über die Jahre";
+            lblTitleGridView.Content = "Alle Einträge in der DB";
+            lblTitleBarChart.Content = $"{list[0]}, {list[1]}, {list[2]} in den Jahren 1994 und 1995";
+            lblTitleLiveChart.Content = $"{list[0]} über die Jahre";
         }
 
         #region Table
@@ -207,24 +281,7 @@ namespace Krebsregister
             {
                 bundeslaenderCounter[krebsmeldung.Bundesland] += krebsmeldung.Anzahl;
             }
-            pieChart1.Series.Clear();
-
-            SeriesCollection series = new SeriesCollection();
-
-            foreach (KeyValuePair<string, int> bundesland in bundeslaenderCounter)
-            {
-                series.Add(new PieSeries() { Title = bundesland.Key, Values = new ChartValues<double> { bundesland.Value } });
-            }
-            pieChart1.Series = series;
-
-            var tooltip = new DefaultTooltip
-            {
-                SelectionMode = TooltipSelectionMode.SharedYValues,
-                IsEnabled = false
-
-            };
-
-            pieChart1.DataTooltip = tooltip;
+            FillPieChart<string>(pieChart1, bundeslaenderCounter);
 
         }
 
@@ -239,6 +296,7 @@ namespace Krebsregister
             var selectedSeries = (PieSeries)chartpoint.SeriesView;
             selectedSeries.PushOut = 8;
         }
+
 
         #endregion
 
@@ -258,15 +316,8 @@ namespace Krebsregister
                 berichtsJahrCounter[krebsmeldung.Jahr] += krebsmeldung.Anzahl;
 
             }
-            pieChart2.Series.Clear();
-
-            SeriesCollection series = new SeriesCollection();
-
-            foreach (KeyValuePair<int, int> berichtsJahr in berichtsJahrCounter)
-            {
-                series.Add(new PieSeries() { Title = "" + berichtsJahr.Key, Values = new ChartValues<double> { berichtsJahr.Value } });
-            }
-            pieChart2.Series = series;
+            FillPieChart(pieChart2, berichtsJahrCounter);
+            
         }
 
         #endregion
@@ -443,6 +494,7 @@ namespace Krebsregister
 
         #region LiveChart
 
+        public List<int> jahreForLiveChart { get; set; }
         public int MinValueX { get; set; }
         public int MaxValueX { get; set; }
 
@@ -523,19 +575,22 @@ namespace Krebsregister
 
         #endregion
 
+        
+
+        #endregion
+
         #region Krebsmeldung
 
         public MainWindow(Krebsmeldung neueKrebsmeldung, bool erstellen)
         {
 
             InitializeComponent();
-            
-            GetPaths();
 
             lblException.Content = "";
             if (erstellen)
             {
                 //Bestätigungs-Fenster
+                GetPaths();
                 DatabaseMethods.InsertNewMeldung(neueKrebsmeldung, constring);
             }
             else
@@ -574,70 +629,96 @@ namespace Krebsregister
                 };
                 Window KrebsmeldungConfirm = new KrebsmeldungConfirm(neueKrebsmeldung);
                 KrebsmeldungConfirm.Show();
+                alleKrebsmeldungen = DatabaseMethods.GetDataFromDatabase_Eintrag(constring);
                 FillCharts(new List<string> { "C00", "C01", "C02"});
                 this.Close();
             }
         }
 
-        private void FillComboBoxes()
-        {
-            NK_cbKrebsart.ItemsSource = DatabaseMethods.GetDataFromDatabase_ICD10(constring);
-            NK_cbGeschlecht.ItemsSource = DatabaseMethods.GetDataFromDatabase_Geschlecht(constring);
-            NK_cbBundesland.ItemsSource = DatabaseMethods.GetDataFromDatabase_Bundesland(constring);
-
-            ES_cboKrebsart.ItemsSource = DatabaseMethods.GetDataFromDatabase_ICD10(constring);
-            ES_cboGeschlecht.ItemsSource = DatabaseMethods.GetDataFromDatabase_Geschlecht (constring);
-            ES_cboBundesland.ItemsSource = DatabaseMethods.GetDataFromDatabase_Bundesland(constring);
-            ES_cboBerichtsjahr.ItemsSource = DatabaseMethods.GetDataFromDatabase_Eintrag(constring).Select(x => x.Jahr).Distinct().ToList();
-        }
 
 
         #endregion
 
-        private void DatenLaden_Click(object sender, RoutedEventArgs e)
+        #region Erweiterte Statistik
+
+
+        private void rbZeitpunkt_Checked(object sender, RoutedEventArgs e)
         {
-            DatabaseMethods.FillDatabase(constring);
+            if(gbZeitpunkt != null) gbZeitpunkt.IsEnabled = true;
+            if(gbZeitraum != null) gbZeitraum.IsEnabled = false;
         }
 
-        private void ErweiterteStatistik_Loaded(object sender, RoutedEventArgs e)
+        private void rbZeitraum_Checked(object sender, RoutedEventArgs e)
         {
+            if (gbZeitpunkt != null) gbZeitpunkt.IsEnabled = false;
+            if (gbZeitraum != null) gbZeitraum.IsEnabled = true;
+        }
+
+        private void Aktualisieren(object sender, RoutedEventArgs e)
+        {
+            //string[] krebsartICD10 = ES_cboKrebsart.SelectedItem.ToString().Split(" - ");
+            List<string> icd10s = new List<string>();
+            icd10s.Add("C00");
+            icd10s.Add("C01");
+            icd10s.Add("C02");
+            List<string> bundeslaender = new List<string>();
+            bundeslaender.Add("Wien");
+            bundeslaender.Add("Oberösterreich");
+
+            List<string> berichtsjahre = new List<string>();
+            berichtsjahre.Add("1993");
+            berichtsjahre.Add("1994");
+
+            List<string> geschelcht = new List<string>();
+            geschelcht.Add("männlich");
+            //////string geschlecht = ES_cboGeschlecht.SelectedItem.ToString();
+            //////string bundesland = ES_cboBundesland.SelectedItem.ToString();
+            //////string zeitpunkt = rbZeitpunkt.IsChecked == true ? zeitpunkt = ES_cboBerichtsjahr.SelectedItem.ToString() : "";
+
+            List<Krebsmeldung> list_krebsmeldung = DatabaseMethods.GetDataFromDatabase_Eintrag(constring);
+
+
+
+            List<Krebsmeldung> gefilterte_krebsmeldung = list_krebsmeldung.Where(x => icd10s.Contains(x.ICD10Code)).ToList()
+                                                                            .Where(x => bundeslaender.Contains(x.Bundesland)).ToList()
+                                                                            .Where(x => berichtsjahre.Contains(x.Jahr.ToString())).ToList()
+                                                                            .Where(x => geschelcht.Contains(x.Geschlecht)).ToList();
+            int i = 0;
+            CreateFilteredCharts(gefilterte_krebsmeldung);
 
         }
 
-        private void GetXMLPath()
+        private void CreateFilteredCharts(List<Krebsmeldung> gefilterte_krebsmeldung)
         {
-            string path = Assembly.GetExecutingAssembly().Location;
-            while (!path.EndsWith("Krebsregister"))
+            PieChart filteredPieChart = new PieChart();
+            filteredPieChart.LegendLocation = LegendLocation.Bottom;
+            filteredPieChart.Height = 300;
+            filteredPieChart.Width = 300;
+            
+            filteredCharts.Children.Add(filteredPieChart);
+            
+
+            Dictionary<string, int> bundeslaenderCounter = new Dictionary<string, int>();
+
+            bundeslaenderCounter.Add("Burgenland", 0);
+            bundeslaenderCounter.Add("Kärnten", 0);
+            bundeslaenderCounter.Add("Niederösterreich", 0);
+            bundeslaenderCounter.Add("Oberösterreich", 0);
+            bundeslaenderCounter.Add("Salzburg", 0);
+            bundeslaenderCounter.Add("Steiermark", 0);
+            bundeslaenderCounter.Add("Tirol", 0);
+            bundeslaenderCounter.Add("Vorarlberg", 0);
+            bundeslaenderCounter.Add("Wien", 0);
+
+            foreach (Krebsmeldung krebsmeldung in gefilterte_krebsmeldung)
             {
-                path = Directory.GetParent(path).ToString();
+                bundeslaenderCounter[krebsmeldung.Bundesland] += krebsmeldung.Anzahl;
             }
+            FillPieChart<string>(filteredPieChart, bundeslaenderCounter);
 
-            path_xml = path + "\\Dateien\\Pfade.xml";
+
         }
 
-        private void Beenden_Click(object sender, RoutedEventArgs e)
-        {
-            Application.Current.Shutdown();
-        }
-
-        private void FillComboBoxImMenu()
-        {
-            cb_selectICD10Dashboard.ItemsSource = DatabaseMethods.GetDataFromDatabase_ICD10(constring);
-            cb_selectICD10Dashboard.SelectedIndex = 0;
-
-            cb_selectMultipleICD10Dashboard.ItemsSource = DatabaseMethods.GetDataFromDatabase_ICD10(constring);
-        }
-
-
-        private void btn_filterdashboard_selected_Click(object sender, RoutedEventArgs e)
-        {
-            List<string> list_icd10s = new List<string>();
-            string item = cb_selectICD10Dashboard.SelectedItem.ToString();
-            string[] items = item.Split("-");
-            list_icd10s.Add(items[0]);
-            list_icd10s.Add("C01");
-            list_icd10s.Add("C02");
-            FillCharts(list_icd10s);
-        }
+        #endregion
     }
 }
