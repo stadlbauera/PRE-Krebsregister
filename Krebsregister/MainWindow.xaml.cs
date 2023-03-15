@@ -39,7 +39,7 @@ namespace Krebsregister
 
         public string path_rest_icd10 { get; set; }
 
-        public string path_xml { get; set; } 
+        public string path_xml { get; set; }
 
         public MainWindow()
         {
@@ -53,11 +53,11 @@ namespace Krebsregister
             lblTitleGridView.Content = "Alle Einträge in der DB";
             lblTitleBarChart.Content = "C00, C01, C01 in den Jahren 1994 und 1995";
             lblTitleLiveChart.Content = "C00 über die Jahre";
-            
+
             DataContext = this;
 
             GetXMLPath();
-            
+
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -72,13 +72,13 @@ namespace Krebsregister
             FillComboBoxImMenu();
         }
 
-        
+
         private void GetPaths()
         {
             XmlDocument xml = new XmlDocument();
             xml.Load(path_xml);
 
-            XmlNodeList nodeList = xml.GetElementsByTagName("Lili");
+            XmlNodeList nodeList = xml.GetElementsByTagName("Vali");
             foreach (XmlNode personalNode in nodeList)
             {
                 foreach (XmlNode targetNode in personalNode.ChildNodes)
@@ -392,7 +392,7 @@ namespace Krebsregister
         #endregion
 
         #region BarChart
-       
+
         public string[] LabelsBC { get; set; }
         private void BarChart(List<Krebsmeldung> show)
         {
@@ -429,7 +429,7 @@ namespace Krebsregister
                 });
             }
 
-            LabelsBC = new string[labels.Count];       
+            LabelsBC = new string[labels.Count];
             for (int i = 0; i < LabelsBC.Length; i++)
             {
                 LabelsBC[i] = labels[i].ToString();
@@ -450,7 +450,7 @@ namespace Krebsregister
 
         public Func<int, string> XFormatterLC { get; set; }
 
-        
+
 
         private void LiveChart(List<int> anzahls, List<int> jahre)
         {
@@ -465,7 +465,7 @@ namespace Krebsregister
             {
                 Values = values
             });
-            
+
 
             LabelsLC = jahre.Select(j => j.ToString()).ToArray();
 
@@ -529,7 +529,7 @@ namespace Krebsregister
         {
 
             InitializeComponent();
-            
+
             GetPaths();
 
             lblException.Content = "";
@@ -574,7 +574,7 @@ namespace Krebsregister
                 };
                 Window KrebsmeldungConfirm = new KrebsmeldungConfirm(neueKrebsmeldung);
                 KrebsmeldungConfirm.Show();
-                FillCharts(new List<string> { "C00", "C01", "C02"});
+                FillCharts(new List<string> { "C00", "C01", "C02" });
                 this.Close();
             }
         }
@@ -586,7 +586,7 @@ namespace Krebsregister
             NK_cbBundesland.ItemsSource = DatabaseMethods.GetDataFromDatabase_Bundesland(constring);
 
             ES_cboKrebsart.ItemsSource = DatabaseMethods.GetDataFromDatabase_ICD10(constring);
-            ES_cboGeschlecht.ItemsSource = DatabaseMethods.GetDataFromDatabase_Geschlecht (constring);
+            ES_cboGeschlecht.ItemsSource = DatabaseMethods.GetDataFromDatabase_Geschlecht(constring);
             ES_cboBundesland.ItemsSource = DatabaseMethods.GetDataFromDatabase_Bundesland(constring);
             ES_cboBerichtsjahr.ItemsSource = DatabaseMethods.GetDataFromDatabase_Eintrag(constring).Select(x => x.Jahr).Distinct().ToList();
         }
