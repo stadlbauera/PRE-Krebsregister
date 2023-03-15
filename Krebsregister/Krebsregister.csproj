@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="Dirkster.NumericUpDownLib" Version="3.3.1" />
     <PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
+    <PackageReference Include="Sdl.MultiSelectComboBox" Version="1.0.61" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
   </ItemGroup>
 

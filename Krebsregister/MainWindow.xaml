@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         xmlns:num="clr-namespace:NumericUpDownLib;assembly=NumericUpDownLib"
+        xmlns:sdlCB="http://schemas.sdl.com/xaml"
         xmlns:local="clr-namespace:Krebsregister"
         x:Class="Krebsregister.MainWindow"
         mc:Ignorable="d"
@@ -18,17 +19,29 @@
         </Grid.RowDefinitions>
         <Menu x:Name="menu"  Grid.Row="0">
             <MenuItem Header="File">
-                <MenuItem x:Name="erstellen" Header="Erstellen" />
-                <MenuItem x:Name="DatenLaden" Header="Daten laden" Click="DatenLaden_Click"/>
+                <MenuItem x:Name="DatenLaden" Header="Daten aktualisieren" Click="DatenLaden_Click"/>
                 <Separator/>
-                <MenuItem Header="Beenden" />
+                <MenuItem Header="Beenden" Click="Beenden_Click"/>
+            </MenuItem>
+            <MenuItem Header="Dashboardfilter">
+                <WrapPanel>
+                    <Label Content="aktuelle ICD10"/>
+                    <ComboBox x:Name="cb_selectICD10Dashboard"></ComboBox>
+                </WrapPanel>
+                <Separator/>
+                <WrapPanel>
+                    <Label Content="Vergleich mit ICD10s"/>
+                    <sdlCB:MultiSelectComboBox Name="cb_selectMultipleICD10Dashboard"/>
+                </WrapPanel>
+                <Separator/>
+                <Button x:Name="btn_filterdashboard_selected" Content="Filter" Click="btn_filterdashboard_selected_Click" Width="50"/>
             </MenuItem>
         </Menu>
 
         <TabControl Grid.Row="1">
             <!--DASHBOARD********************************************************************************************************************************************************************************-->
             <TabItem Header="Dashboard" Height="22" Margin="0,0,0,0" VerticalAlignment="Top">
-                <Grid>
+                <Grid x:Name="DashboardGrid">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
@@ -186,10 +199,10 @@
                             <Label Content="Bundesland:" Grid.Row="0" Grid.Column="2"/>
                             <RadioButton Name="rbZeitpunkt" Grid.Row="0" Grid.Column="3" Content="Zeitpunkt" VerticalAlignment="Center"/>
                             <RadioButton Name="rbZeitraum" Grid.Row="0" Grid.Column="4" Content="Zeitraum" VerticalAlignment="Center" Grid.ColumnSpan="2"/>
-                            <ComboBox Name="ES_cboKrebsart" Margin="5,10,5,10" Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"/>
-                            <ComboBox Name="ES_cboGeschlecht" Margin="5,10,5,10" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2"/>
-                            <ComboBox Name="ES_cboBundesland" Margin="5,10,5,10" Grid.Row="1" Grid.Column="2" Grid.RowSpan="2"/>
-                            <ComboBox Name="ES_cboBerichtsjahr" Margin="5,10,5,10" Grid.Row="1" Grid.Column="3" Grid.RowSpan="2"/>
+                            <sdlCB:MultiSelectComboBox Name="ES_cboKrebsart" Margin="5,10,5,10" Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"/>
+                            <sdlCB:MultiSelectComboBox Name="ES_cboGeschlecht" Margin="5,10,5,10" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2"/>
+                            <sdlCB:MultiSelectComboBox Name="ES_cboBundesland" Margin="5,10,5,10" Grid.Row="1" Grid.Column="2" Grid.RowSpan="2"/>
+                            <sdlCB:MultiSelectComboBox Name="ES_cboBerichtsjahr" Margin="5,10,5,10" Grid.Row="1" Grid.Column="3" Grid.RowSpan="2"/>
                             <Label Content="von:" Grid.Row="1" Grid.Column="4"/>
                             <Label Content="bis:" Grid.Row="2" Grid.Column="4"/>
                         </Grid>

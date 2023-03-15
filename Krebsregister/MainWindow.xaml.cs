@@ -57,6 +57,7 @@ namespace Krebsregister
             DataContext = this;
 
             GetXMLPath();
+            
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -66,16 +67,18 @@ namespace Krebsregister
 
             nudAnzahl.MinValue = 1;
 
-            FillCharts();
+            FillCharts(new List<string> { "C00", "C01", "C02"});
             FillComboBoxes();
+            FillComboBoxImMenu();
         }
 
+        
         private void GetPaths()
         {
             XmlDocument xml = new XmlDocument();
             xml.Load(path_xml);
 
-            XmlNodeList nodeList = xml.GetElementsByTagName("Anna");
+            XmlNodeList nodeList = xml.GetElementsByTagName("Lili");
             foreach (XmlNode personalNode in nodeList)
             {
                 foreach (XmlNode targetNode in personalNode.ChildNodes)
@@ -90,39 +93,38 @@ namespace Krebsregister
 
         public List<int> jahreForLiveChart { get; set; }
 
-        private void FillCharts()
+        private void FillCharts(List<string> used_ICD10s)
         {
             GetPaths();
-            //DatabaseMethods.FillDatabase(constring);
             List<Krebsmeldung> list_krebsmeldung = DatabaseMethods.GetDataFromDatabase_Eintrag(constring);
 
-            List<Krebsmeldung> pieChartRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00")).ToList();
+            List<Krebsmeldung> pieChartRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals(used_ICD10s[0])).ToList();
             PieChart(pieChartRelevant);
 
-            List<Krebsmeldung> negativStackChartRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00")).ToList();
+            List<Krebsmeldung> negativStackChartRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals(used_ICD10s[0])).ToList();
             NegativStackChart(negativStackChartRelevant);
 
 
-            List<Krebsmeldung> barChartRelevant = list_krebsmeldung.Where(krebsmeldung => ((krebsmeldung.ICD10Code.Equals("C00") || krebsmeldung.ICD10Code.Equals("C01") || krebsmeldung.ICD10Code.Equals("C02")) && (krebsmeldung.Jahr >= 1983 && krebsmeldung.Jahr <= 1984))).ToList();
+            List<Krebsmeldung> barChartRelevant = list_krebsmeldung.Where(krebsmeldung => ((krebsmeldung.ICD10Code.Equals(used_ICD10s[0]) || krebsmeldung.ICD10Code.Equals(used_ICD10s[1]) || krebsmeldung.ICD10Code.Equals(used_ICD10s[2])) && (krebsmeldung.Jahr >= 1983 && krebsmeldung.Jahr <= 1984))).ToList();
             BarChart(barChartRelevant);
 
             List<int> jahre = new List<int> { 1983, 1984, 1985, 1986, 1987, 1988, 1989 };
-            List<int> anzahlVonC00 = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00") && (krebsmeldung.Jahr >= 1983 && krebsmeldung.Jahr <= 1989)).ToList().MySum(jahre);
-            List<int> anzahlVonC01 = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C01") && (krebsmeldung.Jahr >= 1983 && krebsmeldung.Jahr <= 1989)).ToList().MySum(jahre);
+            List<int> anzahlVonC00 = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals(used_ICD10s[0]) && (krebsmeldung.Jahr >= 1983 && krebsmeldung.Jahr <= 1989)).ToList().MySum(jahre);
+            List<int> anzahlVonC01 = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals(used_ICD10s[1]) && (krebsmeldung.Jahr >= 1983 && krebsmeldung.Jahr <= 1989)).ToList().MySum(jahre);
             List<List<int>> anzahls = new List<List<int>> { anzahlVonC00, anzahlVonC01 };
             AreaChart(anzahls);
 
 
-            List<Krebsmeldung> geoHeatMapRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00") && krebsmeldung.Jahr == 1994).ToList();
+            List<Krebsmeldung> geoHeatMapRelevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals(used_ICD10s[0]) && krebsmeldung.Jahr == 1994).ToList();
             GeoMap(geoHeatMapRelevant);
 
 
-            List<Krebsmeldung> pieChart2Relevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00") && krebsmeldung.Bundesland.Equals("Oberösterreich")).ToList();
+            List<Krebsmeldung> pieChart2Relevant = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals(used_ICD10s[0]) && krebsmeldung.Bundesland.Equals("Oberösterreich")).ToList();
             PieChart2(pieChart2Relevant);
 
 
             jahreForLiveChart = list_krebsmeldung.Select(x => x.Jahr).Distinct().ToList();
-            List<int> liveChartRelevantC00 = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals("C00")).ToList().MySum(jahreForLiveChart);
+            List<int> liveChartRelevantC00 = list_krebsmeldung.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals(used_ICD10s[0])).ToList().MySum(jahreForLiveChart);
             LiveChart(liveChartRelevantC00, jahreForLiveChart);
 
             Table(list_krebsmeldung);
@@ -572,7 +574,7 @@ namespace Krebsregister
                 };
                 Window KrebsmeldungConfirm = new KrebsmeldungConfirm(neueKrebsmeldung);
                 KrebsmeldungConfirm.Show();
-                FillCharts();
+                FillCharts(new List<string> { "C00", "C01", "C02"});
                 this.Close();
             }
         }
@@ -586,7 +588,7 @@ namespace Krebsregister
             ES_cboKrebsart.ItemsSource = DatabaseMethods.GetDataFromDatabase_ICD10(constring);
             ES_cboGeschlecht.ItemsSource = DatabaseMethods.GetDataFromDatabase_Geschlecht (constring);
             ES_cboBundesland.ItemsSource = DatabaseMethods.GetDataFromDatabase_Bundesland(constring);
-            ES_cboBerichtsjahr.ItemsSource = DatabaseMethods.GetDataFromDatabase_Eintrag(constring).Select(x => x.Jahr).Distinct();
+            ES_cboBerichtsjahr.ItemsSource = DatabaseMethods.GetDataFromDatabase_Eintrag(constring).Select(x => x.Jahr).Distinct().ToList();
         }
 
 
@@ -611,6 +613,31 @@ namespace Krebsregister
             }
 
             path_xml = path + "\\Dateien\\Pfade.xml";
+        }
+
+        private void Beenden_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+        private void FillComboBoxImMenu()
+        {
+            cb_selectICD10Dashboard.ItemsSource = DatabaseMethods.GetDataFromDatabase_ICD10(constring);
+            cb_selectICD10Dashboard.SelectedIndex = 0;
+
+            cb_selectMultipleICD10Dashboard.ItemsSource = DatabaseMethods.GetDataFromDatabase_ICD10(constring);
+        }
+
+
+        private void btn_filterdashboard_selected_Click(object sender, RoutedEventArgs e)
+        {
+            List<string> list_icd10s = new List<string>();
+            string item = cb_selectICD10Dashboard.SelectedItem.ToString();
+            string[] items = item.Split("-");
+            list_icd10s.Add(items[0]);
+            list_icd10s.Add("C01");
+            list_icd10s.Add("C02");
+            FillCharts(list_icd10s);
         }
     }
 }
