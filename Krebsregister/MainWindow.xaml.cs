@@ -90,7 +90,7 @@ namespace Krebsregister
             XmlDocument xml = new XmlDocument();
             xml.Load(path_xml);
 
-            XmlNodeList nodeList = xml.GetElementsByTagName("Anna");
+            XmlNodeList nodeList = xml.GetElementsByTagName("Lili");
             foreach (XmlNode personalNode in nodeList)
             {
                 foreach (XmlNode targetNode in personalNode.ChildNodes)
@@ -134,16 +134,7 @@ namespace Krebsregister
 
         #region Menue
 
-        private void btn_filterdashboard_selected_Click(object sender, RoutedEventArgs e)
-        {
-            List<string> list_icd10s = new List<string>();
-            string item = cb_selectICD10Dashboard.SelectedItem.ToString();
-            string[] items = item.Split(" - ");
-            list_icd10s.Add(items[0]);
-            list_icd10s.Add("C01");
-            list_icd10s.Add("C02");
-            FillCharts(list_icd10s);
-        }
+        
         private void DatenLaden_Click(object sender, RoutedEventArgs e)
         {
             DatabaseMethods.FillDatabase(constring);
@@ -694,9 +685,9 @@ namespace Krebsregister
             filteredPieChart.LegendLocation = LegendLocation.Bottom;
             filteredPieChart.Height = 300;
             filteredPieChart.Width = 300;
-            
+
             filteredCharts.Children.Add(filteredPieChart);
-            
+
 
             Dictionary<string, int> bundeslaenderCounter = new Dictionary<string, int>();
 
@@ -710,7 +701,7 @@ namespace Krebsregister
             bundeslaenderCounter.Add("Vorarlberg", 0);
             bundeslaenderCounter.Add("Wien", 0);
 
-
+        }
         private void FilterDashboard_Click(object sender, RoutedEventArgs e)
         {
             Window filterDWindow = new FilterDashboardWindow(DatabaseMethods.GetDataFromDatabase_ICD10(constring));
