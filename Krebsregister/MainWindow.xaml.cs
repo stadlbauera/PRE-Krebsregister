@@ -443,7 +443,7 @@ namespace Krebsregister
         #endregion
 
         #region BarChart
-       
+
         public string[] LabelsBC { get; set; }
         private void BarChart(List<Krebsmeldung> show)
         {
@@ -480,7 +480,7 @@ namespace Krebsregister
                 });
             }
 
-            LabelsBC = new string[labels.Count];       
+            LabelsBC = new string[labels.Count];
             for (int i = 0; i < LabelsBC.Length; i++)
             {
                 LabelsBC[i] = labels[i].ToString();
@@ -502,7 +502,7 @@ namespace Krebsregister
 
         public Func<int, string> XFormatterLC { get; set; }
 
-        
+
 
         private void LiveChart(List<int> anzahls, List<int> jahre)
         {
@@ -517,7 +517,7 @@ namespace Krebsregister
             {
                 Values = values
             });
-            
+
 
             LabelsLC = jahre.Select(j => j.ToString()).ToArray();
 
