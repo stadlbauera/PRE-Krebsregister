@@ -134,11 +134,6 @@ namespace Krebsregister
 
         #region Menue
 
-<<<<<<< HEAD
-
-=======
-        
->>>>>>> d11f408eed43164deb7061fd0818de0e1bb3bf39
         private void DatenLaden_Click(object sender, RoutedEventArgs e)
         {
             DatabaseMethods.FillDatabase(constring);
@@ -720,8 +715,6 @@ namespace Krebsregister
 
             
         }
-
-
 
         #endregion
 
