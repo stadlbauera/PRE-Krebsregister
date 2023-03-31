@@ -90,7 +90,7 @@ namespace Krebsregister
             XmlDocument xml = new XmlDocument();
             xml.Load(path_xml);
 
-            XmlNodeList nodeList = xml.GetElementsByTagName("Lili");
+            XmlNodeList nodeList = xml.GetElementsByTagName("Anna");
             foreach (XmlNode personalNode in nodeList)
             {
                 foreach (XmlNode targetNode in personalNode.ChildNodes)
@@ -126,6 +126,58 @@ namespace Krebsregister
             };
 
             chart.DataTooltip = tooltip;
+        }
+
+        public void FillGeoMap(GeoMap geomap, List<Krebsmeldung> krebsmedlungentoShow)
+        {
+            Dictionary<string, double> bundeslaenderCounter = new Dictionary<string, double>();
+            Dictionary<string, string> bundeslaenderIDs = new Dictionary<string, string>()
+            {
+                {"Vorarlberg", "2273"},
+                {"Burgenland","2274"},
+                {"Steiermark", "2275"},
+                {"Kärnten","2276"},
+                {"Oberösterreich", "2277"},
+                {"Salzburg", "2278" },
+                {"Tirol", "2280"},
+                {"Niederösterreich", "2281"},
+                {"Wien", "2282"},
+            };
+
+            foreach (Krebsmeldung krebsmeldung in krebsmedlungentoShow)
+            {
+                if (!bundeslaenderCounter.ContainsKey(bundeslaenderIDs[krebsmeldung.Bundesland]))  bundeslaenderCounter.Add(bundeslaenderIDs[krebsmeldung.Bundesland], 0);
+                bundeslaenderCounter[bundeslaenderIDs[krebsmeldung.Bundesland]] += krebsmeldung.Anzahl;
+            }
+            geomap.HeatMap = bundeslaenderCounter;
+
+            //var tooltip = new DefaultTooltip
+            //{
+            //    SelectionMode = TooltipSelectionMode.Auto,
+            //    IsEnabled = false
+            //};
+
+            //geomap.ToolTip = tooltip;
+        }
+
+        public void FillBarChart<T>(CartesianChart barChart, Dictionary<string, Dictionary<T, int>> chartValues)
+        {
+            SeriesCollection seriesCollection = new SeriesCollection();
+            foreach (KeyValuePair<string, Dictionary<T, int>> icd10 in chartValues)
+            {
+                ChartValues<int> cv = new ChartValues<int>();
+                foreach (KeyValuePair<T, int> jahr in icd10.Value)
+                {
+                    cv.Add(jahr.Value);
+                }
+
+                seriesCollection.Add(new ColumnSeries
+                {
+                    Title = icd10.Key.ToString(),
+                    Values = cv
+                });
+            }
+            barChart.Series = seriesCollection;
         }
 
         #endregion
@@ -170,7 +222,7 @@ namespace Krebsregister
 
 
             List<Krebsmeldung> geoHeatMapRelevant = alleKrebsmeldungen.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals(used_ICD10s[0]) && krebsmeldung.Jahr == 1994).ToList();
-            GeoMap(geoHeatMapRelevant);
+            FillGeoMap(geoMap, geoHeatMapRelevant);
 
 
             List<Krebsmeldung> pieChart2Relevant = alleKrebsmeldungen.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals(used_ICD10s[0]) && krebsmeldung.Bundesland.Equals("Oberösterreich")).ToList();
@@ -209,45 +261,6 @@ namespace Krebsregister
 
         #endregion
 
-        #region GeoMap
-
-
-        public void GeoMap(List<Krebsmeldung> show)
-        {
-            Dictionary<string, double> bundeslaenderCounter = new Dictionary<string, double>();
-            Dictionary<string, string> bundeslaenderIDs = new Dictionary<string, string>()
-            {
-                {"Vorarlberg", "2273"},
-                {"Burgenland","2274"},
-                {"Steiermark", "2275"},
-                {"Kärnten","2276"},
-                {"Oberösterreich", "2277"},
-                {"Salzburg", "2278" },
-                {"Tirol", "2280"},
-                {"Niederösterreich", "2281"},
-                {"Wien", "2282"},
-            };
-
-            foreach (Krebsmeldung krebsmeldung in show)
-            {
-                if (!bundeslaenderCounter.ContainsKey(bundeslaenderIDs[krebsmeldung.Bundesland]))
-                {
-                    bundeslaenderCounter.Add(bundeslaenderIDs[krebsmeldung.Bundesland], 0);
-                }
-                bundeslaenderCounter[bundeslaenderIDs[krebsmeldung.Bundesland]] += krebsmeldung.Anzahl;
-            }
-            geoMap.HeatMap = bundeslaenderCounter;
-
-            var tooltip = new DefaultTooltip
-            {
-                SelectionMode = TooltipSelectionMode.Auto,
-                IsEnabled = false
-            };
-
-            geoMap.ToolTip = tooltip;
-        }
-
-        #endregion
 
         #region PieChart Bundesländer C00
         public Func<ChartPoint, string> PointLabel { get; set; }
@@ -258,18 +271,9 @@ namespace Krebsregister
             //dazu muss man die liste (jede krebsmeldugn) durchgehen und das bundesland herausfinden und den counter um die anzahl erhöhen
             Dictionary<string, int> bundeslaenderCounter = new Dictionary<string, int>();
 
-            bundeslaenderCounter.Add("Burgenland", 0);
-            bundeslaenderCounter.Add("Kärnten", 0);
-            bundeslaenderCounter.Add("Niederösterreich", 0);
-            bundeslaenderCounter.Add("Oberösterreich", 0);
-            bundeslaenderCounter.Add("Salzburg", 0);
-            bundeslaenderCounter.Add("Steiermark", 0);
-            bundeslaenderCounter.Add("Tirol", 0);
-            bundeslaenderCounter.Add("Vorarlberg", 0);
-            bundeslaenderCounter.Add("Wien", 0);
-
             foreach (Krebsmeldung krebsmeldung in show)
             {
+                if (!bundeslaenderCounter.ContainsKey(krebsmeldung.Bundesland)) bundeslaenderCounter.Add(krebsmeldung.Bundesland, 0);
                 bundeslaenderCounter[krebsmeldung.Bundesland] += krebsmeldung.Anzahl;
             }
             FillPieChart<string>(pieChart1, bundeslaenderCounter);
@@ -455,31 +459,13 @@ namespace Krebsregister
                 chartValues[krebsmeldung.ICD10Code][krebsmeldung.Jahr] += krebsmeldung.Anzahl;
             }
 
-            SeriesCollection seriesCollection = new SeriesCollection();
-            foreach (KeyValuePair<string, Dictionary<int, int>> icd10 in chartValues)
-            {
-                ChartValues<int> cv = new ChartValues<int>();
-                foreach (KeyValuePair<int, int> jahr in icd10.Value)
-                {
-                    cv.Add(jahr.Value);
-                }
-
-                seriesCollection.Add(new ColumnSeries
-                {
-                    Title = "" + icd10.Key,
-                    Values = cv
-                });
-            }
+            FillBarChart(barChart, chartValues);
 
             LabelsBC = new string[labels.Count];
             for (int i = 0; i < LabelsBC.Length; i++)
             {
                 LabelsBC[i] = labels[i].ToString();
             };
-
-            barChart.Series = seriesCollection;
-
-            DataContext = this;
         }
         #endregion
 
@@ -674,37 +660,154 @@ namespace Krebsregister
                                                                             .Where(x => bundeslaender.Contains(x.Bundesland)).ToList()
                                                                             .Where(x => berichtsjahre.Contains(x.Jahr.ToString())).ToList()
                                                                             .Where(x => geschelcht.Contains(x.Geschlecht)).ToList();
-            int i = 0;
             CreateFilteredCharts(gefilterte_krebsmeldung);
 
         }
 
+        public string[] LabelsFBCBundesland { get; set; }
+        public string[] LabelsFBCGeschlecht { get; set; }
+        public string[] LabelsFBCICD10Code { get; set; }
+        public string[] LabelsFBCJahr { get; set; }
         private void CreateFilteredCharts(List<Krebsmeldung> gefilterte_krebsmeldung)
         {
-            PieChart filteredPieChart = new PieChart();
-            filteredPieChart.LegendLocation = LegendLocation.Bottom;
-            filteredPieChart.Height = 300;
-            filteredPieChart.Width = 300;
+            //PieChart filteredPieChart = new PieChart();
+            //filteredPieChart.LegendLocation = LegendLocation.Bottom;
+            //filteredPieChart.Height = 300;
+            //filteredPieChart.Width = 300;
 
-            filteredCharts.Children.Add(filteredPieChart);
+            //filteredCharts.Children.Add(filteredPieChart);
 
 
             Dictionary<string, int> bundeslaenderCounter = new Dictionary<string, int>();
 
-            bundeslaenderCounter.Add("Burgenland", 0);
-            bundeslaenderCounter.Add("Kärnten", 0);
-            bundeslaenderCounter.Add("Niederösterreich", 0);
-            bundeslaenderCounter.Add("Oberösterreich", 0);
-            bundeslaenderCounter.Add("Salzburg", 0);
-            bundeslaenderCounter.Add("Steiermark", 0);
-            bundeslaenderCounter.Add("Tirol", 0);
-            bundeslaenderCounter.Add("Vorarlberg", 0);
-            bundeslaenderCounter.Add("Wien", 0);
             foreach (Krebsmeldung krebsmeldung in gefilterte_krebsmeldung)
             {
+                if (!bundeslaenderCounter.ContainsKey(krebsmeldung.Bundesland)) bundeslaenderCounter.Add(krebsmeldung.Bundesland, 0);
                 bundeslaenderCounter[krebsmeldung.Bundesland] += krebsmeldung.Anzahl;
             }
-            FillPieChart<string>(filteredPieChart, bundeslaenderCounter);
+            FillPieChart<string>(filteredPieChartBundesland, bundeslaenderCounter);
+
+            Dictionary<string, int> geschlechtCounter = new Dictionary<string, int>();
+
+            foreach (Krebsmeldung krebsmeldung in gefilterte_krebsmeldung)
+            {
+                if (!geschlechtCounter.ContainsKey(krebsmeldung.Geschlecht)) geschlechtCounter.Add(krebsmeldung.Geschlecht, 0);
+                geschlechtCounter[krebsmeldung.Geschlecht] += krebsmeldung.Anzahl;
+            }
+            FillPieChart<string>(filteredPieChartGeschlecht, geschlechtCounter);
+
+
+            Dictionary<string, int> ICD10CodeCounter = new Dictionary<string, int>();
+            foreach (Krebsmeldung krebsmeldung in gefilterte_krebsmeldung)
+            {
+                if (!ICD10CodeCounter.ContainsKey(krebsmeldung.ICD10Code)) ICD10CodeCounter.Add(krebsmeldung.ICD10Code, 0);
+                ICD10CodeCounter[krebsmeldung.ICD10Code] += krebsmeldung.Anzahl;
+            }
+            FillPieChart<string>(filteredPieChartICD10Code, ICD10CodeCounter);
+
+            Dictionary<string, int> JahrCounter = new Dictionary<string, int>();
+            foreach (Krebsmeldung krebsmeldung in gefilterte_krebsmeldung)
+            {
+                if (!JahrCounter.ContainsKey(krebsmeldung.Jahr.ToString())) JahrCounter.Add(krebsmeldung.Jahr.ToString(), 0);
+                JahrCounter[krebsmeldung.Jahr.ToString()] += krebsmeldung.Anzahl;
+            }
+            FillPieChart<string>(filteredPieChartJahr, JahrCounter);
+
+            FillGeoMap(filteredGeoMap, gefilterte_krebsmeldung);
+
+
+            List<string> labelsBundesland = new List<string>();
+            Dictionary<string, Dictionary<int, int>> chartValuesBundesland = new Dictionary<string, Dictionary<int, int>>();
+
+            foreach (Krebsmeldung krebsmeldung in gefilterte_krebsmeldung)
+            {
+                if (!chartValuesBundesland.ContainsKey(krebsmeldung.Bundesland)) chartValuesBundesland.Add(krebsmeldung.Bundesland, new Dictionary<int, int>());
+                if (!chartValuesBundesland[krebsmeldung.Bundesland.ToString()].ContainsKey(krebsmeldung.Jahr))
+                {
+                    labelsBundesland.Add("" + krebsmeldung.Jahr);
+                    chartValuesBundesland[krebsmeldung.Bundesland].Add(krebsmeldung.Jahr, 0);
+                }
+                chartValuesBundesland[krebsmeldung.Bundesland][krebsmeldung.Jahr] += krebsmeldung.Anzahl;
+            }
+
+            FillBarChart(filteredBarChartBundesland, chartValuesBundesland);
+
+            LabelsFBCBundesland = new string[labelsBundesland.Count];
+            for (int i = 0; i < LabelsFBCBundesland.Length; i++)
+            {
+                LabelsFBCBundesland[i] = labelsBundesland[i].ToString();
+            };
+
+
+            List<string> labelsICD10Code = new List<string>();
+            Dictionary<string, Dictionary<int, int>> chartValuesICD10Code = new Dictionary<string, Dictionary<int, int>>();
+
+            foreach (Krebsmeldung krebsmeldung in gefilterte_krebsmeldung)
+            {
+                if (!chartValuesICD10Code.ContainsKey(krebsmeldung.ICD10Code)) chartValuesICD10Code.Add(krebsmeldung.ICD10Code, new Dictionary<int, int>());
+                if (!chartValuesICD10Code[krebsmeldung.ICD10Code.ToString()].ContainsKey(krebsmeldung.Jahr))
+                {
+                    labelsBundesland.Add("" + krebsmeldung.Jahr);
+                    chartValuesICD10Code[krebsmeldung.ICD10Code].Add(krebsmeldung.Jahr, 0);
+                }
+                chartValuesICD10Code[krebsmeldung.ICD10Code][krebsmeldung.Jahr] += krebsmeldung.Anzahl;
+            }
+
+            FillBarChart(filteredBarChartGeschlecht, chartValuesICD10Code);
+
+            LabelsFBCGeschlecht = new string[labelsICD10Code.Count];
+            for (int i = 0; i < LabelsFBCGeschlecht.Length; i++)
+            {
+                LabelsFBCGeschlecht[i] = labelsICD10Code[i].ToString();
+            };
+
+            List<string> labelsJahrBundesland = new List<string>();
+            Dictionary<string, Dictionary<string, int>> chartValuesJahrBundesland = new Dictionary<string, Dictionary<string, int>>();
+
+            foreach (Krebsmeldung krebsmeldung in gefilterte_krebsmeldung)
+            {
+                if (!chartValuesJahrBundesland.ContainsKey(krebsmeldung.Jahr.ToString())) chartValuesJahrBundesland.Add(krebsmeldung.Jahr.ToString(), new Dictionary<string, int>());
+                if (!chartValuesJahrBundesland[krebsmeldung.Jahr.ToString()].ContainsKey(krebsmeldung.Bundesland))
+                {
+                    labelsBundesland.Add(krebsmeldung.Bundesland.ToString());
+                    chartValuesJahrBundesland[krebsmeldung.Jahr.ToString()].Add(krebsmeldung.Bundesland, 0);
+                }
+                chartValuesJahrBundesland[krebsmeldung.Jahr.ToString()][krebsmeldung.Bundesland] += krebsmeldung.Anzahl;
+            }
+
+            FillBarChart(filteredBarChartJahr, chartValuesJahrBundesland);
+
+            LabelsFBCJahr = new string[labelsJahrBundesland.Count];
+            for (int i = 0; i < LabelsFBCJahr.Length; i++)
+            {
+                LabelsFBCJahr[i] = labelsJahrBundesland[i].ToString();
+            };
+
+           
+            List<string> labelsICD10Geschlecht = new List<string>();
+            Dictionary<string, Dictionary<string, int>> chartValuesICD10Geschlecht = new Dictionary<string, Dictionary<string, int>>();
+
+            foreach (Krebsmeldung krebsmeldung in gefilterte_krebsmeldung)
+            {
+                if (!chartValuesICD10Geschlecht.ContainsKey(krebsmeldung.ICD10Code)) chartValuesICD10Geschlecht.Add(krebsmeldung.ICD10Code, new Dictionary<string, int>());
+                if (!chartValuesICD10Geschlecht[krebsmeldung.ICD10Code].ContainsKey(krebsmeldung.Geschlecht))
+                {
+                    labelsICD10Geschlecht.Add(krebsmeldung.Geschlecht);
+                    chartValuesICD10Geschlecht[krebsmeldung.ICD10Code].Add(krebsmeldung.Geschlecht, 0);
+                }
+                chartValuesICD10Geschlecht[krebsmeldung.ICD10Code][krebsmeldung.Geschlecht] += krebsmeldung.Anzahl;
+            }
+
+            FillBarChart(filteredBarChartICD10Code, chartValuesICD10Geschlecht);
+
+            LabelsFBCICD10Code = new string[labelsICD10Geschlecht.Count];
+            for (int i = 0; i < LabelsFBCJahr.Length; i++)
+            {
+                LabelsFBCICD10Code[i] = labelsICD10Geschlecht[i].ToString();
+            };
+
+
+
         }
         private void FilterDashboard_Click(object sender, RoutedEventArgs e)
         {

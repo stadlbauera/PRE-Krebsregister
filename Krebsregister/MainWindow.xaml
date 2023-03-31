@@ -134,7 +134,7 @@
                                 <lvc:Axis Title="Tumorart pro Jahr" Labels="{Binding LabelsBC}"/>
                             </lvc:CartesianChart.AxisX>
                             <lvc:CartesianChart.AxisY>
-                                <lvc:Axis Title="Anzahl" LabelFormatter="{Binding Formatter}"/>
+                                <lvc:Axis Title="Anzahl" />
                             </lvc:CartesianChart.AxisY>
                         </lvc:CartesianChart>
                     </DockPanel>
@@ -225,10 +225,80 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
-                    <TabPanel Name="filteredCharts">
-                        
-                    </TabPanel>
-                    
+                    <TabControl Name="filteredCharts">
+                        <TabItem Header="Pie Chart" Visibility="Visible">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <lvc:PieChart Name="filteredPieChartBundesland" Grid.Row="0" Grid.Column="0"  LegendLocation="Bottom"  Hoverable="False" DataTooltip="{x:Null}" DataClick="PieChart_DataClick"/>
+                                <lvc:PieChart Name="filteredPieChartGeschlecht" Grid.Row="0" Grid.Column="1"  LegendLocation="Bottom"  Hoverable="False" DataTooltip="{x:Null}" DataClick="PieChart_DataClick"/>
+                                <lvc:PieChart Name="filteredPieChartICD10Code"  Grid.Row="1" Grid.Column="0" LegendLocation="Bottom"  Hoverable="False" DataTooltip="{x:Null}" DataClick="PieChart_DataClick"/>
+                                <lvc:PieChart Name="filteredPieChartJahr"       Grid.Row="1" Grid.Column="1" LegendLocation="Bottom"  Hoverable="False" DataTooltip="{x:Null}" DataClick="PieChart_DataClick"/>
+                            </Grid>
+                            
+                        </TabItem>
+                        <TabItem Header="Geo Map" Visibility="Visible">
+                            <lvc:GeoMap Name="filteredGeoMap" Source="maps/austria.xml" Background="White" />
+                        </TabItem>
+                        <TabItem Header="Bar Chart" Visibility="Visible">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <lvc:CartesianChart Name="filteredBarChartBundesland" Grid.Row="0" Grid.Column="0" LegendLocation ="Right">
+                                    <lvc:CartesianChart.AxisX>
+                                        <lvc:Axis Title="{Binding TitleFBCBundesland }" Labels="{Binding LabelsFBCBundesland}"/>
+                                    </lvc:CartesianChart.AxisX>
+                                    <lvc:CartesianChart.AxisY>
+                                        <lvc:Axis Title="Anzahl"/>
+                                    </lvc:CartesianChart.AxisY>
+                                </lvc:CartesianChart>
+                                <lvc:CartesianChart Name="filteredBarChartGeschlecht" Grid.Row="0" Grid.Column="1" LegendLocation ="Right">
+                                    <lvc:CartesianChart.AxisX>
+                                        <lvc:Axis Title="{Binding TitleFBCGeschlecht }" Labels="{Binding LabelsFBCGeschlecht}"/>
+                                    </lvc:CartesianChart.AxisX>
+                                    <lvc:CartesianChart.AxisY>
+                                        <lvc:Axis Title="Anzahl" />
+                                    </lvc:CartesianChart.AxisY>
+                                </lvc:CartesianChart>
+                                <lvc:CartesianChart Name="filteredBarChartICD10Code" Grid.Row="1" Grid.Column="0" LegendLocation ="Right">
+                                    <lvc:CartesianChart.AxisX>
+                                        <lvc:Axis Title="{Binding TitleFBCICD10Code }" Labels="{Binding LabelsFBCICD10Code}"/>
+                                    </lvc:CartesianChart.AxisX>
+                                    <lvc:CartesianChart.AxisY>
+                                        <lvc:Axis Title="Anzahl"/>
+                                    </lvc:CartesianChart.AxisY>
+                                </lvc:CartesianChart>
+                                <lvc:CartesianChart Name="filteredBarChartJahr" Grid.Row="1" Grid.Column="1" LegendLocation ="Right">
+                                    <lvc:CartesianChart.AxisX>
+                                        <lvc:Axis Title="{Binding TitleFBCJahr }" Labels="{Binding LabelsFBCJahr}"/>
+                                    </lvc:CartesianChart.AxisX>
+                                    <lvc:CartesianChart.AxisY>
+                                        <lvc:Axis Title="Anzahl" />
+                                    </lvc:CartesianChart.AxisY>
+                                </lvc:CartesianChart>
+                            </Grid>
+                            
+                        </TabItem>
+                        <TabItem Header="Negative Stacked Chart" Visibility="Visible">
+                            <lvc:CartesianChart Name="filteredNegativeStackedChart"/>
+                        </TabItem>
+                        <TabItem Header="Line Chart" Visibility="Visible">
+                            <lvc:CartesianChart x:Name="filteredLineChart" LegendLocation="Right"/>
+                        </TabItem>
+                    </TabControl>
+
                 </DockPanel>
 
 
