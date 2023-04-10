@@ -313,5 +313,237 @@ namespace Krebsregister
 
             return  path + "\\Dateien\\restlicheICD10Codes.csv";
         }
+
+        public static List<Krebsmeldung> ES_Cube(string constring, List<string> icd10s, List<string> geschlecht, List<string> bundesland, List<string> jahre)
+        {
+            string whereClause = " where ";
+            string selectClause = "select ";
+            string groupByClause = " group by CUBE ";
+            if(icd10s.Count >0)
+            {
+                selectClause += "i.ICD10Code, ";
+                whereClause += "i.ICD10Code in (";
+                foreach (var item in icd10s)
+                {
+                    whereClause += $"'{item}',";
+                }
+                whereClause = whereClause.Remove(whereClause.Length - 1);
+                whereClause += ") and ";
+            }
+            if (geschlecht.Count > 0)
+            {
+                selectClause += "g.Geschlecht, ";
+                whereClause += "g.Geschlecht in (";
+                foreach (var item in geschlecht)
+                {
+                    whereClause += $"'{item}',";
+                }
+                whereClause = whereClause.Remove(whereClause.Length - 1);
+                whereClause += ") and ";
+            }
+            if (bundesland.Count > 0)
+            {
+                selectClause += "b.Name, ";
+                whereClause += "b.Name in (";
+                foreach (var item in bundesland)
+                {
+                    whereClause += $"'{item}',";
+                }
+                whereClause = whereClause.Remove(whereClause.Length - 1);
+                whereClause += ") and ";
+            }
+            if (jahre.Count > 0)
+            {
+                selectClause += "e.Berichtsjahr, ";
+                whereClause += "e.Berichtsjahr in (";
+                foreach (var item in jahre)
+                {
+                    whereClause += $"{Int32.Parse(item)},";
+                }
+                whereClause = whereClause.Remove(whereClause.Length - 1);
+                whereClause += ") and ";
+            }
+            selectClause = selectClause.Remove(selectClause.Length - 2);
+            groupByClause += $"({selectClause.Remove(0, 6)})";
+            selectClause += ", SUM(e.AnzahlMeldungen), AVG(e.AnzahlMeldungen)";
+            whereClause = whereClause.Remove(whereClause.Length - 4);
+
+            
+
+            List<Krebsmeldung> result = new List<Krebsmeldung>();
+            SqlConnection connection = new SqlConnection(constring);
+            if (connection.State != System.Data.ConnectionState.Open)
+            {
+                connection.Open();
+            }
+            SqlCommand cmd = new SqlCommand
+                ($"{selectClause} " +
+                $"FROM Eintrag e " +
+                $"JOIN ICD10 i on (e.ICD10ID = i.ICD10ID) " +
+                $"JOIN Bundesland b on (b.BundeslandID = e.BundeslandID) " +
+                $"JOIN Geschlecht g on (g.GeschlechtID = e.GeschlechtID) " +
+                $"{whereClause} " +
+                $"{groupByClause}", connection);
+            SqlDataReader reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                int i = 0;
+                Krebsmeldung k = new Krebsmeldung();
+                if(icd10s.Count > 0)
+                {
+                    if (!reader.IsDBNull(i))
+                        k.ICD10Code = reader.GetString(i);
+                    else
+                        k.ICD10Code = "null";
+                    i++;
+                }
+                if(geschlecht.Count > 0)
+                {
+                    if (!reader.IsDBNull(i))
+                        k.Geschlecht = reader.GetString(i);
+                    else
+                        k.Geschlecht = "null";
+                    i++;
+                }
+                if(bundesland.Count > 0)
+                {
+                    if (!reader.IsDBNull(i))
+                        k.Bundesland = reader.GetString(i);
+                    else
+                        k.Bundesland = "null";
+                    i++;
+                }
+                if(jahre.Count > 0)
+                {
+                    if (!reader.IsDBNull(i))
+                        k.Jahr = reader.GetInt32(i);
+                    else
+                        k.Jahr = -1;
+                    i++;
+                }
+                k.SUM = reader.GetInt32(i);
+                i++;
+                k.AVG = reader.GetInt32(i);
+                result.Add(k);
+            }
+            connection.Close();
+            return result;
+        }
+
+        public static List<Krebsmeldung> ES_ROLLUP(string constring, List<string> icd10s, List<string> geschlecht, List<string> bundesland, List<string> jahre)
+        {
+            string whereClause = " where ";
+            string selectClause = "select ";
+            string groupByClause = " group by ROLLUP ";
+            if (icd10s.Count > 0)
+            {
+                selectClause += "i.ICD10Code, ";
+                whereClause += "i.ICD10Code in (";
+                foreach (var item in icd10s)
+                {
+                    whereClause += $"'{item}',";
+                }
+                whereClause = whereClause.Remove(whereClause.Length - 1);
+                whereClause += ") and ";
+            }
+            if (geschlecht.Count > 0)
+            {
+                selectClause += "g.Geschlecht, ";
+                whereClause += "g.Geschlecht in (";
+                foreach (var item in geschlecht)
+                {
+                    whereClause += $"'{item}',";
+                }
+                whereClause = whereClause.Remove(whereClause.Length - 1);
+                whereClause += ") and ";
+            }
+            if (bundesland.Count > 0)
+            {
+                selectClause += "b.Name, ";
+                whereClause += "b.Name in (";
+                foreach (var item in bundesland)
+                {
+                    whereClause += $"'{item}',";
+                }
+                whereClause = whereClause.Remove(whereClause.Length - 1);
+                whereClause += ") and ";
+            }
+            if (jahre.Count > 0)
+            {
+                selectClause += "e.Berichtsjahr, ";
+                whereClause += "e.Berichtsjahr in (";
+                foreach (var item in jahre)
+                {
+                    whereClause += $"{Int32.Parse(item)},";
+                }
+                whereClause = whereClause.Remove(whereClause.Length - 1);
+                whereClause += ") and ";
+            }
+            selectClause = selectClause.Remove(selectClause.Length - 2);
+            groupByClause += $"({selectClause.Remove(0, 6)})";
+            selectClause += ", SUM(e.AnzahlMeldungen), AVG(e.AnzahlMeldungen)";
+            whereClause = whereClause.Remove(whereClause.Length - 4);
+
+
+
+            List<Krebsmeldung> result = new List<Krebsmeldung>();
+            SqlConnection connection = new SqlConnection(constring);
+            if (connection.State != System.Data.ConnectionState.Open)
+            {
+                connection.Open();
+            }
+            SqlCommand cmd = new SqlCommand
+                ($"{selectClause} " +
+                $"FROM Eintrag e " +
+                $"JOIN ICD10 i on (e.ICD10ID = i.ICD10ID) " +
+                $"JOIN Bundesland b on (b.BundeslandID = e.BundeslandID) " +
+                $"JOIN Geschlecht g on (g.GeschlechtID = e.GeschlechtID) " +
+                $"{whereClause} " +
+                $"{groupByClause}", connection);
+            SqlDataReader reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                int i = 0;
+                Krebsmeldung k = new Krebsmeldung();
+                if (icd10s.Count > 0)
+                {
+                    if (!reader.IsDBNull(i))
+                        k.ICD10Code = reader.GetString(i);
+                    else
+                        k.ICD10Code = "null";
+                    i++;
+                }
+                if (geschlecht.Count > 0)
+                {
+                    if (!reader.IsDBNull(i))
+                        k.Geschlecht = reader.GetString(i);
+                    else
+                        k.Geschlecht = "null";
+                    i++;
+                }
+                if (bundesland.Count > 0)
+                {
+                    if (!reader.IsDBNull(i))
+                        k.Bundesland = reader.GetString(i);
+                    else
+                        k.Bundesland = "null";
+                    i++;
+                }
+                if (jahre.Count > 0)
+                {
+                    if (!reader.IsDBNull(i))
+                        k.Jahr = reader.GetInt32(i);
+                    else
+                        k.Jahr = -1;
+                    i++;
+                }
+                k.SUM = reader.GetInt32(i);
+                i++;
+                k.AVG = reader.GetInt32(i);
+                result.Add(k);
+            }
+            connection.Close();
+            return result;
+        }
     }
 }

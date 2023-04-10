@@ -208,12 +208,12 @@
                     <ListView Margin="10" Name="lvfilter" DockPanel.Dock="Left">
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn Header="Krebsart" Width="300" DisplayMemberBinding="{Binding Krebsart}" />
-                                <GridViewColumn Header="ICD10-Code" Width="80" DisplayMemberBinding="{Binding ICD10Code}" />
-                                <GridViewColumn Header="Bundesland" Width="100" DisplayMemberBinding="{Binding Bundesland}" />
-                                <GridViewColumn Header="Geschlecht" Width="80" DisplayMemberBinding="{Binding Geschlecht}" />
-                                <GridViewColumn Header="Jahr" Width="80" DisplayMemberBinding="{Binding Jahr}" />
-                                <GridViewColumn Header="Anzahl" Width="80" DisplayMemberBinding="{Binding Anzahl}" />
+                                <GridViewColumn x:Name="gvc_Krebsart" Header="Krebsart" Width="300" DisplayMemberBinding="{Binding ICD10Code}" />
+                                <GridViewColumn x:Name="gvc_Bundesland" Header="Bundesland" Width="100" DisplayMemberBinding="{Binding Bundesland}" />
+                                <GridViewColumn x:Name="gvc_Geschlecht" Header="Geschlecht" Width="80" DisplayMemberBinding="{Binding Geschlecht}" />
+                                <GridViewColumn x:Name="gvc_Jahr" Header="Jahr" Width="80" DisplayMemberBinding="{Binding Jahr}" />
+                                <GridViewColumn x:Name="gvc_SUM" Header="SUM" Width="80" DisplayMemberBinding="{Binding SUM}" />
+                                <GridViewColumn x:Name="gvc_AVG" Header="AVG" Width="80" DisplayMemberBinding="{Binding AVG}" />
                             </GridView>
                         </ListView.View>
                     </ListView>

@@ -644,6 +644,13 @@ namespace Krebsregister
         List<string> selectedBundeslandES = new List<string>();
         List<int> selectedJahrES = new List<int>();
 
+        List<string> Krebsart_ES_Tabelle = new List<string>();
+        List<string> Geschlecht_ES_Tabelle = new List<string>();
+        List<string> Bundesland_ES_Tabelle = new List<string>();
+        List<int> JAHR_ES_Tabelle = new List<int>();
+        List<int> SUM_ES_Tabelle = new List<int>();
+        List<int> AVG_ES_Tabelle = new List<int>();
+
         private void rbZeitpunkt_Checked(object sender, RoutedEventArgs e)
         {
             if (gbZeitpunkt != null) gbZeitpunkt.IsEnabled = true;
@@ -689,6 +696,11 @@ namespace Krebsregister
                                                                             .Where(x => geschelcht.Contains(x.Geschlecht)).ToList();
             int i = 0;
             CreateFilteredCharts(gefilterte_krebsmeldung);
+
+            List<Krebsmeldung> result = DatabaseMethods.ES_Cube(constring, icd10s, geschelcht, bundeslaender, berichtsjahre);
+            //List<Krebsmeldung> result = DatabaseMethods.ES_ROLLUP(constring, icd10s, geschelcht, bundeslaender, berichtsjahre);
+
+            lvfilter.ItemsSource = result;
 
             selectedICD10ES.Clear();
         }
@@ -738,7 +750,6 @@ namespace Krebsregister
             foreach (string item in e.Selected)
             {
                 selectedICD10ES.Add(item.Split(" - ")[0]);
-                selectedICD10ES.Distinct();
             }
         }
 
@@ -747,7 +758,6 @@ namespace Krebsregister
             foreach (string item in e.Selected)
             {
                 selectedGeschlechtES.Add(item);
-                selectedGeschlechtES.Distinct();
             }
         }
 
@@ -756,16 +766,14 @@ namespace Krebsregister
             foreach (string item in e.Selected)
             {
                 selectedBundeslandES.Add(item);
-                selectedBundeslandES.Distinct();
             }
         }
 
         private void ES_cboBerichtsjahr_SelectedItemsChanged(object sender, Sdl.MultiSelectComboBox.EventArgs.SelectedItemsChangedEventArgs e)
         {
-            foreach (string item in e.Selected)
+            foreach (int item in e.Selected)
             {
-                selectedJahrES.Add(Int32.Parse(item));
-                selectedJahrES.Distinct();
+                selectedJahrES.Add(item);
             }
         }
 
