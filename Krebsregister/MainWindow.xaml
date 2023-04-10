@@ -102,14 +102,27 @@
                     </DockPanel>
                     <!--GRIDVIEW**************************************************************************************************************************************************************************-->
 
-                    <DockPanel  Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2" LastChildFill="True">
+                    <!--<DockPanel  Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2" LastChildFill="True">
 
                         <Label Name="lblTitleGridView" DockPanel.Dock="Top"/>
                         <DataGrid Margin="10" Name="dgKrebsmeldungen" IsReadOnly="True">
                         </DataGrid>
 
 
-                    </DockPanel>
+                    </DockPanel>-->
+
+                    <ListView Margin="10" Name="lvfilter" Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Krebsart" Width="300" DisplayMemberBinding="{Binding Krebsart}" />
+                                <GridViewColumn Header="ICD10-Code" Width="80" DisplayMemberBinding="{Binding ICD10Code}" />
+                                <GridViewColumn Header="Bundesland" Width="100" DisplayMemberBinding="{Binding Bundesland}" />
+                                <GridViewColumn Header="Geschlecht" Width="80" DisplayMemberBinding="{Binding Geschlecht}" />
+                                <GridViewColumn Header="Jahr" Width="80" DisplayMemberBinding="{Binding Jahr}" />
+                                <GridViewColumn Header="Anzahl" Width="80" DisplayMemberBinding="{Binding Anzahl}" />
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
 
 
 
@@ -172,19 +185,31 @@
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <Label Content="Krebsart:" Grid.Row="0" Grid.Column="0"/>
                             <Label Content="Geschlecht:" Grid.Row="0" Grid.Column="1"/>
                             <Label Content="Bundesland:" Grid.Row="0" Grid.Column="2"/>
                             <RadioButton Content="Zeitpunkt" Name="rbZeitpunkt" IsChecked="True" Grid.Row="0" Grid.Column="3" VerticalAlignment="Center" Checked="rbZeitpunkt_Checked"/>
                             <RadioButton Name="rbZeitraum" Grid.Row="0" Grid.Column="4" Content="Zeitraum" VerticalAlignment="Center" Grid.ColumnSpan="2" Checked="rbZeitraum_Checked"/>
-                            <sdlCB:MultiSelectComboBox Name="ES_cboKrebsart" Margin="5,10,5,10" Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" SelectedItemsChanged="ES_cboKrebsart_SelectedItemsChanged"/>
+                            <!--<sdlCB:MultiSelectComboBox Name="ES_cboKrebsart" Margin="5,10,5,10" Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" SelectedItemsChanged="ES_cboKrebsart_SelectedItemsChanged"/>
                             <sdlCB:MultiSelectComboBox Name="ES_cboGeschlecht" Margin="5,10,5,10" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" SelectedItemsChanged="ES_cboGeschlecht_SelectedItemsChanged"/>
-                            <sdlCB:MultiSelectComboBox Name="ES_cboBundesland" Margin="5,10,5,10" Grid.Row="1" Grid.Column="2" Grid.RowSpan="2" SelectedItemsChanged="ES_cboBundesland_SelectedItemsChanged"/>
-                            <GroupBox Name="gbZeitpunkt" Grid.Row="1" Grid.Column="3" Grid.RowSpan="2">
-                                <sdlCB:MultiSelectComboBox Name="ES_cboBerichtsjahr" Margin="5,8,5,6" SelectedItemsChanged="ES_cboBerichtsjahr_SelectedItemsChanged"/>
+                            <sdlCB:MultiSelectComboBox Name="ES_cboBundesland" Margin="5,10,5,10" Grid.Row="1" Grid.Column="2" Grid.RowSpan="2" SelectedItemsChanged="ES_cboBundesland_SelectedItemsChanged"/>-->
+                            <Label Name="ES_lblSelectedKrebsart" Content="Ausgewählt: " Grid.Row="1" Grid.Column="0"/>
+                            <ComboBox Name="ES_cboKrebsart" Margin="5,10,5,10" Grid.Row="2" Grid.Column="0" Grid.RowSpan="2" SelectionChanged="ES_cboKrebsart_SelectionChanged"/>
+                            <Label Name="ES_lblSelectedGeschlecht" Content="Ausgewählt: " Grid.Row="1" Grid.Column="1"/>
+                            <ComboBox Name="ES_cboGeschlecht" Margin="5,10,5,10" Grid.Row="2" Grid.Column="1" Grid.RowSpan="2" SelectionChanged="ES_cboGeschlecht_SelectionChanged"/>
+                            <Label Name="ES_lblSelectedBundesland" Content="Ausgewählt: " Grid.Row="1" Grid.Column="2"/>
+                            <ComboBox Name="ES_cboBundesland" Margin="5,10,5,10" Grid.Row="2" Grid.Column="2" Grid.RowSpan="2" SelectionChanged="ES_cboBundesland_SelectionChanged"/>
+                            <GroupBox Name="gbZeitpunkt" Grid.Row="1" Grid.Column="3" Grid.RowSpan="3">
+                                <!--<sdlCB:MultiSelectComboBox Name="ES_cboBerichtsjahr" Margin="5,8,5,6" SelectedItemsChanged="ES_cboBerichtsjahr_SelectedItemsChanged"/>-->
+                                <StackPanel>
+                                    <Label Name="ES_lblSelectedZeitpunkt" Content="Ausgewählt: "/>
+                                    <ComboBox Name="ES_cboBerichtsjahr" Margin="5,8,5,0" SelectionChanged="ES_cboBerichtsjahr_SelectionChanged"/>
+                                </StackPanel>
+                                
                             </GroupBox>
-                            <GroupBox Name="gbZeitraum" IsEnabled="False" Grid.Row="1" Grid.Column="4" Grid.RowSpan="2">
+                            <GroupBox Name="gbZeitraum" IsEnabled="False" Grid.Row="1" Grid.Column="4" Grid.RowSpan="3">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="*"/>
@@ -205,7 +230,7 @@
                         </Grid>
                     </GroupBox>
                     <Button DockPanel.Dock="Top" Height="20" Content="Aktualisieren" Margin="5" Click="Aktualisieren"/>
-                    <ListView Margin="10" Name="lvfilter" DockPanel.Dock="Left">
+                    <ListView Margin="10" Name="lvfilterNeu" DockPanel.Dock="Left">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Krebsart" Width="300" DisplayMemberBinding="{Binding Krebsart}" />

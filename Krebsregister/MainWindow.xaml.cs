@@ -27,6 +27,7 @@ using System.Xml;
 using Path = System.IO.Path;
 using System.Numerics;
 using System.Reflection;
+using System.Collections;
 
 namespace Krebsregister
 {
@@ -38,6 +39,10 @@ namespace Krebsregister
 
         #region Allgemein
 
+        List<string> icd10s;
+        List<string> geschlechter;
+        List<string> bundeslaender;
+        List<string> jahre;
         public string constring { get; set; }
 
         public string path_rest_icd10 { get; set; }
@@ -55,7 +60,7 @@ namespace Krebsregister
             InitializeComponent();
             GetPaths();
             alleKrebsmeldungen = DatabaseMethods.GetDataFromDatabase_Eintrag(constring);
-            dgKrebsmeldungen.ItemsSource = alleKrebsmeldungen;
+            //dgKrebsmeldungen.ItemsSource = alleKrebsmeldungen;
 
             nudJahr.MaxValue = DateTime.Now.Year;
             nudJahr.Value = DateTime.Now.Year;
@@ -65,6 +70,7 @@ namespace Krebsregister
 
             FillComboBoxes();
 
+            lvfilter.ItemsSource = alleKrebsmeldungen;
         }
 
         private void FillComboBoxes()
@@ -73,13 +79,19 @@ namespace Krebsregister
             NK_cbGeschlecht.ItemsSource = DatabaseMethods.GetDataFromDatabase_Geschlecht(constring);
             NK_cbBundesland.ItemsSource = DatabaseMethods.GetDataFromDatabase_Bundesland(constring);
 
-            ES_cboKrebsart.ItemsSource = DatabaseMethods.GetDataFromDatabase_ICD10(constring);
-            ES_cboKrebsart.ItemsSource.Insert(0, "Alle");
-            ES_cboGeschlecht.ItemsSource = DatabaseMethods.GetDataFromDatabase_Geschlecht(constring);
-            ES_cboGeschlecht.ItemsSource.Insert(0, "Alle");
-            ES_cboBundesland.ItemsSource = DatabaseMethods.GetDataFromDatabase_Bundesland(constring);
-            ES_cboBundesland.ItemsSource.Insert(0, "Alle");
-            ES_cboBerichtsjahr.ItemsSource = DatabaseMethods.GetDataFromDatabase_Eintrag(constring).Select(x => x.Jahr).Distinct().ToList();
+            icd10s = DatabaseMethods.GetDataFromDatabase_ICD10(constring);
+            icd10s.Insert(0, "Alle");
+            ES_cboKrebsart.ItemsSource = icd10s;
+
+            geschlechter = DatabaseMethods.GetDataFromDatabase_Geschlecht(constring);
+            geschlechter.Insert(0, "Alle");
+            ES_cboGeschlecht.ItemsSource = geschlechter;
+            bundeslaender = DatabaseMethods.GetDataFromDatabase_Bundesland(constring);
+            bundeslaender.Insert(0, "Alle");
+            ES_cboBundesland.ItemsSource = bundeslaender;
+             jahre = DatabaseMethods.GetDataFromDatabase_Eintrag(constring).Select(x => x.Jahr.ToString()).Distinct().ToList();
+            jahre.Insert(0, "Alle");
+            ES_cboBerichtsjahr.ItemsSource = jahre;
 
             tbVon.Text = DatabaseMethods.GetDataFromDatabase_Eintrag(constring).Select(x => x.Jahr).Distinct().Min().ToString();
             tbBis.Text = DatabaseMethods.GetDataFromDatabase_Eintrag(constring).Select(x => x.Jahr).Distinct().Max().ToString();
@@ -249,7 +261,7 @@ namespace Krebsregister
             lblTitlePieChart.Content = $"{list[0]} Verteilung auf die Bundesländer";
             lblTitleAreaChart.Content = $"{list[0]} und {list[1]} im Jahr 1983 - 1989";
             lblTitlePieChart2.Content = $"{list[0]} in Oberösterreich über die Jahre";
-            lblTitleGridView.Content = "Alle Einträge in der DB";
+            //lblTitleGridView.Content = "Alle Einträge in der DB";
             lblTitleBarChart.Content = $"{list[0]}, {list[1]}, {list[2]} in den Jahren 1994 und 1995";
             lblTitleLiveChart.Content = $"{list[0]} über die Jahre";
         }
@@ -263,7 +275,7 @@ namespace Krebsregister
             {
                 krebsmeldungen.Add(k);
             }
-            dgKrebsmeldungen.ItemsSource = krebsmeldungen;
+            //dgKrebsmeldungen.ItemsSource = krebsmeldungen;
         }
 
         #endregion
@@ -644,35 +656,61 @@ namespace Krebsregister
 
         private void Aktualisieren(object sender, RoutedEventArgs e)
         {
+            //Test-Daten
+            //List<string> icd10s = new List<string>();
+            //icd10s.Add("C00");
+            //icd10s.Add("C01");
+            //icd10s.Add("C02");
+            //List<string> bundeslaender = new List<string>();
+            //bundeslaender.Add("Wien");
+            //bundeslaender.Add("Oberösterreich");
+            //bundeslaender.Add("Niederösterreich");
+
+            //List<string> berichtsjahre = new List<string>();
+            //berichtsjahre.Add("1993");
+            //berichtsjahre.Add("1994");
+            //berichtsjahre.Add("1998");
+
+            //List<string> geschelcht = new List<string>();
+            //geschelcht.Add("männlich");
+            //geschelcht.Add("weiblich");
+
+            List<string> selectedicd10s = ES_lblSelectedKrebsart.Content.ToString().Split(" ")[1].Split(";").ToList();
+            if (selectedicd10s[0].Equals("Alle"))
+            {
+                
+                selectedicd10s = icd10s.Select(x => x.Split(" - ")[1]).ToList();
+            }
+            List<string> selectedbundeslaender = ES_lblSelectedBundesland.Content.ToString().Split(" ")[1].Split(";").ToList();
+            if (selectedbundeslaender[0].Equals("Alle")) selectedbundeslaender = bundeslaender;
+            List<string> selectedberichtsjahre = new List<string>();
+            if (rbZeitpunkt.IsChecked == true)
+            {
+                selectedberichtsjahre = ES_lblSelectedZeitpunkt.Content.ToString().Split(" ")[1].Split(";").ToList();
+                if (selectedberichtsjahre[0].Equals("Alle")) selectedberichtsjahre = jahre;
+            }
+            if (rbZeitraum.IsChecked == true)
+            {
+                for(int i = int.Parse(tbVon.Text); i < int.Parse(tbBis.Text); i++)
+                {
+                    selectedberichtsjahre.Add(i.ToString());
+                }
+            }
             
-
-            //string[] krebsartICD10 = ES_cboKrebsart.SelectedItem.ToString().Split(" - ");
-            List<string> icd10s = new List<string>();
-            icd10s.Add("C00");
-            icd10s.Add("C01");
-            icd10s.Add("C02");
-            List<string> bundeslaender = new List<string>();
-            bundeslaender.Add("Wien");
-            bundeslaender.Add("Oberösterreich");
-
-            List<string> berichtsjahre = new List<string>();
-            berichtsjahre.Add("1993");
-            berichtsjahre.Add("1994");
-
-            List<string> geschelcht = new List<string>();
-            geschelcht.Add("männlich");
-            //////string geschlecht = ES_cboGeschlecht.SelectedItem.ToString();
-            //////string bundesland = ES_cboBundesland.SelectedItem.ToString();
-            //////string zeitpunkt = rbZeitpunkt.IsChecked == true ? zeitpunkt = ES_cboBerichtsjahr.SelectedItem.ToString() : "";
+            List<string> selectedgeschlecht = ES_lblSelectedGeschlecht.Content.ToString().Split(" ")[1].Split(";").ToList();
+            if (selectedgeschlecht[0].Equals("Alle")) selectedgeschlecht = geschlechter;
 
             List<Krebsmeldung> list_krebsmeldung = DatabaseMethods.GetDataFromDatabase_Eintrag(constring);
 
+            List<Krebsmeldung> gefilterte_krebsmeldung = list_krebsmeldung.Where(x => selectedicd10s.Contains(x.ICD10Code)).ToList()
+                                                                            .Where(x => selectedbundeslaender.Contains(x.Bundesland)).ToList()
+                                                                            .Where(x => selectedberichtsjahre.Contains(x.Jahr.ToString())).ToList()
+                                                                            .Where(x => selectedgeschlecht.Contains(x.Geschlecht)).ToList();
 
-
-            List<Krebsmeldung> gefilterte_krebsmeldung = list_krebsmeldung.Where(x => icd10s.Contains(x.ICD10Code)).ToList()
-                                                                            .Where(x => bundeslaender.Contains(x.Bundesland)).ToList()
-                                                                            .Where(x => berichtsjahre.Contains(x.Jahr.ToString())).ToList()
-                                                                            .Where(x => geschelcht.Contains(x.Geschlecht)).ToList();
+            //List<Krebsmeldung> gefilterte_krebsmeldung = list_krebsmeldung.Where(x => selectedICD10ES.Contains(x.ICD10Code)).ToList()
+            //                                                                .Where(x => selectedBundeslandES.Contains(x.Bundesland)).ToList()
+            //                                                                .Where(x => selectedJahrES.Contains(x.Jahr)).ToList()
+            //                                                                .Where(x => selectedGeschlechtES.Contains(x.Geschlecht)).ToList();
             CreateFilteredCharts(gefilterte_krebsmeldung);
 
             selectedICD10ES.Clear();
@@ -834,55 +872,150 @@ namespace Krebsregister
 
         
 
-        private void ES_cboKrebsart_SelectedItemsChanged(object sender, Sdl.MultiSelectComboBox.EventArgs.SelectedItemsChangedEventArgs e)
-        {
-            foreach (string item in e.Selected)
-            {
-                selectedICD10ES.Add(item.Split(" - ")[0]);
-                selectedICD10ES.Distinct();
-            }
-        }
+        //private void ES_cboKrebsart_SelectedItemsChanged(object sender, Sdl.MultiSelectComboBox.EventArgs.SelectedItemsChangedEventArgs e)
+        //{
+        //    foreach (string item in e.Selected)
+        //    {
+        //        selectedICD10ES.Add(item.Split(" - ")[0]);
+        //        selectedICD10ES.Distinct();
+        //    }
+        //}
 
-        private void ES_cboGeschlecht_SelectedItemsChanged(object sender, Sdl.MultiSelectComboBox.EventArgs.SelectedItemsChangedEventArgs e)
-        {
-            foreach (string item in e.Selected)
-            {
-                selectedGeschlechtES.Add(item);
-                selectedGeschlechtES.Distinct();
-            }
-        }
+        //private void ES_cboGeschlecht_SelectedItemsChanged(object sender, Sdl.MultiSelectComboBox.EventArgs.SelectedItemsChangedEventArgs e)
+        //{
+        //    foreach (string item in e.Selected)
+        //    {
+        //        selectedGeschlechtES.Add(item);
+        //        selectedGeschlechtES.Distinct();
+        //    }
+        //}
 
-        private void ES_cboBundesland_SelectedItemsChanged(object sender, Sdl.MultiSelectComboBox.EventArgs.SelectedItemsChangedEventArgs e)
-        {
-            foreach (string item in e.Selected)
-            {
-                selectedBundeslandES.Add(item);
-                selectedBundeslandES.Distinct();
-            }
-        }
+        //private void ES_cboBundesland_SelectedItemsChanged(object sender, Sdl.MultiSelectComboBox.EventArgs.SelectedItemsChangedEventArgs e)
+        //{
+        //    foreach (string item in e.Selected)
+        //    {
+        //        selectedBundeslandES.Add(item);
+        //        selectedBundeslandES.Distinct();
+        //    }
+        //}
 
-        private void ES_cboBerichtsjahr_SelectedItemsChanged(object sender, Sdl.MultiSelectComboBox.EventArgs.SelectedItemsChangedEventArgs e)
-        {
-            foreach (string item in e.Selected)
-            {
-                selectedJahrES.Add(Int32.Parse(item));
-                selectedJahrES.Distinct();
-            }
-        }
+        //private void ES_cboBerichtsjahr_SelectedItemsChanged(object sender, Sdl.MultiSelectComboBox.EventArgs.SelectedItemsChangedEventArgs e)
+        //{
+        //    foreach (int item in e.Selected)
+        //    {
+        //        selectedJahrES.Add(item);
+        //        selectedJahrES.Distinct();
+        //    }
+        //}
 
         #endregion
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string? tabItem = ((TabItem)((TabControl)sender).SelectedItem).Header as string;
-            if(tabItem == "Erweiterte Statistik")
+            //string? tabItem = ((TabItem)((TabControl)sender).SelectedItem).Header as string;
+            //if(tabItem == "Erweiterte Statistik")
+            //{
+            //    selectedICD10ES.Clear();
+            //    selectedBundeslandES.Clear();
+            //    selectedGeschlechtES.Clear();
+            //    selectedJahrES.Clear();
+            //}
+        }
+
+        private void ES_cboKrebsart_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string selected = ES_cboKrebsart.SelectedItem.ToString().Split(" - ")[0];
+            if (selected.Equals("Alle"))
             {
-                selectedICD10ES.Clear();
-                selectedBundeslandES.Clear();
-                selectedGeschlechtES.Clear();
-                selectedJahrES.Clear();
+                ES_lblSelectedKrebsart.Content = "Ausgewählt: Alle";
+            }
+            else
+            {
+                if (ES_lblSelectedKrebsart.Content.Equals("Ausgewählt: Alle")) ES_lblSelectedKrebsart.Content = "Ausgewählt: ";
+                if (ES_lblSelectedKrebsart.Content.ToString().Contains(selected))
+                {
+                    int length = ($"{selected};").Length;
+                    int start = ES_lblSelectedKrebsart.Content.ToString().IndexOf(selected);
+                    ES_lblSelectedKrebsart.Content = ES_lblSelectedKrebsart.Content.ToString().Remove(start, length);
+                }
+                else
+                {
+                    ES_lblSelectedKrebsart.Content = $"{ES_lblSelectedKrebsart.Content}{selected};";
+                }
+            }
+
+        }
+
+        private void ES_cboGeschlecht_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string selected = ES_cboGeschlecht.SelectedItem.ToString();
+            if (selected.Equals("Alle"))
+            {
+                ES_lblSelectedGeschlecht.Content = "Ausgewählt: Alle";
+            }
+            else
+            {
+                if (ES_lblSelectedGeschlecht.Content.Equals("Ausgewählt: Alle")) ES_lblSelectedGeschlecht.Content = "Ausgewählt: ";
+                if (ES_lblSelectedGeschlecht.Content.ToString().Contains(selected))
+                {
+                    int length = ($"{selected};").Length;
+                    int start = ES_lblSelectedGeschlecht.Content.ToString().IndexOf(selected);
+                    ES_lblSelectedGeschlecht.Content = ES_lblSelectedGeschlecht.Content.ToString().Remove(start,length);
+                }
+                else
+                {
+                    ES_lblSelectedGeschlecht.Content = $"{ES_lblSelectedGeschlecht.Content}{selected};";
+                }
+            }
+ 
+        }
+
+        private void ES_cboBundesland_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string selected = ES_cboBundesland.SelectedItem.ToString();
+            if (selected.Equals("Alle"))
+            {
+                ES_lblSelectedBundesland.Content = "Ausgewählt: Alle";
+            }
+            else
+            {
+                if (ES_lblSelectedBundesland.Content.Equals("Ausgewählt: Alle")) ES_lblSelectedBundesland.Content = "Ausgewählt: ";
+                if (ES_lblSelectedBundesland.Content.ToString().Contains(selected))
+                {
+                    int length = ($"{selected};").Length;
+                    int start = ES_lblSelectedBundesland.Content.ToString().IndexOf(selected);
+                    ES_lblSelectedBundesland.Content = ES_lblSelectedBundesland.Content.ToString().Remove(start, length);
+                }
+                else
+                {
+                    ES_lblSelectedBundesland.Content = $"{ES_lblSelectedBundesland.Content}{selected};";
+                }
             }
         }
 
+        private void ES_cboBerichtsjahr_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            {
+                string selected = ES_cboBerichtsjahr.SelectedItem.ToString();
+                if (selected.Equals("Alle"))
+                {
+                    ES_lblSelectedZeitpunkt.Content = "Ausgewählt: Alle";
+                }
+                else
+                {
+                    if (ES_lblSelectedZeitpunkt.Content.Equals("Ausgewählt: Alle")) ES_lblSelectedZeitpunkt.Content = "Ausgewählt: ";
+                    if (ES_lblSelectedZeitpunkt.Content.ToString().Contains(selected))
+                    {
+                        int length = ($"{selected};").Length;
+                        int start = ES_lblSelectedZeitpunkt.Content.ToString().IndexOf(selected);
+                        ES_lblSelectedZeitpunkt.Content = ES_lblSelectedZeitpunkt.Content.ToString().Remove(start, length);
+                    }
+                    else
+                    {
+                        ES_lblSelectedZeitpunkt.Content = $"{ES_lblSelectedZeitpunkt.Content}{selected};";
+                    }
+                }
+            }
+        }
     }
 }
