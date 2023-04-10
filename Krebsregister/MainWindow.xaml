@@ -29,145 +29,152 @@
         <TabControl Grid.Row="1" SelectionChanged="TabControl_SelectionChanged">
             <!--DASHBOARD********************************************************************************************************************************************************************************-->
             <TabItem Header="Dashboard" Height="22" Margin="0,0,0,0" VerticalAlignment="Top">
-                <Grid x:Name="DashboardGrid">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+                <DockPanel LastChildFill="True">
+                    <Label Name="lblTitleDashboardKrebsart" FontSize="40" FontWeight="Bold" DockPanel.Dock="Top"/>
 
-                    <!--GEOHEATMAP********************************************************************************************************************************************************************************-->
-                    <DockPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Grid.RowSpan="2" LastChildFill="True">
-                        <Label Name="lblTitleGeoHeatMap" DockPanel.Dock="Top"/>
-                        <lvc:GeoMap Name="geoMap" Source="maps/austria.xml"  Background="White" />
+                    <Grid x:Name="DashboardGrid">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
 
-                    </DockPanel>
+                        <!--GEOHEATMAP********************************************************************************************************************************************************************************-->
+                        <DockPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Grid.RowSpan="2" LastChildFill="True">
+                            <Label Name="lblTitleGeoHeatMap" DockPanel.Dock="Top"/>
+                            <lvc:GeoMap Name="geoMap" Source="maps/austria.xml"  Background="White" />
 
-                    <!--PIECHART**********************************************************************************************************************************************************************************-->
-                    <DockPanel LastChildFill="True" Grid.Column="3" Grid.Row="1">
-                        <Label Name="lblTitlePieChart2" DockPanel.Dock="Top"/>
-                        <lvc:PieChart Name="pieChart2"  LegendLocation="Bottom"  Hoverable="False" DataClick="PieChart_DataClick" />
-                    </DockPanel>
+                        </DockPanel>
 
-                    <!--PIECHART********************************************************************************************************************************************************************************-->
-                    <DockPanel Grid.Column="2" Grid.Row="2" LastChildFill="True">
-                        <Label Name="lblTitlePieChart" DockPanel.Dock="Top"/>
-                        <lvc:PieChart Name="pieChart1"  LegendLocation="Bottom"  Hoverable="False" DataTooltip="{x:Null}" DataClick="PieChart_DataClick">
-                            <!--<lvc:PieChart.Series>
-                            <lvc:PieSeries Title="Maria" Values="3" DataLabels="True"
-                               LabelPoint="{Binding PointLabel}"/>
-                            <lvc:PieSeries Title="Charles" Values="4" DataLabels="True" 
-                               LabelPoint="{Binding PointLabel}"/>
-                            <lvc:PieSeries Title="Frida" Values="6" DataLabels="True" 
-                               LabelPoint="{Binding PointLabel}"/>
-                            <lvc:PieSeries Title="Frederic" Values="2" DataLabels="True" 
-                               LabelPoint="{Binding PointLabel}"/>
-                        </lvc:PieChart.Series>-->
-                        </lvc:PieChart>
-                    </DockPanel>
-                    <!--AREACHART**************************************************************************************************************************************************************************-->
-                    <DockPanel Grid.Column="4" Grid.Row="0" LastChildFill="True">
-                        <Label Name="lblTitleAreaChart" DockPanel.Dock="Top"/>
-                        <lvc:CartesianChart x:Name="id_lineChart" LegendLocation="Right" Series="{Binding SeriesCollection}">
-                            <lvc:CartesianChart.AxisY>
-                                <lvc:Axis Title="Anzahl Meldungen" LabelFormatter="{Binding YFormatterAC}"/>
-                            </lvc:CartesianChart.AxisY>
-                            <lvc:CartesianChart.AxisX>
-                                <lvc:Axis Title="Jahre" Labels="{Binding LabelsAC}"/>
-                            </lvc:CartesianChart.AxisX>
-                        </lvc:CartesianChart>
-                    </DockPanel>
-                    <!--NEGATIVSTACKCHART**************************************************************************************************************************************************************************-->
-                    <DockPanel Grid.Column="3" Grid.Row="0" LastChildFill="True">
-                        <Label Name="lblTitleNegativStackedChart" DockPanel.Dock="Top"/>
-                        <lvc:CartesianChart Name="negativStackChart"  Series="{Binding SeriesCollectionNSC}" >
+                        <!--PIECHART**********************************************************************************************************************************************************************************-->
+                        <DockPanel LastChildFill="True" Grid.Column="3" Grid.Row="1">
+                            <Label Name="lblTitlePieChart2" DockPanel.Dock="Top"/>
+                            <lvc:PieChart Name="pieChart2"  LegendLocation="Bottom"  Hoverable="False" DataClick="PieChart_DataClick" />
+                        </DockPanel>
 
-                            <lvc:CartesianChart.AxisX>
-                                <lvc:Axis LabelFormatter="{Binding FormatterNSC}"/>
-                            </lvc:CartesianChart.AxisX>
-                            <lvc:CartesianChart.AxisY>
-                                <lvc:Axis Title="Jahre" Labels="{Binding LabelsNSC}"/>
-                            </lvc:CartesianChart.AxisY>
-                            <!--<lvc:CartesianChart.DataTooltip>
-                            <lvc:DefaultTooltip SelectionMode="SharedYValues"/>
-                        </lvc:CartesianChart.DataTooltip>-->
-                        </lvc:CartesianChart>
-                    </DockPanel>
-                    <!--GRIDVIEW**************************************************************************************************************************************************************************-->
-
-                    <!--<DockPanel  Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2" LastChildFill="True">
-
-                        <Label Name="lblTitleGridView" DockPanel.Dock="Top"/>
-                        <DataGrid Margin="10" Name="dgKrebsmeldungen" IsReadOnly="True">
-                        </DataGrid>
-
-
-                    </DockPanel>-->
-
-                    <ListView Margin="10" Name="lvfilter" Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn Header="Krebsart" Width="300" DisplayMemberBinding="{Binding Krebsart}" />
-                                <GridViewColumn Header="ICD10-Code" Width="80" DisplayMemberBinding="{Binding ICD10Code}" />
-                                <GridViewColumn Header="Bundesland" Width="100" DisplayMemberBinding="{Binding Bundesland}" />
-                                <GridViewColumn Header="Geschlecht" Width="80" DisplayMemberBinding="{Binding Geschlecht}" />
-                                <GridViewColumn Header="Jahr" Width="80" DisplayMemberBinding="{Binding Jahr}" />
-                                <GridViewColumn Header="Anzahl" Width="80" DisplayMemberBinding="{Binding Anzahl}" />
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-
-
-
-
-
-
-
-
-                    <!--BARCHART**************************************************************************************************************************************************************************-->
-                    <DockPanel Grid.Column="4" Grid.Row="1" LastChildFill="True">
-                        <Label Name="lblTitleBarChart" DockPanel.Dock="Top"/>
-                        <lvc:CartesianChart Name="barChart" LegendLocation ="Right" Series="{Binding SeriesCollectionBC}">
-                            <lvc:CartesianChart.AxisX>
-                                <lvc:Axis Title="Tumorart pro Jahr" Labels="{Binding LabelsBC}"/>
-                            </lvc:CartesianChart.AxisX>
-                            <lvc:CartesianChart.AxisY>
-                                <lvc:Axis Title="Anzahl" />
-                            </lvc:CartesianChart.AxisY>
-                        </lvc:CartesianChart>
-                    </DockPanel>
-
-                    <!--LiveChart**************************************************************************************************************************************************************************-->
-                    <DockPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" LastChildFill="True">
-                        <Label Name="lblTitleLiveChart" DockPanel.Dock="Top"></Label>
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <WrapPanel Grid.Row="0">
-                                <Button Content="Prev" Click="PreviousOnClick" Height="30" />
-                                <Button Content="Next" Click="NextOnClick" Height="30"/>
-                                <Button Content="ZoomIn" Click="CustomZoomOnClick" Height="30" />
-                                <Button Content="ZoomOut" Click="CustomZoomOutClick" Height="30" />
-                                <TextBox x:Name="minIntervall" Height="30" Width="40"/>
-                                <TextBox x:Name="maxIntervall" Height="30" Width="40"/>
-                            </WrapPanel>
-                            <lvc:CartesianChart Name="liveChart" Grid.Row="1">
+                        <!--PIECHART********************************************************************************************************************************************************************************-->
+                        <DockPanel Grid.Column="2" Grid.Row="2" LastChildFill="True">
+                            <Label Name="lblTitlePieChart" DockPanel.Dock="Top"/>
+                            <lvc:PieChart Name="pieChart1"  LegendLocation="Bottom"  Hoverable="False" DataTooltip="{x:Null}" DataClick="PieChart_DataClick">
+                                <!--<lvc:PieChart.Series>
+                                <lvc:PieSeries Title="Maria" Values="3" DataLabels="True"
+                                   LabelPoint="{Binding PointLabel}"/>
+                                <lvc:PieSeries Title="Charles" Values="4" DataLabels="True" 
+                                   LabelPoint="{Binding PointLabel}"/>
+                                <lvc:PieSeries Title="Frida" Values="6" DataLabels="True" 
+                                   LabelPoint="{Binding PointLabel}"/>
+                                <lvc:PieSeries Title="Frederic" Values="2" DataLabels="True" 
+                                   LabelPoint="{Binding PointLabel}"/>
+                            </lvc:PieChart.Series>-->
+                            </lvc:PieChart>
+                        </DockPanel>
+                        <!--AREACHART**************************************************************************************************************************************************************************-->
+                        <DockPanel Grid.Column="4" Grid.Row="0" LastChildFill="True">
+                            <Label Name="lblTitleAreaChart" DockPanel.Dock="Top"/>
+                            <lvc:CartesianChart x:Name="id_lineChart" LegendLocation="Right" Series="{Binding SeriesCollection}">
+                                <lvc:CartesianChart.AxisY>
+                                    <lvc:Axis Title="Anzahl Meldungen" LabelFormatter="{Binding YFormatterAC}"/>
+                                </lvc:CartesianChart.AxisY>
                                 <lvc:CartesianChart.AxisX>
-                                    <lvc:Axis Labels="{Binding LabelsLC}"/>
+                                    <lvc:Axis Title="Jahre" Labels="{Binding LabelsAC}"/>
                                 </lvc:CartesianChart.AxisX>
                             </lvc:CartesianChart>
-                        </Grid>
-                    </DockPanel>
-                </Grid>
+                        </DockPanel>
+                        <!--NEGATIVSTACKCHART**************************************************************************************************************************************************************************-->
+                        <DockPanel Grid.Column="3" Grid.Row="0" LastChildFill="True">
+                            <Label Name="lblTitleNegativStackedChart" DockPanel.Dock="Top"/>
+                            <lvc:CartesianChart Name="negativStackChart"  Series="{Binding SeriesCollectionNSC}" >
+
+                                <lvc:CartesianChart.AxisX>
+                                    <lvc:Axis LabelFormatter="{Binding FormatterNSC}"/>
+                                </lvc:CartesianChart.AxisX>
+                                <lvc:CartesianChart.AxisY>
+                                    <lvc:Axis Title="Jahre" Labels="{Binding LabelsNSC}"/>
+                                </lvc:CartesianChart.AxisY>
+                                <!--<lvc:CartesianChart.DataTooltip>
+                                <lvc:DefaultTooltip SelectionMode="SharedYValues"/>
+                            </lvc:CartesianChart.DataTooltip>-->
+                            </lvc:CartesianChart>
+                        </DockPanel>
+                        <!--GRIDVIEW**************************************************************************************************************************************************************************-->
+
+                        <!--<DockPanel  Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2" LastChildFill="True">
+
+                            <Label Name="lblTitleGridView" DockPanel.Dock="Top"/>
+                            <DataGrid Margin="10" Name="dgKrebsmeldungen" IsReadOnly="True">
+                            </DataGrid>
+
+
+                        </DockPanel>-->
+
+                        <ListView Margin="10" Name="lvfilter" Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Krebsart" Width="300" DisplayMemberBinding="{Binding Krebsart}" />
+                                    <GridViewColumn Header="ICD10-Code" Width="80" DisplayMemberBinding="{Binding ICD10Code}" />
+                                    <GridViewColumn Header="Bundesland" Width="100" DisplayMemberBinding="{Binding Bundesland}" />
+                                    <GridViewColumn Header="Geschlecht" Width="80" DisplayMemberBinding="{Binding Geschlecht}" />
+                                    <GridViewColumn Header="Jahr" Width="80" DisplayMemberBinding="{Binding Jahr}" />
+                                    <GridViewColumn Header="Anzahl" Width="80" DisplayMemberBinding="{Binding Anzahl}" />
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+
+
+
+
+
+
+
+
+                        <!--BARCHART**************************************************************************************************************************************************************************-->
+                        <DockPanel Grid.Column="4" Grid.Row="1" LastChildFill="True">
+                            <Label Name="lblTitleBarChart" DockPanel.Dock="Top"/>
+                            <lvc:CartesianChart Name="barChart" LegendLocation ="Right" Series="{Binding SeriesCollectionBC}">
+                                <lvc:CartesianChart.AxisX>
+                                    <lvc:Axis Title="Tumorart pro Jahr" Labels="{Binding LabelsBC}"/>
+                                </lvc:CartesianChart.AxisX>
+                                <lvc:CartesianChart.AxisY>
+                                    <lvc:Axis Title="Anzahl" />
+                                </lvc:CartesianChart.AxisY>
+                            </lvc:CartesianChart>
+                        </DockPanel>
+
+                        <!--LiveChart**************************************************************************************************************************************************************************-->
+                        <DockPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" LastChildFill="True">
+                            <Label Name="lblTitleLiveChart" DockPanel.Dock="Top"></Label>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="30"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <WrapPanel Grid.Row="0">
+                                    <Button Content="Previous" Click="PreviousOnClick" Height="30" Width="60" Margin="0,0,5,0"/>
+                                    <Button Content="Next" Click="NextOnClick" Height="30" Width="60" Margin="0,0,5,0"/>
+                                    <Button Content="ZoomIn" Click="CustomZoomOnClick" Height="30" Width="60" Margin="0,0,5,0"/>
+                                    <Button Content="ZoomOut" Click="CustomZoomOutClick" Height="30" Width="60" Margin="0,0,5,0"/>
+                                    <Label Content="von:"/>
+                                    <TextBox x:Name="minIntervall" Height="30"  Width="60"/>
+                                    <Label Content="bis:"/>
+                                    <TextBox x:Name="maxIntervall" Height="30"  Width="60"/>
+                                    
+                                </WrapPanel>
+                                <lvc:CartesianChart Name="liveChart" Grid.Row="1">
+                                    <lvc:CartesianChart.AxisX>
+                                        <lvc:Axis Labels="{Binding LabelsLC}"/>
+                                    </lvc:CartesianChart.AxisX>
+                                </lvc:CartesianChart>
+                            </Grid>
+                        </DockPanel>
+                    </Grid>
+               </DockPanel>
             </TabItem>
             <!--ERWEITERTE-STATISTIK********************************************************************************************************************************************************************************-->
             <TabItem Header="Erweiterte Statistik">
@@ -322,47 +329,49 @@
             </TabItem>
             <!--NEUE-KREBSMELDUNG********************************************************************************************************************************************************************************-->
             <TabItem Name="tiKrebsmeldung" Header="Neue Krebsmeldung" Height="24" Margin="-2,0,-2,0" VerticalAlignment="Top">
-                <Grid Name="gridKrebsmeldung">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="30"/>
-                        <RowDefinition Height="30"/>
-                        <RowDefinition Height="30"/>
-                        <RowDefinition Height="30"/>
-                        <RowDefinition Height="30"/>
-                        <RowDefinition Height="30"/>
-                        <RowDefinition Height="30"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="67*"/>
-                        <ColumnDefinition Width="330*"/>
-                    </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" Grid.Row="0" Content="Krebsart:"/>
-                    <Label Grid.Column="0" Grid.Row="1" Content="Geschlecht:"/>
-                    <Label Grid.Column="0" Grid.Row="2" Content="Bundesland:"/>
-                    <Label Grid.Column="0" Grid.Row="3" Content="Jahr:"/>
-                    <Label Grid.Column="0" Grid.Row="4" Content="Anzahl:"/>
+                
+                    <Grid Name="gridKrebsmeldung" Margin="30">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="50"/>
+                            <RowDefinition Height="50"/>
+                            <RowDefinition Height="50"/>
+                            <RowDefinition Height="50"/>
+                            <RowDefinition Height="50"/>
+                            <RowDefinition Height="50"/>
+                            <RowDefinition Height="50"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" Grid.Row="0" Content="Krebsart:" VerticalAlignment="Center" FontSize="20"/>
+                        <Label Grid.Column="0" Grid.Row="1" Content="Geschlecht:" VerticalAlignment="Center" FontSize="20"/>
+                        <Label Grid.Column="0" Grid.Row="2" Content="Bundesland:" VerticalAlignment="Center" FontSize="20"/>
+                        <Label Grid.Column="0" Grid.Row="3" Content="Jahr:" VerticalAlignment="Center" FontSize="20"/>
+                        <Label Grid.Column="0" Grid.Row="4" Content="Anzahl:" VerticalAlignment="Center" FontSize="20"/>
 
-                    <ComboBox Name="NK_cbKrebsart" Grid.Column="1" Grid.Row="0" Width="150" Margin="5,5,0,5" HorizontalAlignment="Left"/>
+                        <ComboBox Name="NK_cbKrebsart" Grid.Column="1" Grid.Row="0" Width="250" Margin="5,5,0,5" HorizontalAlignment="Left"/>
 
-                    <ComboBox  Name="NK_cbGeschlecht" Grid.Column="1" Grid.Row="1" Width="150" Margin="5,5,0,5" HorizontalAlignment="Left"/>
+                        <ComboBox  Name="NK_cbGeschlecht" Grid.Column="1" Grid.Row="1" Width="250" Margin="5,5,0,5" HorizontalAlignment="Left"/>
 
-                    <ComboBox Name="NK_cbBundesland" Grid.Column="1" Grid.Row="2" Width="150" Margin="5,5,0,5" HorizontalAlignment="Left"/>
-
-
-                    <num:NumericUpDown x:Name="nudJahr" Grid.Row="3" Grid.Column="1" Margin="5,2" Width="150" HorizontalAlignment="Left"/>
-
-                    <num:NumericUpDown Name="nudAnzahl" Grid.Column="1"  Grid.Row="4" Margin="5, 2" Width="150" HorizontalAlignment="Left" Value="1"/>
+                        <ComboBox Name="NK_cbBundesland" Grid.Column="1" Grid.Row="2" Width="250" Margin="5,5,0,5" HorizontalAlignment="Left"/>
 
 
+                        <num:NumericUpDown x:Name="nudJahr" Grid.Row="3" Grid.Column="1" Margin="5,2" Width="250" HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-                    <Button Name="bNeueKrebsmeldung" Content="Hinzufügen" Grid.Row="5" Grid.Column="1" Width="150" Margin="5,5,0,5" HorizontalAlignment="Left" Click="bNeueKrebsmeldung_Click"/>
-
-                    <Label Name="lblException" Grid.Row="6" Grid.Column="1" Margin="5,5,5,-5"/>
+                        <num:NumericUpDown Name="nudAnzahl" Grid.Column="1"  Grid.Row="4" Margin="5, 2" Width="250" HorizontalAlignment="Left" Value="1" VerticalAlignment="Center"/>
 
 
 
+                        <Button Name="bNeueKrebsmeldung" Content="Hinzufügen" Grid.Row="5" Grid.Column="1" Width="250" Margin="5,5,0,5" HorizontalAlignment="Left" Click="bNeueKrebsmeldung_Click"/>
 
-                </Grid>
+                        <Label Name="lblException" Grid.Row="6" Grid.Column="1" Margin="5,5,5,-5"/>
+
+
+
+
+                    </Grid>
+                
             </TabItem>
         </TabControl>
     </Grid>

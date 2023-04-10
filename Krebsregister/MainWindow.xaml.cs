@@ -71,6 +71,7 @@ namespace Krebsregister
             FillComboBoxes();
 
             lvfilter.ItemsSource = alleKrebsmeldungen;
+            lblTitleDashboardKrebsart.Content = "C00 - Bösartige Neubildung der Lippe";
         }
 
         private void FillComboBoxes()
@@ -223,6 +224,9 @@ namespace Krebsregister
         private void FillCharts(List<string> used_ICD10s)
         {
             FillTitles(used_ICD10s);
+            List<string> icd10Beschreibung = DatabaseMethods.GetDataFromDatabase_ICD10(constring);
+            lblTitleDashboardKrebsart.Content = icd10Beschreibung.Where(x => x.StartsWith(used_ICD10s[0])).ToList().FirstOrDefault();
+
             List<Krebsmeldung> pieChartRelevant = alleKrebsmeldungen.Where(krebsmeldung => krebsmeldung.ICD10Code.Equals(used_ICD10s[0])).ToList();
             PieChart(pieChartRelevant);
 
@@ -698,7 +702,7 @@ namespace Krebsregister
             }
             if (rbZeitraum.IsChecked == true)
             {
-                for(int i = int.Parse(tbVon.Text); i < int.Parse(tbBis.Text); i++)
+                for(int i = int.Parse(tbVon.Text); i <= int.Parse(tbBis.Text); i++)
                 {
                     selectedberichtsjahre.Add(i.ToString());
                 }
@@ -720,10 +724,10 @@ namespace Krebsregister
             //                                                                .Where(x => selectedGeschlechtES.Contains(x.Geschlecht)).ToList();
             CreateFilteredCharts(gefilterte_krebsmeldung);
 
-            List<Krebsmeldung> result = DatabaseMethods.ES_Cube(constring, icd10s, geschelcht, bundeslaender, berichtsjahre);
-            //List<Krebsmeldung> result = DatabaseMethods.ES_ROLLUP(constring, icd10s, geschelcht, bundeslaender, berichtsjahre);
+            //List<Krebsmeldung> result = DatabaseMethods.ES_Cube(constring, selectedicd10s, selectedgeschlecht, selectedbundeslaender, selectedberichtsjahre);
+            List<Krebsmeldung> result = DatabaseMethods.ES_ROLLUP(constring, selectedicd10s, selectedgeschlecht, selectedbundeslaender, selectedberichtsjahre);
 
-            lvfilter.ItemsSource = result;
+            lvfilterNeu.ItemsSource = result;
 
             selectedICD10ES.Clear();
         }

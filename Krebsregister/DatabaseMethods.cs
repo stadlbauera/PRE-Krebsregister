@@ -316,6 +316,7 @@ namespace Krebsregister
 
         public static List<Krebsmeldung> ES_Cube(string constring, List<string> icd10s, List<string> geschlecht, List<string> bundesland, List<string> jahre)
         {
+
             string whereClause = " where ";
             string selectClause = "select ";
             string groupByClause = " group by CUBE ";
@@ -323,9 +324,9 @@ namespace Krebsregister
             {
                 selectClause += "i.ICD10Code, ";
                 whereClause += "i.ICD10Code in (";
-                foreach (var item in icd10s)
+                for(int i = 0; i < icd10s.Count; i++)
                 {
-                    whereClause += $"'{item}',";
+                    if (!icd10s[i].Equals("Alle")) whereClause += $"'{icd10s[i]}',";
                 }
                 whereClause = whereClause.Remove(whereClause.Length - 1);
                 whereClause += ") and ";
@@ -334,9 +335,9 @@ namespace Krebsregister
             {
                 selectClause += "g.Geschlecht, ";
                 whereClause += "g.Geschlecht in (";
-                foreach (var item in geschlecht)
+                for(int i = 0; i < geschlecht.Count; i++)
                 {
-                    whereClause += $"'{item}',";
+                    if(!geschlecht[i].Equals("Alle")) whereClause += $"'{geschlecht[i]}',";
                 }
                 whereClause = whereClause.Remove(whereClause.Length - 1);
                 whereClause += ") and ";
@@ -345,9 +346,9 @@ namespace Krebsregister
             {
                 selectClause += "b.Name, ";
                 whereClause += "b.Name in (";
-                foreach (var item in bundesland)
+                for(int i = 0; i < bundesland.Count; i++)
                 {
-                    whereClause += $"'{item}',";
+                    if(!bundesland[i].Equals("Alle")) whereClause += $"'{bundesland[i]}',";
                 }
                 whereClause = whereClause.Remove(whereClause.Length - 1);
                 whereClause += ") and ";
@@ -356,9 +357,9 @@ namespace Krebsregister
             {
                 selectClause += "e.Berichtsjahr, ";
                 whereClause += "e.Berichtsjahr in (";
-                foreach (var item in jahre)
+                for(int i = 0; i < jahre.Count; i++)
                 {
-                    whereClause += $"{Int32.Parse(item)},";
+                    if(!jahre[i].Equals("Alle") && !jahre[i].Equals("")) whereClause += $"{Int32.Parse(jahre[i])},";
                 }
                 whereClause = whereClause.Remove(whereClause.Length - 1);
                 whereClause += ") and ";
@@ -439,9 +440,9 @@ namespace Krebsregister
             {
                 selectClause += "i.ICD10Code, ";
                 whereClause += "i.ICD10Code in (";
-                foreach (var item in icd10s)
+                for (int i = 0; i < icd10s.Count; i++)
                 {
-                    whereClause += $"'{item}',";
+                    if (!icd10s[i].Equals("Alle")) whereClause += $"'{icd10s[i]}',";
                 }
                 whereClause = whereClause.Remove(whereClause.Length - 1);
                 whereClause += ") and ";
@@ -450,9 +451,9 @@ namespace Krebsregister
             {
                 selectClause += "g.Geschlecht, ";
                 whereClause += "g.Geschlecht in (";
-                foreach (var item in geschlecht)
+                for (int i = 0; i < geschlecht.Count; i++)
                 {
-                    whereClause += $"'{item}',";
+                    if (!geschlecht[i].Equals("Alle")) whereClause += $"'{geschlecht[i]}',";
                 }
                 whereClause = whereClause.Remove(whereClause.Length - 1);
                 whereClause += ") and ";
@@ -461,9 +462,9 @@ namespace Krebsregister
             {
                 selectClause += "b.Name, ";
                 whereClause += "b.Name in (";
-                foreach (var item in bundesland)
+                for (int i = 0; i < bundesland.Count; i++)
                 {
-                    whereClause += $"'{item}',";
+                    if (!bundesland[i].Equals("Alle")) whereClause += $"'{bundesland[i]}',";
                 }
                 whereClause = whereClause.Remove(whereClause.Length - 1);
                 whereClause += ") and ";
@@ -472,9 +473,9 @@ namespace Krebsregister
             {
                 selectClause += "e.Berichtsjahr, ";
                 whereClause += "e.Berichtsjahr in (";
-                foreach (var item in jahre)
+                for (int i = 0; i < jahre.Count; i++)
                 {
-                    whereClause += $"{Int32.Parse(item)},";
+                    if (!jahre[i].Equals("Alle") && !jahre[i].Equals("")) whereClause += $"{Int32.Parse(jahre[i])},";
                 }
                 whereClause = whereClause.Remove(whereClause.Length - 1);
                 whereClause += ") and ";
