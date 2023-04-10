@@ -55,6 +55,7 @@ namespace Krebsregister
             InitializeComponent();
             GetPaths();
             alleKrebsmeldungen = DatabaseMethods.GetDataFromDatabase_Eintrag(constring);
+            dgKrebsmeldungen.ItemsSource = alleKrebsmeldungen;
 
             nudJahr.MaxValue = DateTime.Now.Year;
             nudJahr.Value = DateTime.Now.Year;
@@ -63,6 +64,7 @@ namespace Krebsregister
             FillCharts(new List<string> { "C00", "C01", "C02" });
 
             FillComboBoxes();
+
         }
 
         private void FillComboBoxes()
@@ -72,9 +74,15 @@ namespace Krebsregister
             NK_cbBundesland.ItemsSource = DatabaseMethods.GetDataFromDatabase_Bundesland(constring);
 
             ES_cboKrebsart.ItemsSource = DatabaseMethods.GetDataFromDatabase_ICD10(constring);
+            ES_cboKrebsart.ItemsSource.Insert(0, "Alle");
             ES_cboGeschlecht.ItemsSource = DatabaseMethods.GetDataFromDatabase_Geschlecht(constring);
+            ES_cboGeschlecht.ItemsSource.Insert(0, "Alle");
             ES_cboBundesland.ItemsSource = DatabaseMethods.GetDataFromDatabase_Bundesland(constring);
+            ES_cboBundesland.ItemsSource.Insert(0, "Alle");
             ES_cboBerichtsjahr.ItemsSource = DatabaseMethods.GetDataFromDatabase_Eintrag(constring).Select(x => x.Jahr).Distinct().ToList();
+
+            tbVon.Text = DatabaseMethods.GetDataFromDatabase_Eintrag(constring).Select(x => x.Jahr).Distinct().Min().ToString();
+            tbBis.Text = DatabaseMethods.GetDataFromDatabase_Eintrag(constring).Select(x => x.Jahr).Distinct().Max().ToString();
         }
 
         private void GetPaths()
@@ -186,7 +194,6 @@ namespace Krebsregister
 
         #region Menue
 
-
         private void DatenLaden_Click(object sender, RoutedEventArgs e)
         {
             DatabaseMethods.FillDatabase(constring);
@@ -256,7 +263,7 @@ namespace Krebsregister
             {
                 krebsmeldungen.Add(k);
             }
-            lvKrebsmeldungen.ItemsSource = krebsmeldungen;
+            dgKrebsmeldungen.ItemsSource = krebsmeldungen;
         }
 
         #endregion
@@ -618,6 +625,10 @@ namespace Krebsregister
 
         #region Erweiterte Statistik
 
+        List<string> selectedICD10ES = new List<string>();
+        List<string> selectedGeschlechtES = new List<string>();
+        List<string> selectedBundeslandES = new List<string>();
+        List<int> selectedJahrES = new List<int>();
 
         private void rbZeitpunkt_Checked(object sender, RoutedEventArgs e)
         {
@@ -633,6 +644,8 @@ namespace Krebsregister
 
         private void Aktualisieren(object sender, RoutedEventArgs e)
         {
+            
+
             //string[] krebsartICD10 = ES_cboKrebsart.SelectedItem.ToString().Split(" - ");
             List<string> icd10s = new List<string>();
             icd10s.Add("C00");
@@ -662,6 +675,7 @@ namespace Krebsregister
                                                                             .Where(x => geschelcht.Contains(x.Geschlecht)).ToList();
             CreateFilteredCharts(gefilterte_krebsmeldung);
 
+            selectedICD10ES.Clear();
         }
 
         public string[] LabelsFBCBundesland { get; set; }
@@ -816,13 +830,59 @@ namespace Krebsregister
             {
                 FillCharts(FilterDashboardWindow.selectedICDs);
             }
-
-            
         }
 
+        
 
+        private void ES_cboKrebsart_SelectedItemsChanged(object sender, Sdl.MultiSelectComboBox.EventArgs.SelectedItemsChangedEventArgs e)
+        {
+            foreach (string item in e.Selected)
+            {
+                selectedICD10ES.Add(item.Split(" - ")[0]);
+                selectedICD10ES.Distinct();
+            }
+        }
+
+        private void ES_cboGeschlecht_SelectedItemsChanged(object sender, Sdl.MultiSelectComboBox.EventArgs.SelectedItemsChangedEventArgs e)
+        {
+            foreach (string item in e.Selected)
+            {
+                selectedGeschlechtES.Add(item);
+                selectedGeschlechtES.Distinct();
+            }
+        }
+
+        private void ES_cboBundesland_SelectedItemsChanged(object sender, Sdl.MultiSelectComboBox.EventArgs.SelectedItemsChangedEventArgs e)
+        {
+            foreach (string item in e.Selected)
+            {
+                selectedBundeslandES.Add(item);
+                selectedBundeslandES.Distinct();
+            }
+        }
+
+        private void ES_cboBerichtsjahr_SelectedItemsChanged(object sender, Sdl.MultiSelectComboBox.EventArgs.SelectedItemsChangedEventArgs e)
+        {
+            foreach (string item in e.Selected)
+            {
+                selectedJahrES.Add(Int32.Parse(item));
+                selectedJahrES.Distinct();
+            }
+        }
 
         #endregion
+
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string? tabItem = ((TabItem)((TabControl)sender).SelectedItem).Header as string;
+            if(tabItem == "Erweiterte Statistik")
+            {
+                selectedICD10ES.Clear();
+                selectedBundeslandES.Clear();
+                selectedGeschlechtES.Clear();
+                selectedJahrES.Clear();
+            }
+        }
 
     }
 }
