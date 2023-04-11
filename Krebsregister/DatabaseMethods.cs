@@ -15,7 +15,7 @@ using System.Xml.Linq;
 
 namespace Krebsregister
 {
-    internal class DatabaseMethods
+    public static class DatabaseMethods
     {
         #region erstellen und befüllen Datenbank
         public static void FillDatabase(string constring)
@@ -316,6 +316,15 @@ namespace Krebsregister
 
         public static List<Krebsmeldung> ES_Cube(string constring, List<string> icd10s, List<string> geschlecht, List<string> bundesland, List<string> jahre)
         {
+            //select i.ICD10Code, g.Geschlecht, b.Name, e.Berichtsjahr, SUM(e.AnzahlMeldungen), AVG(e.AnzahlMeldungen)
+            //FROM Eintrag e
+            //JOIN ICD10 i on(e.ICD10ID = i.ICD10ID)
+            //JOIN Bundesland b on(b.BundeslandID = e.BundeslandID)
+            //JOIN Geschlecht g on(g.GeschlechtID = e.GeschlechtID)
+            //where i.ICD10Code in ('C01', '') and
+            //g.Geschlecht in ('männlich', 'weiblich', 'inter', 'divers', 'unbekannt')
+            //and b.Name in ('Salzburg', '') and e.Berichtsjahr in (1985, 1996)
+            //group by CUBE(i.ICD10Code, g.Geschlecht, b.Name, e.Berichtsjahr)
 
             string whereClause = " where ";
             string selectClause = "select ";
@@ -433,6 +442,17 @@ namespace Krebsregister
 
         public static List<Krebsmeldung> ES_ROLLUP(string constring, List<string> icd10s, List<string> geschlecht, List<string> bundesland, List<string> jahre)
         {
+
+            //select i.ICD10Code, g.Geschlecht, b.Name, e.Berichtsjahr, SUM(e.AnzahlMeldungen), AVG(e.AnzahlMeldungen)
+            //FROM Eintrag e
+            //JOIN ICD10 i on(e.ICD10ID = i.ICD10ID)
+            //JOIN Bundesland b on(b.BundeslandID = e.BundeslandID)
+            //JOIN Geschlecht g on(g.GeschlechtID = e.GeschlechtID)
+            //where i.ICD10Code in ('C01', '')
+            //and g.Geschlecht in ('männlich', 'weiblich', 'inter', 'divers', 'unbekannt')
+            //and b.Name in ('Salzburg', '') and e.Berichtsjahr in (1985, 1996)
+            //group by ROLLUP(i.ICD10Code, g.Geschlecht, b.Name, e.Berichtsjahr)
+
             string whereClause = " where ";
             string selectClause = "select ";
             string groupByClause = " group by ROLLUP ";

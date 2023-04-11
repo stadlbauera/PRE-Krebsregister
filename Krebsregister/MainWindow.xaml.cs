@@ -111,7 +111,7 @@ namespace Krebsregister
             XmlDocument xml = new XmlDocument();
             xml.Load(path_xml);
 
-            XmlNodeList nodeList = xml.GetElementsByTagName("Anna");
+            XmlNodeList nodeList = xml.GetElementsByTagName("Lili");
             foreach (XmlNode personalNode in nodeList)
             {
                 foreach (XmlNode targetNode in personalNode.ChildNodes)
@@ -724,8 +724,8 @@ namespace Krebsregister
             //                                                                .Where(x => selectedGeschlechtES.Contains(x.Geschlecht)).ToList();
             CreateFilteredCharts(gefilterte_krebsmeldung);
 
-            //List<Krebsmeldung> result = DatabaseMethods.ES_Cube(constring, selectedicd10s, selectedgeschlecht, selectedbundeslaender, selectedberichtsjahre);
-            List<Krebsmeldung> result = DatabaseMethods.ES_ROLLUP(constring, selectedicd10s, selectedgeschlecht, selectedbundeslaender, selectedberichtsjahre);
+            List<Krebsmeldung> result = DatabaseMethods.ES_Cube(constring, selectedicd10s, selectedgeschlecht, selectedbundeslaender, selectedberichtsjahre);
+            List<Krebsmeldung> result2 = DatabaseMethods.ES_ROLLUP(constring, selectedicd10s, selectedgeschlecht, selectedbundeslaender, selectedberichtsjahre);
 
             lvfilterNeu.ItemsSource = result;
 
