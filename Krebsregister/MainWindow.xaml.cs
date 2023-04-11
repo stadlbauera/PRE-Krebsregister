@@ -282,6 +282,15 @@ namespace Krebsregister
             //dgKrebsmeldungen.ItemsSource = krebsmeldungen;
         }
 
+        private void FilterDashboard_Click(object sender, RoutedEventArgs e)
+        {
+            Window filterDWindow = new FilterDashboardWindow(DatabaseMethods.GetDataFromDatabase_ICD10(constring));
+            if (filterDWindow.ShowDialog() == true)
+            {
+                FillCharts(FilterDashboardWindow.selectedICDs);
+            }
+        }
+
         #endregion
 
 
@@ -877,16 +886,10 @@ namespace Krebsregister
 
 
         }
-        private void FilterDashboard_Click(object sender, RoutedEventArgs e)
-        {
-            Window filterDWindow = new FilterDashboardWindow(DatabaseMethods.GetDataFromDatabase_ICD10(constring));
-            if (filterDWindow.ShowDialog() == true)
-            {
-                FillCharts(FilterDashboardWindow.selectedICDs);
-            }
-        }
 
-        
+        #region Multiselect ComboBox
+
+
 
         //private void ES_cboKrebsart_SelectedItemsChanged(object sender, Sdl.MultiSelectComboBox.EventArgs.SelectedItemsChangedEventArgs e)
         //{
@@ -924,7 +927,6 @@ namespace Krebsregister
         //    }
         //}
 
-        #endregion
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -976,14 +978,14 @@ namespace Krebsregister
                 {
                     int length = ($"{selected};").Length;
                     int start = ES_lblSelectedGeschlecht.Content.ToString().IndexOf(selected);
-                    ES_lblSelectedGeschlecht.Content = ES_lblSelectedGeschlecht.Content.ToString().Remove(start,length);
+                    ES_lblSelectedGeschlecht.Content = ES_lblSelectedGeschlecht.Content.ToString().Remove(start, length);
                 }
                 else
                 {
                     ES_lblSelectedGeschlecht.Content = $"{ES_lblSelectedGeschlecht.Content}{selected};";
                 }
             }
- 
+
         }
 
         private void ES_cboBundesland_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1033,5 +1035,9 @@ namespace Krebsregister
                 }
             }
         }
+        #endregion
+
+        #endregion
+
     }
 }
