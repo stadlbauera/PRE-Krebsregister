@@ -676,24 +676,6 @@ namespace Krebsregister
 
         private void Aktualisieren(object sender, RoutedEventArgs e)
         {
-            //Test-Daten
-            //List<string> icd10s = new List<string>();
-            //icd10s.Add("C00");
-            //icd10s.Add("C01");
-            //icd10s.Add("C02");
-            //List<string> bundeslaender = new List<string>();
-            //bundeslaender.Add("Wien");
-            //bundeslaender.Add("Oberösterreich");
-            //bundeslaender.Add("Niederösterreich");
-
-            //List<string> berichtsjahre = new List<string>();
-            //berichtsjahre.Add("1993");
-            //berichtsjahre.Add("1994");
-            //berichtsjahre.Add("1998");
-
-            //List<string> geschelcht = new List<string>();
-            //geschelcht.Add("männlich");
-            //geschelcht.Add("weiblich");
 
             List<string> selectedicd10s = ES_lblSelectedKrebsart.Content.ToString().Split(" ")[1].Split(";").ToList();
             if (selectedicd10s[0].Equals("Alle"))
@@ -734,7 +716,8 @@ namespace Krebsregister
             CreateFilteredCharts(gefilterte_krebsmeldung);
 
             List<Krebsmeldung> result = DatabaseMethods.ES_Cube(constring, selectedicd10s, selectedgeschlecht, selectedbundeslaender, selectedberichtsjahre);
-            List<Krebsmeldung> result2 = DatabaseMethods.ES_ROLLUP(constring, selectedicd10s, selectedgeschlecht, selectedbundeslaender, selectedberichtsjahre);
+            //List<Krebsmeldung> result = DatabaseMethods.ES_ROLLUP(constring, selectedicd10s, selectedgeschlecht, selectedbundeslaender, selectedberichtsjahre);
+            //List<Krebsmeldung> result = DatabaseMethods.ES_GROUPINGSETS(constring, selectedicd10s, selectedgeschlecht, selectedbundeslaender, selectedberichtsjahre);
 
             lvfilterNeu.ItemsSource = result;
 

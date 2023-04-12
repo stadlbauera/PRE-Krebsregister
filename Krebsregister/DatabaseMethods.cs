@@ -20,7 +20,7 @@ namespace Krebsregister
         #region erstellen und befüllen Datenbank
         public static void FillDatabase(string constring)
         {
-            string path_rest_icd10 = GetXMLPath();
+            string path_rest_icd10 = GetRestlicheICD10Path();
 
             //Allgemein Databaseconnection erstellen und öffnen
             SqlConnection connection = new SqlConnection(constring);
@@ -303,7 +303,7 @@ namespace Krebsregister
 
         #endregion Daten aus den Datenbank holen
 
-        private static string GetXMLPath()
+        private static string GetRestlicheICD10Path()
         {
             string path = Assembly.GetExecutingAssembly().Location;
             while (!path.EndsWith("Krebsregister"))
@@ -456,6 +456,132 @@ namespace Krebsregister
             string whereClause = " where ";
             string selectClause = "select ";
             string groupByClause = " group by ROLLUP ";
+            if (icd10s.Count > 0)
+            {
+                selectClause += "i.ICD10Code, ";
+                whereClause += "i.ICD10Code in (";
+                for (int i = 0; i < icd10s.Count; i++)
+                {
+                    if (!icd10s[i].Equals("Alle")) whereClause += $"'{icd10s[i]}',";
+                }
+                whereClause = whereClause.Remove(whereClause.Length - 1);
+                whereClause += ") and ";
+            }
+            if (geschlecht.Count > 0)
+            {
+                selectClause += "g.Geschlecht, ";
+                whereClause += "g.Geschlecht in (";
+                for (int i = 0; i < geschlecht.Count; i++)
+                {
+                    if (!geschlecht[i].Equals("Alle")) whereClause += $"'{geschlecht[i]}',";
+                }
+                whereClause = whereClause.Remove(whereClause.Length - 1);
+                whereClause += ") and ";
+            }
+            if (bundesland.Count > 0)
+            {
+                selectClause += "b.Name, ";
+                whereClause += "b.Name in (";
+                for (int i = 0; i < bundesland.Count; i++)
+                {
+                    if (!bundesland[i].Equals("Alle")) whereClause += $"'{bundesland[i]}',";
+                }
+                whereClause = whereClause.Remove(whereClause.Length - 1);
+                whereClause += ") and ";
+            }
+            if (jahre.Count > 0)
+            {
+                selectClause += "e.Berichtsjahr, ";
+                whereClause += "e.Berichtsjahr in (";
+                for (int i = 0; i < jahre.Count; i++)
+                {
+                    if (!jahre[i].Equals("Alle") && !jahre[i].Equals("")) whereClause += $"{Int32.Parse(jahre[i])},";
+                }
+                whereClause = whereClause.Remove(whereClause.Length - 1);
+                whereClause += ") and ";
+            }
+            selectClause = selectClause.Remove(selectClause.Length - 2);
+            groupByClause += $"({selectClause.Remove(0, 6)})";
+            selectClause += ", SUM(e.AnzahlMeldungen), AVG(e.AnzahlMeldungen)";
+            whereClause = whereClause.Remove(whereClause.Length - 4);
+
+
+
+            List<Krebsmeldung> result = new List<Krebsmeldung>();
+            SqlConnection connection = new SqlConnection(constring);
+            if (connection.State != System.Data.ConnectionState.Open)
+            {
+                connection.Open();
+            }
+            SqlCommand cmd = new SqlCommand
+                ($"{selectClause} " +
+                $"FROM Eintrag e " +
+                $"JOIN ICD10 i on (e.ICD10ID = i.ICD10ID) " +
+                $"JOIN Bundesland b on (b.BundeslandID = e.BundeslandID) " +
+                $"JOIN Geschlecht g on (g.GeschlechtID = e.GeschlechtID) " +
+                $"{whereClause} " +
+                $"{groupByClause}", connection);
+            SqlDataReader reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                int i = 0;
+                Krebsmeldung k = new Krebsmeldung();
+                if (icd10s.Count > 0)
+                {
+                    if (!reader.IsDBNull(i))
+                        k.ICD10Code = reader.GetString(i);
+                    else
+                        k.ICD10Code = "null";
+                    i++;
+                }
+                if (geschlecht.Count > 0)
+                {
+                    if (!reader.IsDBNull(i))
+                        k.Geschlecht = reader.GetString(i);
+                    else
+                        k.Geschlecht = "null";
+                    i++;
+                }
+                if (bundesland.Count > 0)
+                {
+                    if (!reader.IsDBNull(i))
+                        k.Bundesland = reader.GetString(i);
+                    else
+                        k.Bundesland = "null";
+                    i++;
+                }
+                if (jahre.Count > 0)
+                {
+                    if (!reader.IsDBNull(i))
+                        k.Jahr = reader.GetInt32(i);
+                    else
+                        k.Jahr = -1;
+                    i++;
+                }
+                k.SUM = reader.GetInt32(i);
+                i++;
+                k.AVG = reader.GetInt32(i);
+                result.Add(k);
+            }
+            connection.Close();
+            return result;
+        }
+
+        public static List<Krebsmeldung> ES_GROUPINGSETS(string constring, List<string> icd10s, List<string> geschlecht, List<string> bundesland, List<string> jahre)
+        {
+            //select i.ICD10Code, g.Geschlecht, b.Name, e.Berichtsjahr, SUM(e.AnzahlMeldungen), AVG(e.AnzahlMeldungen)
+            //FROM Eintrag e
+            //JOIN ICD10 i on(e.ICD10ID = i.ICD10ID)
+            //JOIN Bundesland b on(b.BundeslandID = e.BundeslandID)
+            //JOIN Geschlecht g on(g.GeschlechtID = e.GeschlechtID)
+            //where i.ICD10Code in ('C01', '') and
+            //g.Geschlecht in ('männlich', 'weiblich', 'inter', 'divers', 'unbekannt')
+            //and b.Name in ('Salzburg', '') and e.Berichtsjahr in (1985, 1996)
+            //group by GROUPING SETS(i.ICD10Code, g.Geschlecht, b.Name, e.Berichtsjahr)
+
+            string whereClause = " where ";
+            string selectClause = "select ";
+            string groupByClause = " group by GROUPING SETS ";
             if (icd10s.Count > 0)
             {
                 selectClause += "i.ICD10Code, ";
